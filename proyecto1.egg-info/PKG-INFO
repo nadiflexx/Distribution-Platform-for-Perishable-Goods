@@ -30,6 +30,7 @@ Requires-Dist: pytest>=8.4.2
 Requires-Dist: openpyxl>=3.1.5
 Requires-Dist: matplotlib>=3.10.7
 Requires-Dist: seaborn>=0.13.2
+Requires-Dist: geopy>=2.4.1
 
 # Distribution-Platform-for-Perishable-Goods
 Este proyecto tiene como objetivo crear una herramienta que permita determinar y calcular las rutas más óptimas de distribución de productos desde las instalaciones centrales de una empresa de mercancias.

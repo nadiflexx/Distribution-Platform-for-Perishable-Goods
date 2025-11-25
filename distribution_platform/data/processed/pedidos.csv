@@ -1,0 +1,1001 @@
+pedido_id,fecha_pedido,producto,cantidad_producto,precio_venta,tiempo_fabricacion_medio,caducidad,destino,distancia_km,coordenadas_gps,email_cliente
+1,2025-01-02,Producto5,8,"64,84",1,3,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto28,1,"24,6",4,12,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto29,6,"64,14",10,30,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto3,1,"74,19",7,21,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto38,1,"41,61",3,9,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto44,9,"17,32",7,21,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto40,1,"95,77",4,12,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto13,1,"29,33",10,30,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto1,8,"45,84",3,9,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto29,1,"64,14",10,30,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto8,5,"66,37",4,12,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto23,5,"22,06",6,18,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto11,3,"30,66",7,21,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto12,7,"13,74",5,15,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto50,2,"14,33",3,9,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto33,7,12,8,24,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto19,9,"29,87",7,21,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto3,1,"74,19",7,21,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto16,2,"31,55",4,12,Destino Guadalajara,"455,56",,cliente68@correo.com
+1,2025-01-02,Producto6,8,"85,57",6,18,Destino Guadalajara,"455,56",,cliente68@correo.com
+2,2025-01-03,Producto34,2,"44,47",8,24,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto32,10,"50,83",6,18,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto20,6,"98,15",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto19,5,"29,87",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto34,5,"44,47",8,24,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto3,6,"74,19",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto43,4,"33,04",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto3,9,"74,19",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto48,10,"52,82",3,9,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto1,1,"45,84",3,9,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto38,10,"41,61",3,9,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto42,4,"63,8",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto48,5,"52,82",3,9,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto34,5,"44,47",8,24,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto22,3,"17,45",8,24,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto39,8,"56,7",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto16,3,"31,55",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto13,4,"29,33",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto19,4,"29,87",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+2,2025-01-03,Producto21,3,"15,22",2,6,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente6@correo.com
+3,2025-01-04,Producto35,7,"83,82",6,18,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto13,7,"29,33",10,30,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto48,4,"52,82",3,9,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto30,6,"16,56",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto33,1,12,8,24,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto42,8,"63,8",10,30,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto37,5,"55,4",3,9,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto49,4,"58,45",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto29,5,"64,14",10,30,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto46,1,"85,8",5,15,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto2,5,"54,2",9,27,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto47,10,"47,14",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto4,7,"53,82",1,3,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto26,4,"48,26",1,3,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto20,1,"98,15",1,3,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto7,1,"49,53",4,12,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto35,5,"83,82",6,18,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto29,5,"64,14",10,30,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto11,2,"30,66",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+3,2025-01-04,Producto50,2,"14,33",3,9,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente22@correo.com
+4,2025-01-05,Producto21,4,"15,22",2,6,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto47,4,"47,14",7,21,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto50,5,"14,33",3,9,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto29,3,"64,14",10,30,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto1,8,"45,84",3,9,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto2,8,"54,2",9,27,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto3,1,"74,19",7,21,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto44,9,"17,32",7,21,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto44,9,"17,32",7,21,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto41,9,"81,12",6,18,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto7,8,"49,53",4,12,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto38,5,"41,61",3,9,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto37,2,"55,4",3,9,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto30,1,"16,56",7,21,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto16,3,"31,55",4,12,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto17,5,"69,85",10,30,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto5,2,"64,84",1,3,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto7,6,"49,53",4,12,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto26,6,"48,26",1,3,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+4,2025-01-05,Producto17,6,"69,85",10,30,Destino Castellón,"242,85","40.2518568,-0.0615052",cliente3@correo.com
+5,2025-01-06,Producto36,2,"36,98",5,15,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto15,1,"94,12",4,12,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto18,4,"71,71",2,6,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto5,5,"64,84",1,3,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto1,4,"45,84",3,9,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto3,7,"74,19",7,21,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto22,2,"17,45",8,24,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto19,9,"29,87",7,21,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto22,5,"17,45",8,24,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto44,5,"17,32",7,21,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto41,8,"81,12",6,18,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto2,1,"54,2",9,27,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto1,10,"45,84",3,9,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto34,5,"44,47",8,24,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto32,9,"50,83",6,18,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto42,10,"63,8",10,30,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto42,1,"63,8",10,30,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto9,5,"76,82",2,6,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto26,2,"48,26",1,3,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+5,2025-01-06,Producto40,4,"95,77",4,12,Destino Navarra,"825,56","42.6125488,-1.8307877",cliente78@correo.com
+6,2025-01-07,Producto34,3,"44,47",8,24,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto31,4,"96,86",8,24,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto40,9,"95,77",4,12,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto48,4,"52,82",3,9,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto10,6,"18,03",5,15,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto4,2,"53,82",1,3,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto14,2,"58,11",2,6,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto2,9,"54,2",9,27,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto30,6,"16,56",7,21,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto12,9,"13,74",5,15,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto40,8,"95,77",4,12,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto33,3,12,8,24,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto28,3,"24,6",4,12,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto30,3,"16,56",7,21,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto17,7,"69,85",10,30,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto29,3,"64,14",10,30,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto30,3,"16,56",7,21,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto30,3,"16,56",7,21,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto37,6,"55,4",3,9,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+6,2025-01-07,Producto44,7,"17,32",7,21,Destino Lugo,"821,5","43.0396042,-7.4566072",cliente46@correo.com
+7,2025-01-08,Producto17,10,"69,85",10,30,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto12,5,"13,74",5,15,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto9,6,"76,82",2,6,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto7,4,"49,53",4,12,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto6,7,"85,57",6,18,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto49,6,"58,45",7,21,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto7,9,"49,53",4,12,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto24,3,"53,39",7,21,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto22,2,"17,45",8,24,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto13,1,"29,33",10,30,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto19,4,"29,87",7,21,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto37,9,"55,4",3,9,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto13,10,"29,33",10,30,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto32,2,"50,83",6,18,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto34,1,"44,47",8,24,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto22,5,"17,45",8,24,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto5,10,"64,84",1,3,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto24,9,"53,39",7,21,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto47,5,"47,14",7,21,Destino Las Palmas,"353,06",,cliente97@correo.com
+7,2025-01-08,Producto9,2,"76,82",2,6,Destino Las Palmas,"353,06",,cliente97@correo.com
+8,2025-01-09,Producto24,10,"53,39",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto38,2,"41,61",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto16,2,"31,55",4,12,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto50,2,"14,33",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto28,5,"24,6",4,12,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto20,9,"98,15",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto4,4,"53,82",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto33,8,12,8,24,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto18,1,"71,71",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto42,4,"63,8",10,30,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto11,5,"30,66",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto9,10,"76,82",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto13,4,"29,33",10,30,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto18,10,"71,71",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto25,9,"40,69",5,15,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto43,8,"33,04",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto2,6,"54,2",9,27,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto32,1,"50,83",6,18,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto20,3,"98,15",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+8,2025-01-09,Producto39,7,"56,7",10,30,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente55@correo.com
+9,2025-01-10,Producto26,9,"48,26",1,3,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto3,9,"74,19",7,21,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto35,10,"83,82",6,18,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto50,6,"14,33",3,9,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto39,4,"56,7",10,30,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto21,3,"15,22",2,6,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto16,3,"31,55",4,12,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto50,9,"14,33",3,9,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto37,8,"55,4",3,9,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto12,6,"13,74",5,15,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto31,7,"96,86",8,24,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto24,10,"53,39",7,21,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto21,8,"15,22",2,6,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto39,10,"56,7",10,30,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto35,5,"83,82",6,18,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto36,1,"36,98",5,15,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto5,5,"64,84",1,3,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto16,5,"31,55",4,12,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto34,8,"44,47",8,24,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+9,2025-01-10,Producto31,1,"96,86",8,24,Destino La Rioja,"159,69","42.2814642,-2.482805",cliente75@correo.com
+10,2025-01-11,Producto25,5,"40,69",5,15,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto3,1,"74,19",7,21,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto11,6,"30,66",7,21,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto30,3,"16,56",7,21,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto35,4,"83,82",6,18,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto37,6,"55,4",3,9,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto41,4,"81,12",6,18,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto12,2,"13,74",5,15,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto14,4,"58,11",2,6,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto24,5,"53,39",7,21,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto49,9,"58,45",7,21,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto19,5,"29,87",7,21,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto17,7,"69,85",10,30,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto1,7,"45,84",3,9,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto10,1,"18,03",5,15,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto38,3,"41,61",3,9,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto48,5,"52,82",3,9,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto36,1,"36,98",5,15,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto42,10,"63,8",10,30,Destino Vizcaya,"888,86",,cliente70@correo.com
+10,2025-01-11,Producto29,7,"64,14",10,30,Destino Vizcaya,"888,86",,cliente70@correo.com
+11,2025-01-12,Producto1,4,"45,84",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto23,5,"22,06",6,18,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto18,7,"71,71",2,6,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto11,4,"30,66",7,21,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto48,7,"52,82",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto44,9,"17,32",7,21,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto5,4,"64,84",1,3,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto2,6,"54,2",9,27,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto35,6,"83,82",6,18,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto22,2,"17,45",8,24,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto17,3,"69,85",10,30,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto31,7,"96,86",8,24,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto50,4,"14,33",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto21,4,"15,22",2,6,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto29,6,"64,14",10,30,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto21,9,"15,22",2,6,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto37,5,"55,4",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto4,4,"53,82",1,3,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto8,9,"66,37",4,12,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+11,2025-01-12,Producto48,1,"52,82",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente16@correo.com
+12,2025-01-13,Producto22,7,"17,45",8,24,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto43,7,"33,04",1,3,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto30,10,"16,56",7,21,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto33,5,12,8,24,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto37,9,"55,4",3,9,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto9,5,"76,82",2,6,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto9,3,"76,82",2,6,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto16,4,"31,55",4,12,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto23,7,"22,06",6,18,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto9,5,"76,82",2,6,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto31,7,"96,86",8,24,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto33,5,12,8,24,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto49,6,"58,45",7,21,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto28,8,"24,6",4,12,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto13,8,"29,33",10,30,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto8,5,"66,37",4,12,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto34,6,"44,47",8,24,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto20,10,"98,15",1,3,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto38,10,"41,61",3,9,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+12,2025-01-13,Producto23,5,"22,06",6,18,Destino Guipúzcoa,"403,61",,cliente59@correo.com
+13,2025-01-14,Producto45,10,"86,39",6,18,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto32,9,"50,83",6,18,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto4,5,"53,82",1,3,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto10,1,"18,03",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto36,10,"36,98",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto33,2,12,8,24,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto38,1,"41,61",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto36,7,"36,98",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto35,4,"83,82",6,18,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto38,6,"41,61",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto46,3,"85,8",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto42,10,"63,8",10,30,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto27,10,"93,76",10,30,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto22,8,"17,45",8,24,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto33,1,12,8,24,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto48,1,"52,82",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto44,7,"17,32",7,21,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto24,5,"53,39",7,21,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto12,7,"13,74",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+13,2025-01-14,Producto40,3,"95,77",4,12,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente10@correo.com
+14,2025-01-15,Producto38,3,"41,61",3,9,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto17,4,"69,85",10,30,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto50,7,"14,33",3,9,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto7,8,"49,53",4,12,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto48,1,"52,82",3,9,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto40,3,"95,77",4,12,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto36,6,"36,98",5,15,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto18,5,"71,71",2,6,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto8,5,"66,37",4,12,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto23,2,"22,06",6,18,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto41,8,"81,12",6,18,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto24,3,"53,39",7,21,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto21,1,"15,22",2,6,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto31,2,"96,86",8,24,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto19,1,"29,87",7,21,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto50,5,"14,33",3,9,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto8,3,"66,37",4,12,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto24,10,"53,39",7,21,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto18,3,"71,71",2,6,Destino Córdoba,"711,53",,cliente17@correo.com
+14,2025-01-15,Producto37,5,"55,4",3,9,Destino Córdoba,"711,53",,cliente17@correo.com
+15,2025-01-16,Producto19,1,"29,87",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto32,2,"50,83",6,18,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto24,9,"53,39",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto43,5,"33,04",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto43,6,"33,04",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto2,2,"54,2",9,27,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto15,8,"94,12",4,12,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto43,4,"33,04",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto37,7,"55,4",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto48,4,"52,82",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto23,10,"22,06",6,18,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto36,7,"36,98",5,15,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto32,10,"50,83",6,18,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto43,5,"33,04",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto21,5,"15,22",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto36,9,"36,98",5,15,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto44,6,"17,32",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto14,8,"58,11",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto11,9,"30,66",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+15,2025-01-16,Producto18,2,"71,71",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente78@correo.com
+16,2025-01-17,Producto18,8,"71,71",2,6,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto7,2,"49,53",4,12,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto41,4,"81,12",6,18,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto45,8,"86,39",6,18,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto12,8,"13,74",5,15,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto49,8,"58,45",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto1,5,"45,84",3,9,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto19,3,"29,87",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto43,6,"33,04",1,3,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto28,6,"24,6",4,12,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto2,8,"54,2",9,27,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto1,10,"45,84",3,9,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto35,7,"83,82",6,18,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto19,3,"29,87",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto44,2,"17,32",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto15,7,"94,12",4,12,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto36,8,"36,98",5,15,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto11,2,"30,66",7,21,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto45,2,"86,39",6,18,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+16,2025-01-17,Producto21,4,"15,22",2,6,Destino Islas Baleares,"205,58","39.613432,2.8829185",cliente7@correo.com
+17,2025-01-18,Producto43,3,"33,04",1,3,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto6,7,"85,57",6,18,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto13,7,"29,33",10,30,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto33,4,12,8,24,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto12,6,"13,74",5,15,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto27,6,"93,76",10,30,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto6,2,"85,57",6,18,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto25,3,"40,69",5,15,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto1,9,"45,84",3,9,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto38,8,"41,61",3,9,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto41,6,"81,12",6,18,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto33,7,12,8,24,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto3,5,"74,19",7,21,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto13,8,"29,33",10,30,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto33,1,12,8,24,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto30,5,"16,56",7,21,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto22,5,"17,45",8,24,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto9,3,"76,82",2,6,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto45,7,"86,39",6,18,Destino Segovia,"529,57",,cliente27@correo.com
+17,2025-01-18,Producto19,10,"29,87",7,21,Destino Segovia,"529,57",,cliente27@correo.com
+18,2025-01-19,Producto23,10,"22,06",6,18,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto33,9,12,8,24,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto17,8,"69,85",10,30,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto45,4,"86,39",6,18,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto23,1,"22,06",6,18,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto44,4,"17,32",7,21,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto14,5,"58,11",2,6,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto35,3,"83,82",6,18,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto40,3,"95,77",4,12,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto43,4,"33,04",1,3,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto26,7,"48,26",1,3,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto25,9,"40,69",5,15,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto1,1,"45,84",3,9,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto46,6,"85,8",5,15,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto30,10,"16,56",7,21,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto14,4,"58,11",2,6,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto11,8,"30,66",7,21,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto36,2,"36,98",5,15,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto2,3,"54,2",9,27,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+18,2025-01-19,Producto35,2,"83,82",6,18,Destino Huesca,"230,28","42.1360615,-0.0298027",cliente96@correo.com
+19,2025-01-20,Producto1,7,"45,84",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto23,4,"22,06",6,18,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto10,7,"18,03",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto48,6,"52,82",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto50,9,"14,33",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto32,8,"50,83",6,18,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto30,3,"16,56",7,21,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto50,6,"14,33",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto12,9,"13,74",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto15,4,"94,12",4,12,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto47,4,"47,14",7,21,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto36,10,"36,98",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto38,9,"41,61",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto16,8,"31,55",4,12,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto10,2,"18,03",5,15,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto48,6,"52,82",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto29,3,"64,14",10,30,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto13,7,"29,33",10,30,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto37,6,"55,4",3,9,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+19,2025-01-20,Producto14,8,"58,11",2,6,Destino Albacete,"433,31","38.9950921,-1.8559154",cliente11@correo.com
+20,2025-01-21,Producto50,7,"14,33",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto39,9,"56,7",10,30,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto36,3,"36,98",5,15,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto32,3,"50,83",6,18,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto15,1,"94,12",4,12,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto6,2,"85,57",6,18,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto35,10,"83,82",6,18,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto46,6,"85,8",5,15,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto47,1,"47,14",7,21,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto47,5,"47,14",7,21,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto41,3,"81,12",6,18,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto48,8,"52,82",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto37,10,"55,4",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto19,4,"29,87",7,21,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto38,6,"41,61",3,9,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto42,5,"63,8",10,30,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto2,9,"54,2",9,27,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto20,4,"98,15",1,3,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto16,6,"31,55",4,12,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+20,2025-01-21,Producto39,3,"56,7",10,30,Destino Burgos,"498,36","42.343926,-3.696977",cliente10@correo.com
+21,2025-01-22,Producto16,6,"31,55",4,12,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto21,5,"15,22",2,6,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto12,4,"13,74",5,15,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto48,7,"52,82",3,9,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto11,6,"30,66",7,21,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto48,1,"52,82",3,9,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto7,5,"49,53",4,12,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto22,2,"17,45",8,24,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto23,10,"22,06",6,18,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto7,8,"49,53",4,12,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto8,10,"66,37",4,12,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto35,7,"83,82",6,18,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto28,2,"24,6",4,12,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto27,2,"93,76",10,30,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto30,2,"16,56",7,21,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto23,8,"22,06",6,18,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto5,6,"64,84",1,3,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto47,1,"47,14",7,21,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto2,4,"54,2",9,27,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+21,2025-01-22,Producto1,5,"45,84",3,9,Destino Salamanca,"657,73","40.9651572,-5.6640182",cliente51@correo.com
+22,2025-01-23,Producto33,1,12,8,24,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto7,8,"49,53",4,12,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto23,9,"22,06",6,18,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto33,4,12,8,24,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto38,8,"41,61",3,9,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto33,9,12,8,24,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto50,1,"14,33",3,9,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto38,1,"41,61",3,9,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto27,5,"93,76",10,30,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto18,10,"71,71",2,6,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto30,5,"16,56",7,21,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto42,5,"63,8",10,30,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto46,6,"85,8",5,15,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto32,8,"50,83",6,18,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto17,9,"69,85",10,30,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto37,7,"55,4",3,9,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto42,4,"63,8",10,30,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto4,4,"53,82",1,3,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto17,10,"69,85",10,30,Destino Córdoba,"711,53",,cliente75@correo.com
+22,2025-01-23,Producto29,8,"64,14",10,30,Destino Córdoba,"711,53",,cliente75@correo.com
+23,2025-01-24,Producto19,2,"29,87",7,21,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto43,7,"33,04",1,3,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto48,2,"52,82",3,9,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto44,5,"17,32",7,21,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto22,3,"17,45",8,24,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto7,4,"49,53",4,12,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto8,6,"66,37",4,12,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto39,6,"56,7",10,30,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto23,5,"22,06",6,18,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto12,4,"13,74",5,15,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto28,7,"24,6",4,12,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto43,2,"33,04",1,3,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto46,7,"85,8",5,15,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto45,8,"86,39",6,18,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto5,8,"64,84",1,3,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto44,9,"17,32",7,21,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto8,4,"66,37",4,12,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto17,10,"69,85",10,30,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto47,5,"47,14",7,21,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+23,2025-01-24,Producto48,9,"52,82",3,9,Destino Guipúzcoa,"403,61",,cliente98@correo.com
+24,2025-01-25,Producto16,4,"31,55",4,12,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto50,4,"14,33",3,9,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto46,3,"85,8",5,15,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto5,3,"64,84",1,3,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto29,6,"64,14",10,30,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto15,9,"94,12",4,12,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto39,4,"56,7",10,30,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto40,10,"95,77",4,12,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto42,7,"63,8",10,30,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto7,10,"49,53",4,12,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto36,1,"36,98",5,15,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto5,10,"64,84",1,3,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto40,3,"95,77",4,12,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto7,1,"49,53",4,12,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto23,3,"22,06",6,18,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto14,3,"58,11",2,6,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto30,4,"16,56",7,21,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto41,1,"81,12",6,18,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto28,1,"24,6",4,12,Destino Girona,"85,5",,cliente29@correo.com
+24,2025-01-25,Producto16,2,"31,55",4,12,Destino Girona,"85,5",,cliente29@correo.com
+25,2025-01-26,Producto9,2,"76,82",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto10,6,"18,03",5,15,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto39,2,"56,7",10,30,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto6,7,"85,57",6,18,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto1,2,"45,84",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto10,6,"18,03",5,15,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto17,2,"69,85",10,30,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto27,3,"93,76",10,30,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto18,4,"71,71",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto18,2,"71,71",2,6,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto28,8,"24,6",4,12,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto5,7,"64,84",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto49,2,"58,45",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto49,6,"58,45",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto22,7,"17,45",8,24,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto5,8,"64,84",1,3,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto37,8,"55,4",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto30,8,"16,56",7,21,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto1,7,"45,84",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+25,2025-01-26,Producto48,2,"52,82",3,9,Destino Palencia,"561,34","42.4096322,-4.6161004",cliente9@correo.com
+26,2025-01-27,Producto29,10,"64,14",10,30,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto21,10,"15,22",2,6,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto46,10,"85,8",5,15,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto46,6,"85,8",5,15,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto34,4,"44,47",8,24,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto14,8,"58,11",2,6,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto26,10,"48,26",1,3,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto5,8,"64,84",1,3,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto44,9,"17,32",7,21,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto43,3,"33,04",1,3,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto39,1,"56,7",10,30,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto32,9,"50,83",6,18,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto4,4,"53,82",1,3,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto5,1,"64,84",1,3,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto41,4,"81,12",6,18,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto19,2,"29,87",7,21,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto20,3,"98,15",1,3,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto15,5,"94,12",4,12,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto7,9,"49,53",4,12,Destino Teruel,"299,5",,cliente61@correo.com
+26,2025-01-27,Producto39,4,"56,7",10,30,Destino Teruel,"299,5",,cliente61@correo.com
+27,2025-01-28,Producto7,6,"49,53",4,12,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto41,7,"81,12",6,18,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto13,9,"29,33",10,30,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto5,4,"64,84",1,3,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto21,8,"15,22",2,6,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto9,5,"76,82",2,6,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto39,10,"56,7",10,30,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto40,1,"95,77",4,12,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto34,5,"44,47",8,24,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto1,4,"45,84",3,9,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto49,10,"58,45",7,21,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto21,1,"15,22",2,6,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto24,6,"53,39",7,21,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto3,2,"74,19",7,21,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto29,4,"64,14",10,30,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto21,3,"15,22",2,6,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto1,1,"45,84",3,9,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto41,4,"81,12",6,18,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto23,8,"22,06",6,18,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+27,2025-01-28,Producto38,9,"41,61",3,9,Destino Guipúzcoa,"403,61",,cliente37@correo.com
+28,2025-01-29,Producto35,8,"83,82",6,18,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto16,3,"31,55",4,12,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto11,8,"30,66",7,21,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto41,6,"81,12",6,18,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto25,2,"40,69",5,15,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto40,7,"95,77",4,12,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto30,8,"16,56",7,21,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto21,6,"15,22",2,6,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto3,10,"74,19",7,21,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto8,7,"66,37",4,12,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto50,3,"14,33",3,9,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto45,7,"86,39",6,18,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto3,9,"74,19",7,21,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto41,4,"81,12",6,18,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto6,7,"85,57",6,18,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto27,6,"93,76",10,30,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto22,5,"17,45",8,24,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto34,5,"44,47",8,24,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto29,3,"64,14",10,30,Destino Zamora,"661,01",,cliente52@correo.com
+28,2025-01-29,Producto23,4,"22,06",6,18,Destino Zamora,"661,01",,cliente52@correo.com
+29,2025-01-30,Producto16,1,"31,55",4,12,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto11,10,"30,66",7,21,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto28,7,"24,6",4,12,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto31,4,"96,86",8,24,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto48,6,"52,82",3,9,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto44,3,"17,32",7,21,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto26,6,"48,26",1,3,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto30,2,"16,56",7,21,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto12,6,"13,74",5,15,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto20,6,"98,15",1,3,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto19,7,"29,87",7,21,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto9,4,"76,82",2,6,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto20,6,"98,15",1,3,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto46,5,"85,8",5,15,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto10,5,"18,03",5,15,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto27,9,"93,76",10,30,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto16,2,"31,55",4,12,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto8,1,"66,37",4,12,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto40,4,"95,77",4,12,Destino Soria,"388,44",,cliente9@correo.com
+29,2025-01-30,Producto13,5,"29,33",10,30,Destino Soria,"388,44",,cliente9@correo.com
+30,2025-01-31,Producto23,10,"22,06",6,18,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto3,8,"74,19",7,21,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto24,10,"53,39",7,21,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto17,10,"69,85",10,30,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto24,7,"53,39",7,21,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto36,1,"36,98",5,15,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto39,4,"56,7",10,30,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto43,3,"33,04",1,3,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto15,3,"94,12",4,12,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto11,1,"30,66",7,21,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto27,6,"93,76",10,30,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto6,4,"85,57",6,18,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto29,1,"64,14",10,30,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto43,7,"33,04",1,3,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto4,10,"53,82",1,3,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto9,10,"76,82",2,6,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto24,5,"53,39",7,21,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto22,7,"17,45",8,24,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto7,1,"49,53",4,12,Destino Ávila,"582,19",,cliente76@correo.com
+30,2025-01-31,Producto21,10,"15,22",2,6,Destino Ávila,"582,19",,cliente76@correo.com
+31,2025-02-01,Producto43,10,"33,04",1,3,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto2,9,"54,2",9,27,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto21,6,"15,22",2,6,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto25,8,"40,69",5,15,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto29,10,"64,14",10,30,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto32,10,"50,83",6,18,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto1,1,"45,84",3,9,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto37,2,"55,4",3,9,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto27,8,"93,76",10,30,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto2,1,"54,2",9,27,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto14,1,"58,11",2,6,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto30,9,"16,56",7,21,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto13,6,"29,33",10,30,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto23,7,"22,06",6,18,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto29,10,"64,14",10,30,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto30,8,"16,56",7,21,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto28,9,"24,6",4,12,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto35,6,"83,82",6,18,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto27,1,"93,76",10,30,Destino Murcia,"472,04",,cliente46@correo.com
+31,2025-02-01,Producto36,4,"36,98",5,15,Destino Murcia,"472,04",,cliente46@correo.com
+32,2025-02-02,Producto43,9,"33,04",1,3,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto20,1,"98,15",1,3,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto28,9,"24,6",4,12,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto15,5,"94,12",4,12,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto16,9,"31,55",4,12,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto21,3,"15,22",2,6,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto41,5,"81,12",6,18,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto13,10,"29,33",10,30,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto23,4,"22,06",6,18,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto21,4,"15,22",2,6,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto22,7,"17,45",8,24,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto23,2,"22,06",6,18,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto13,3,"29,33",10,30,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto42,3,"63,8",10,30,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto24,10,"53,39",7,21,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto45,6,"86,39",6,18,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto31,9,"96,86",8,24,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto2,6,"54,2",9,27,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto29,1,"64,14",10,30,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+32,2025-02-02,Producto35,7,"83,82",6,18,Destino Valencia,"302,81","39.4697065,-0.3763353",cliente35@correo.com
+33,2025-02-03,Producto37,1,"55,4",3,9,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto17,1,"69,85",10,30,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto17,5,"69,85",10,30,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto23,2,"22,06",6,18,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto24,3,"53,39",7,21,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto22,2,"17,45",8,24,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto31,1,"96,86",8,24,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto42,2,"63,8",10,30,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto14,2,"58,11",2,6,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto2,4,"54,2",9,27,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto17,4,"69,85",10,30,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto30,6,"16,56",7,21,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto43,8,"33,04",1,3,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto14,6,"58,11",2,6,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto22,7,"17,45",8,24,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto45,4,"86,39",6,18,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto34,5,"44,47",8,24,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto48,2,"52,82",3,9,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto22,10,"17,45",8,24,Destino Córdoba,"711,53",,cliente10@correo.com
+33,2025-02-03,Producto39,7,"56,7",10,30,Destino Córdoba,"711,53",,cliente10@correo.com
+34,2025-02-04,Producto42,10,"63,8",10,30,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto33,4,12,8,24,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto22,5,"17,45",8,24,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto46,3,"85,8",5,15,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto31,2,"96,86",8,24,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto3,2,"74,19",7,21,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto16,7,"31,55",4,12,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto7,2,"49,53",4,12,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto46,10,"85,8",5,15,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto39,6,"56,7",10,30,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto21,8,"15,22",2,6,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto20,5,"98,15",1,3,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto48,2,"52,82",3,9,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto14,2,"58,11",2,6,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto15,4,"94,12",4,12,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto48,8,"52,82",3,9,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto49,2,"58,45",7,21,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto16,8,"31,55",4,12,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto14,10,"58,11",2,6,Destino Las Palmas,"353,06",,cliente47@correo.com
+34,2025-02-04,Producto9,6,"76,82",2,6,Destino Las Palmas,"353,06",,cliente47@correo.com
+35,2025-02-05,Producto3,6,"74,19",7,21,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto26,10,"48,26",1,3,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto37,2,"55,4",3,9,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto24,10,"53,39",7,21,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto5,2,"64,84",1,3,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto33,9,12,8,24,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto23,2,"22,06",6,18,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto32,7,"50,83",6,18,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto21,6,"15,22",2,6,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto46,7,"85,8",5,15,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto29,2,"64,14",10,30,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto26,6,"48,26",1,3,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto49,2,"58,45",7,21,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto40,4,"95,77",4,12,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto37,6,"55,4",3,9,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto15,2,"94,12",4,12,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto10,3,"18,03",5,15,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto18,9,"71,71",2,6,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto37,8,"55,4",3,9,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+35,2025-02-05,Producto40,9,"95,77",4,12,Destino Cuenca,"390,98","40.0661031,-2.1313528",cliente4@correo.com
+36,2025-02-06,Producto41,10,"81,12",6,18,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto39,3,"56,7",10,30,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto28,9,"24,6",4,12,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto1,9,"45,84",3,9,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto42,9,"63,8",10,30,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto48,2,"52,82",3,9,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto18,5,"71,71",2,6,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto48,7,"52,82",3,9,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto43,2,"33,04",1,3,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto30,9,"16,56",7,21,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto33,4,12,8,24,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto20,3,"98,15",1,3,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto28,8,"24,6",4,12,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto3,3,"74,19",7,21,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto20,5,"98,15",1,3,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto34,7,"44,47",8,24,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto10,1,"18,03",5,15,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto42,6,"63,8",10,30,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto50,8,"14,33",3,9,Destino Girona,"85,5",,cliente32@correo.com
+36,2025-02-06,Producto28,3,"24,6",4,12,Destino Girona,"85,5",,cliente32@correo.com
+37,2025-02-07,Producto12,4,"13,74",5,15,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto4,3,"53,82",1,3,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto14,3,"58,11",2,6,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto35,4,"83,82",6,18,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto26,4,"48,26",1,3,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto32,4,"50,83",6,18,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto10,7,"18,03",5,15,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto15,3,"94,12",4,12,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto3,8,"74,19",7,21,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto2,1,"54,2",9,27,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto39,5,"56,7",10,30,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto45,7,"86,39",6,18,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto26,9,"48,26",1,3,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto38,4,"41,61",3,9,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto15,1,"94,12",4,12,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto18,1,"71,71",2,6,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto22,5,"17,45",8,24,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto47,8,"47,14",7,21,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto12,9,"13,74",5,15,Destino Vizcaya,"888,86",,cliente23@correo.com
+37,2025-02-07,Producto19,10,"29,87",7,21,Destino Vizcaya,"888,86",,cliente23@correo.com
+38,2025-02-08,Producto3,2,"74,19",7,21,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto15,3,"94,12",4,12,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto29,10,"64,14",10,30,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto7,3,"49,53",4,12,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto39,3,"56,7",10,30,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto13,4,"29,33",10,30,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto39,6,"56,7",10,30,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto2,4,"54,2",9,27,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto24,3,"53,39",7,21,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto29,1,"64,14",10,30,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto34,5,"44,47",8,24,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto6,9,"85,57",6,18,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto5,5,"64,84",1,3,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto30,8,"16,56",7,21,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto47,5,"47,14",7,21,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto40,1,"95,77",4,12,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto36,7,"36,98",5,15,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto20,2,"98,15",1,3,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto14,2,"58,11",2,6,Destino Badajoz,"372,78",,cliente68@correo.com
+38,2025-02-08,Producto4,10,"53,82",1,3,Destino Badajoz,"372,78",,cliente68@correo.com
+39,2025-02-09,Producto24,6,"53,39",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto39,6,"56,7",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto27,6,"93,76",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto43,1,"33,04",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto3,5,"74,19",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto43,1,"33,04",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto39,9,"56,7",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto42,1,"63,8",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto39,7,"56,7",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto18,1,"71,71",2,6,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto14,3,"58,11",2,6,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto25,4,"40,69",5,15,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto12,3,"13,74",5,15,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto28,7,"24,6",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto7,4,"49,53",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto9,7,"76,82",2,6,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto5,8,"64,84",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto8,7,"66,37",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto23,9,"22,06",6,18,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+39,2025-02-09,Producto1,7,"45,84",3,9,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente27@correo.com
+40,2025-02-10,Producto8,1,"66,37",4,12,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto9,8,"76,82",2,6,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto22,3,"17,45",8,24,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto45,2,"86,39",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto15,3,"94,12",4,12,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto31,1,"96,86",8,24,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto2,4,"54,2",9,27,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto32,10,"50,83",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto32,5,"50,83",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto31,5,"96,86",8,24,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto36,8,"36,98",5,15,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto13,1,"29,33",10,30,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto32,8,"50,83",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto41,10,"81,12",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto12,7,"13,74",5,15,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto28,1,"24,6",4,12,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto46,7,"85,8",5,15,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto50,7,"14,33",3,9,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto26,2,"48,26",1,3,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+40,2025-02-10,Producto23,3,"22,06",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente82@correo.com
+41,2025-02-11,Producto28,10,"24,6",4,12,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto45,10,"86,39",6,18,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto46,2,"85,8",5,15,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto11,10,"30,66",7,21,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto20,6,"98,15",1,3,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto41,8,"81,12",6,18,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto43,7,"33,04",1,3,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto15,9,"94,12",4,12,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto47,4,"47,14",7,21,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto42,1,"63,8",10,30,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto18,9,"71,71",2,6,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto24,9,"53,39",7,21,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto2,10,"54,2",9,27,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto1,6,"45,84",3,9,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto22,9,"17,45",8,24,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto45,2,"86,39",6,18,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto8,6,"66,37",4,12,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto35,5,"83,82",6,18,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto10,7,"18,03",5,15,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+41,2025-02-11,Producto6,1,"85,57",6,18,Destino Ourense,"837,68","42.1939629,-7.537124",cliente23@correo.com
+42,2025-02-12,Producto20,3,"98,15",1,3,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto43,1,"33,04",1,3,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto5,9,"64,84",1,3,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto29,5,"64,14",10,30,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto33,1,12,8,24,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto49,8,"58,45",7,21,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto24,6,"53,39",7,21,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto22,1,"17,45",8,24,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto32,1,"50,83",6,18,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto42,10,"63,8",10,30,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto25,8,"40,69",5,15,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto35,8,"83,82",6,18,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto45,7,"86,39",6,18,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto34,1,"44,47",8,24,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto1,6,"45,84",3,9,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto32,1,"50,83",6,18,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto14,5,"58,11",2,6,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto22,7,"17,45",8,24,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto15,8,"94,12",4,12,Destino Guadalajara,"455,56",,cliente34@correo.com
+42,2025-02-12,Producto9,1,"76,82",2,6,Destino Guadalajara,"455,56",,cliente34@correo.com
+43,2025-02-13,Producto13,1,"29,33",10,30,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto14,2,"58,11",2,6,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto24,2,"53,39",7,21,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto36,3,"36,98",5,15,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto6,6,"85,57",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto5,8,"64,84",1,3,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto9,9,"76,82",2,6,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto43,5,"33,04",1,3,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto26,10,"48,26",1,3,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto44,4,"17,32",7,21,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto45,2,"86,39",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto16,7,"31,55",4,12,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto41,7,"81,12",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto35,10,"83,82",6,18,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto42,6,"63,8",10,30,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto17,4,"69,85",10,30,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto22,4,"17,45",8,24,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto50,4,"14,33",3,9,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto1,1,"45,84",3,9,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+43,2025-02-13,Producto1,7,"45,84",3,9,Destino Zaragoza,"256,17","41.6521342,-0.8809428",cliente9@correo.com
+44,2025-02-14,Producto38,6,"41,61",3,9,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto9,5,"76,82",2,6,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto36,6,"36,98",5,15,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto28,7,"24,6",4,12,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto1,3,"45,84",3,9,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto17,7,"69,85",10,30,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto38,7,"41,61",3,9,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto36,1,"36,98",5,15,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto38,9,"41,61",3,9,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto37,6,"55,4",3,9,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto27,10,"93,76",10,30,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto35,3,"83,82",6,18,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto24,3,"53,39",7,21,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto40,2,"95,77",4,12,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto2,1,"54,2",9,27,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto10,7,"18,03",5,15,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto13,4,"29,33",10,30,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto18,1,"71,71",2,6,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto48,8,"52,82",3,9,Destino Córdoba,"711,53",,cliente85@correo.com
+44,2025-02-14,Producto45,3,"86,39",6,18,Destino Córdoba,"711,53",,cliente85@correo.com
+45,2025-02-15,Producto4,3,"53,82",1,3,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto43,9,"33,04",1,3,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto24,8,"53,39",7,21,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto46,7,"85,8",5,15,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto12,4,"13,74",5,15,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto49,1,"58,45",7,21,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto30,10,"16,56",7,21,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto26,6,"48,26",1,3,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto50,7,"14,33",3,9,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto17,2,"69,85",10,30,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto48,9,"52,82",3,9,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto1,1,"45,84",3,9,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto2,7,"54,2",9,27,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto1,6,"45,84",3,9,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto1,5,"45,84",3,9,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto44,10,"17,32",7,21,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto7,9,"49,53",4,12,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto27,6,"93,76",10,30,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto31,4,"96,86",8,24,Destino Córdoba,"711,53",,cliente35@correo.com
+45,2025-02-15,Producto2,7,"54,2",9,27,Destino Córdoba,"711,53",,cliente35@correo.com
+46,2025-02-16,Producto20,2,"98,15",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto3,10,"74,19",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto30,10,"16,56",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto7,7,"49,53",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto26,1,"48,26",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto41,10,"81,12",6,18,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto28,4,"24,6",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto3,1,"74,19",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto42,4,"63,8",10,30,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto30,8,"16,56",7,21,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto8,6,"66,37",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto5,5,"64,84",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto45,8,"86,39",6,18,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto34,9,"44,47",8,24,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto21,6,"15,22",2,6,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto4,7,"53,82",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto15,8,"94,12",4,12,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto25,4,"40,69",5,15,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto14,5,"58,11",2,6,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+46,2025-02-16,Producto5,5,"64,84",1,3,Destino Sevilla,"830,4","37.3886303,-5.9953403",cliente10@correo.com
+47,2025-02-17,Producto9,8,"76,82",2,6,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto28,10,"24,6",4,12,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto28,7,"24,6",4,12,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto14,1,"58,11",2,6,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto44,9,"17,32",7,21,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto43,1,"33,04",1,3,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto50,10,"14,33",3,9,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto34,8,"44,47",8,24,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto6,3,"85,57",6,18,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto5,3,"64,84",1,3,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto5,5,"64,84",1,3,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto16,4,"31,55",4,12,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto8,8,"66,37",4,12,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto46,1,"85,8",5,15,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto42,8,"63,8",10,30,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto15,2,"94,12",4,12,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto37,2,"55,4",3,9,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto26,6,"48,26",1,3,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto5,7,"64,84",1,3,Destino Ciudad Real,"583,14",,cliente62@correo.com
+47,2025-02-17,Producto17,4,"69,85",10,30,Destino Ciudad Real,"583,14",,cliente62@correo.com
+48,2025-02-18,Producto49,3,"58,45",7,21,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto49,1,"58,45",7,21,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto50,3,"14,33",3,9,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto44,3,"17,32",7,21,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto21,1,"15,22",2,6,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto6,8,"85,57",6,18,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto39,8,"56,7",10,30,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto2,9,"54,2",9,27,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto3,5,"74,19",7,21,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto14,4,"58,11",2,6,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto38,8,"41,61",3,9,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto47,5,"47,14",7,21,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto3,7,"74,19",7,21,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto30,5,"16,56",7,21,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto9,6,"76,82",2,6,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto2,4,"54,2",9,27,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto2,10,"54,2",9,27,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto8,8,"66,37",4,12,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto7,8,"49,53",4,12,Destino Las Palmas,"353,06",,cliente60@correo.com
+48,2025-02-18,Producto12,7,"13,74",5,15,Destino Las Palmas,"353,06",,cliente60@correo.com
+49,2025-02-19,Producto8,4,"66,37",4,12,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto14,4,"58,11",2,6,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto4,5,"53,82",1,3,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto24,2,"53,39",7,21,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto47,3,"47,14",7,21,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto44,7,"17,32",7,21,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto7,7,"49,53",4,12,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto37,9,"55,4",3,9,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto4,1,"53,82",1,3,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto49,9,"58,45",7,21,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto45,2,"86,39",6,18,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto48,5,"52,82",3,9,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto17,3,"69,85",10,30,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto43,8,"33,04",1,3,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto45,5,"86,39",6,18,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto17,5,"69,85",10,30,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto43,9,"33,04",1,3,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto30,9,"16,56",7,21,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto35,7,"83,82",6,18,Destino Murcia,"472,04",,cliente88@correo.com
+49,2025-02-19,Producto30,9,"16,56",7,21,Destino Murcia,"472,04",,cliente88@correo.com
+50,2025-02-20,Producto11,3,"30,66",7,21,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto23,6,"22,06",6,18,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto9,5,"76,82",2,6,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto12,9,"13,74",5,15,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto32,1,"50,83",6,18,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto1,4,"45,84",3,9,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto34,10,"44,47",8,24,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto21,7,"15,22",2,6,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto34,8,"44,47",8,24,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto5,4,"64,84",1,3,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto39,10,"56,7",10,30,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto28,7,"24,6",4,12,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto1,9,"45,84",3,9,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto46,8,"85,8",5,15,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto38,8,"41,61",3,9,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto2,2,"54,2",9,27,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto2,3,"54,2",9,27,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto40,6,"95,77",4,12,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto21,10,"15,22",2,6,Destino Tarragona,"82,21",,cliente22@correo.com
+50,2025-02-20,Producto41,10,"81,12",6,18,Destino Tarragona,"82,21",,cliente22@correo.com
