@@ -33,7 +33,6 @@ distribution_platform/data/raw/dboLineasPedido.csv
 distribution_platform/data/raw/dboPedidos.csv
 distribution_platform/data/raw/dboProductos.csv
 distribution_platform/data/raw/dboProvincias.csv
-distribution_platform/pipelines/preprocessing_pipeline.py
 distribution_platform/pipelines/__pycache__/preprocessing_pipeline.cpython-313.pyc
 distribution_platform/utils/__init__.py
 distribution_platform/utils/correaltions.py
@@ -43,7 +42,6 @@ distribution_platform/utils/data_cleaning.py
 distribution_platform/utils/data_loaders.py
 distribution_platform/utils/data_visualizers.py
 distribution_platform/utils/enums.py
-distribution_platform/utils/helper.py
 distribution_platform/utils/process_audio.py
 distribution_platform/utils/process_helpers.py
 distribution_platform/utils/process_image.py
@@ -61,6 +59,5 @@ proyecto1.egg-info/dependency_links.txt
 proyecto1.egg-info/requires.txt
 proyecto1.egg-info/top_level.txt
 scripts/__init__.py
-scripts/ejecutar_etl.py
 scripts/__pycache__/__init__.cpython-313.pyc
 scripts/__pycache__/ejecutar_etl.cpython-313.pyc

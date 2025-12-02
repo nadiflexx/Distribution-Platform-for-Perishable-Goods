@@ -47,6 +47,7 @@ dependencies = [
     "seaborn>=0.13.2",
     "geopy>=2.4.1",
     "streamlit>=1.51.0",
+    "pydantic[email]>=2.12.4",
 ]
 
 [dependency-groups]

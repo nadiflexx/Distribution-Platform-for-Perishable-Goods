@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
-from typing import Dict, List
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 import re
-
 
 
 # -------------------------------------------------------------
@@ -15,10 +13,10 @@ def normalize_column_names(self):
         .str.replace("[^a-z0-9_]", "", regex=True)
     )
 
+
 # -------------------------------------------------------------
 def detect_types(self):
     for col in self.df.columns:
-
         if col in self.excluded_cols:
             continue
 
@@ -30,6 +28,7 @@ def detect_types(self):
 
         else:
             self.categorical_cols.append(col)
+
 
 # -------------------------------------------------------------
 def auto_impute(self):
@@ -46,15 +45,17 @@ def auto_impute(self):
         self.df[col] = self.df[col].replace(["", " ", "null", "None"], np.nan)
         self.df[col] = self.df[col].fillna(self.df[col].mode()[0])
 
+
 # -------------------------------------------------------------
 def auto_encode(self):
     for col in self.categorical_cols:
-        if col in self.excluded_cols: 
+        if col in self.excluded_cols:
             continue
 
         le = LabelEncoder()
         self.df[col] = le.fit_transform(self.df[col].astype(str))
         self.label_encoders[col] = le
+
 
 # -------------------------------------------------------------
 def auto_outliers(self, z_thresh=4):
@@ -68,6 +69,7 @@ def auto_outliers(self, z_thresh=4):
 
     self.df = df_no_outliers.reset_index(drop=True)
 
+
 # -------------------------------------------------------------
 def auto_scale(self):
     if not self.numeric_cols:
@@ -76,22 +78,24 @@ def auto_scale(self):
     self.scaler = StandardScaler()
     self.df[self.numeric_cols] = self.scaler.fit_transform(self.df[self.numeric_cols])
 
+
 # -------------------------------------------------------------
 def encode_target(self):
     if not self.target:
         return
-    
+
     le = LabelEncoder()
     self.df[self.target] = le.fit_transform(self.df[self.target].astype(str))
     self.label_encoders[self.target] = le
+
 
 # -------------------------------------------------------------
 def to_snake_case(df: pd.DataFrame) -> pd.DataFrame:
     def snake(col):
         # Reemplaza caracteres no alfanuméricos por espacios
-        col = re.sub(r'[^0-9a-zA-Z]+', ' ', col)
+        col = re.sub(r"[^0-9a-zA-Z]+", " ", col)
         # Inserta guiones bajos entre minúsculas-seguidas-de-mayúsculas (CamelCase → camel_case)
-        col = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', col)
+        col = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", col)
         # Convierte a snake case
         col = col.strip().replace(" ", "_").lower()
         return col
@@ -100,7 +104,8 @@ def to_snake_case(df: pd.DataFrame) -> pd.DataFrame:
     df.columns = [snake(c) for c in df.columns]
     return df
 
-#--------------------------------------------------------------
+
+# --------------------------------------------------------------
 def clean(self) -> pd.DataFrame:
     self.normalize_column_names()
     self.detect_types()
