@@ -1,0 +1,40 @@
+Metadata-Version: 2.4
+Name: distribution_platform
+Version: 0.2.0
+Summary: Project to integrate and develop predictive models.
+Author-email: Nadeem <alu2019213@365.stucom.com>
+Maintainer-email: Nadeem <alu2019213@365.stucom.com>
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: rich
+Requires-Dist: numpy
+Requires-Dist: python-dotenv
+Requires-Dist: gitpython
+Requires-Dist: fastapi>=0.117.1
+Requires-Dist: az>=0.1.0.dev1
+Requires-Dist: azure-storage-blob>=12.26.0
+Requires-Dist: azure-cosmos>=4.9.0
+Requires-Dist: dotenv>=0.9.9
+Requires-Dist: pyyaml>=6.0.3
+Requires-Dist: types-pyyaml>=6.0.12.20250915
+Requires-Dist: aiofiles>=24.1.0
+Requires-Dist: types-aiofiles>=24.1.0.20250822
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: uvicorn>=0.37.0
+Requires-Dist: nltk>=3.9.2
+Requires-Dist: requests>=2.32.5
+Requires-Dist: types-requests>=2.32.4.20250913
+Requires-Dist: pandas>=2.3.3
+Requires-Dist: librosa>=0.11.0
+Requires-Dist: pytest>=8.4.2
+Requires-Dist: openpyxl>=3.1.5
+Requires-Dist: matplotlib>=3.10.7
+Requires-Dist: seaborn>=0.13.2
+Requires-Dist: geopy>=2.4.1
+Requires-Dist: streamlit>=1.51.0
+Requires-Dist: pydantic[email]>=2.12.4
+Requires-Dist: folium>=0.20.0
+Requires-Dist: streamlit-folium>=0.25.3
+
+# Distribution-Platform-for-Perishable-Goods
+Este proyecto tiene como objetivo crear una herramienta que permita determinar y calcular las rutas más óptimas de distribución de productos desde las instalaciones centrales de una empresa de mercancias.

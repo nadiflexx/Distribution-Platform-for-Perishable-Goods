@@ -9,8 +9,7 @@ from distribution_platform.utils.enums import DataTypesEnum
 
 def _load_data_csv(path_to_data: str | Path) -> pd.DataFrame:
     """Load data from a CSV file."""
-    return pd.read_csv(path_to_data, sep=';')
-
+    return pd.read_csv(path_to_data, engine="python")
 
 
 def _load_data_excel(
@@ -197,3 +196,22 @@ def save_dataframe_to_csv(
     data.to_csv(output_path, index=index)
     return output_path
 
+
+def load_uploaded_file(uploaded_file) -> pd.DataFrame:
+    """
+    Load a Streamlit UploadedFile using the internal loader logic.
+    Auto-detects file type based on extension.
+    """
+
+    name = uploaded_file.name.lower()
+
+    if name.endswith(".csv"):
+        return pd.read_csv(uploaded_file, sep=";", engine="python")
+
+    if name.endswith(".xlsx") or name.endswith(".xls"):
+        return pd.read_excel(uploaded_file)
+
+    if name.endswith(".tsv") or name.endswith(".txt"):
+        return pd.read_csv(uploaded_file, sep=None, engine="python")  # auto-detect
+
+    raise ValueError(f"Unsupported file type for uploaded file: {uploaded_file.name}")

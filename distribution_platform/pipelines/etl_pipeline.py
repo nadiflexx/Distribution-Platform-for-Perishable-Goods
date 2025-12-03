@@ -1,13 +1,13 @@
 from distribution_platform.utils.etl import ETLProcessor
 
 
-def run_etl():
+def run_etl(uploaded_files=None):
     """Run the ETL preprocessing pipeline.
 
     Initializes and executes the ETL processor to transform and load data.
     """
     etl = ETLProcessor()
-    df_pedidos = etl.run()
+    df_pedidos = etl.run(uploaded_files=uploaded_files)
 
     print(df_pedidos.columns.tolist())
 

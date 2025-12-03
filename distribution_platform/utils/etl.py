@@ -5,6 +5,10 @@ from distribution_platform.utils import data_cleaning, data_loaders, enums
 from distribution_platform.utils.geolocator import get_coordinates
 from distribution_platform.models.order import Order
 import pandas as pd
+from distribution_platform.utils.data_loaders import (
+    load_uploaded_file,
+    safe_concat_dataframes,
+)
 
 
 class ETLProcessor:
@@ -67,7 +71,28 @@ class ETLProcessor:
             enums.DataTypesEnum.CSV, self.paths.DATA_RAW / "dboDestinos.csv"
         )
 
-    # ------------------------------------------------------------------
+    def load_from_uploaded_files(self, files_dict):
+        def to_list(value):
+            """Ensure the input is always a list of files."""
+            if value is None:
+                return []
+            if isinstance(value, list):
+                return value
+            return [value]  # wrap single UploadedFile
+
+        def concat_uploaded(files):
+            files = to_list(files)
+            dfs = [load_uploaded_file(f) for f in files]
+            return safe_concat_dataframes(dfs)
+
+        self.df_clientes = concat_uploaded(files_dict["clientes"])
+        self.df_lineas_pedido = concat_uploaded(files_dict["lineas_pedido"])
+        self.df_pedidos = concat_uploaded(files_dict["pedidos"])
+        self.df_productos = concat_uploaded(files_dict["productos"])
+        self.df_provincias = concat_uploaded(files_dict["provincias"])
+        self.df_destinos = concat_uploaded(files_dict["destinos"])
+        # ------------------------------------------------------------------
+
     # 2. CLEAN
     # ------------------------------------------------------------------
     def clean_comas(self):
@@ -188,16 +213,23 @@ class ETLProcessor:
     # ------------------------------------------------------------------
     # 5. PIPELINE
     # ------------------------------------------------------------------
-    def run(self):
+    def run(self, uploaded_files=None):
         """High-level method to run the entire ETL."""
         output_path = self.paths.DATA_PROCESSED / "pedidos.csv"
 
         # If already processed, return directly
-        if os.path.exists(output_path):
-            return data_loaders.load_data(enums.DataTypesEnum.CSV, output_path)
+        # Case 1: If uploaded files are provided → load from Streamlit uploader
+        if uploaded_files is not None:
+            self.load_from_uploaded_files(uploaded_files)
+        else:
+            # Case 2: fallback → load datasets from disk
+            output_path = self.paths.DATA_PROCESSED / "pedidos.csv"
+            if os.path.exists(output_path):
+                return data_loaders.load_data(enums.DataTypesEnum.CSV, output_path)
 
-        # Otherwise run full ETL
-        self.load_raw_data()
+            # Otherwise run full ETL
+            self.load_raw_data()
+
         self.normalize_column_names()
         self.clean_destinos()
         self.clean_comas()
@@ -221,7 +253,7 @@ class ETLProcessor:
         orders_grouped = []
         grouped = df_pedidos.sort_values(by="caducidad").groupby("pedido_id")
 
-        for pedido_id, group in grouped:
+        for _, group in grouped:
             order_lines = []
             for _, row in group.iterrows():
                 order_line = Order(

@@ -6,19 +6,15 @@ build-backend = "setuptools.build_meta"
 enabled = true
 
 [tool.setuptools.packages.find]
-include = ["proyecto1"]
+include = ["distribution_platform*"]
 
 [project]
-name = "proyecto1"
+name = "distribution_platform"
 description = "Project to integrate and develop predictive models."
 version = "0.2.0"
 readme = "README.md"
-authors = [
-    { name = "Nadeem", email = "alu2019213@365.stucom.com" },
-]
-maintainers = [
-    { name = "Nadeem", email = "alu2019213@365.stucom.com" },
-]
+authors = [{ name = "Nadeem", email = "alu2019213@365.stucom.com" }]
+maintainers = [{ name = "Nadeem", email = "alu2019213@365.stucom.com" }]
 requires-python = ">=3.12"
 dependencies = [
     "rich",
@@ -48,6 +44,8 @@ dependencies = [
     "geopy>=2.4.1",
     "streamlit>=1.51.0",
     "pydantic[email]>=2.12.4",
+    "folium>=0.20.0",
+    "streamlit-folium>=0.25.3",
 ]
 
 [dependency-groups]
@@ -64,60 +62,47 @@ dev = [
 [tool.pytest.ini_options]
 pythonpath = ["."]
 minversion = "6.2"
-addopts = "-vvv -s --cov=proyecto1 --cov-report term-missing --cov-report xml:coverage.xml"
+addopts = "-vvv -s --cov=distribution_platform --cov-report term-missing --cov-report xml:coverage.xml"
 testpaths = ["tests"]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-]
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.mypy]
 files = ["**/*.py"]
 ignore_missing_imports = true
 
 [tool.ruff]
-exclude = [
-    ".git",
-    ".venv",
-    "build",
-    "dist",
-    "node_modules",
-    "__init__.py"
-]
+exclude = [".git", ".venv", "build", "dist", "node_modules", "__init__.py"]
 line-length = 88
 indent-width = 4
 target-version = "py312"
 
 [tool.ruff.lint]
 select = [
-    "A",    # flake8-builtins
-    "B",    # flake8-bugbear
-    "D",    # pydocstyle
-    "E",    # pycodestyle-error
-    "F",    # Pyflakes
-    "I",    # isort
-    "N",    # pep8-naming
-    "PD",   # pandas-vet
-    "TID",  # flake8-tidy-imports
-    "UP",   # pyupgrade
+    "A",   # flake8-builtins
+    "B",   # flake8-bugbear
+    "D",   # pydocstyle
+    "E",   # pycodestyle-error
+    "F",   # Pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "PD",  # pandas-vet
+    "TID", # flake8-tidy-imports
+    "UP",  # pyupgrade
 ]
 ignore = [
-    "D100",     # Checks for undocumented public module definitions
-    "D104",     # Checks for undocumented public package definitions
-    "D107",     # Checks for public __init__ method definitions that are missing docstrings
-    "D205",     # Checks for docstring summary lines that are not separated from the docstring description by one blank line.
-    "D212",     # Checks for docstring summary lines that are not positioned on the first physical line of the docstring
-    "D401",     # Checks for docstring first lines that are not in an imperative mood
+    "D100", # Checks for undocumented public module definitions
+    "D104", # Checks for undocumented public package definitions
+    "D107", # Checks for public __init__ method definitions that are missing docstrings
+    "D205", # Checks for docstring summary lines that are not separated from the docstring description by one blank line.
+    "D212", # Checks for docstring summary lines that are not positioned on the first physical line of the docstring
+    "D401", # Checks for docstring first lines that are not in an imperative mood
 ]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.ruff.lint.isort]
-known-local-folder = [
-  "scripts",
-  "mh_chatbot_dialogue",
-  "tests",
-]
+known-local-folder = ["scripts", "mh_chatbot_dialogue", "tests"]
 
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["classmethod", "pydantic.field_validator"]
