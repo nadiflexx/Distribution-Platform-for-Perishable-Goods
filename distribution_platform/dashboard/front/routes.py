@@ -1,31 +1,41 @@
-from distribution_platform.dashboard.front.user_interface import ui_components as ui
-from distribution_platform.dashboard.front.knowledge_base import rules
-from distribution_platform.dashboard.front.inference_engine.engine import InferenceMotor
 import streamlit as st
+from pathlib import Path
+
+from distribution_platform.dashboard.front.user_interface.ui_components import (
+    render_form_page,
+    render_routes_page,
+    init_state,
+)
 
 
-def run_dashboard():
-    selected_truck, send_request = ui.initialize_components()
+def load_styles():
+    css_path = Path(__file__).parent / "styles" / "components.css"
+    if css_path.exists():
+        st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
-    if send_request:
-        ui.show_waiting_message()
-        motor = InferenceMotor(rules.obtain_rules())
-        result = motor.evaluate(selected_truck)
 
-        if result.is_valid:
-            st.success(
-                "✅ The truck selected is **VALID** according to the defined rules."
-            )
-        else:
-            st.error(
-                "❌ The truck selected is **NOT VALID** according to the defined rules."
-            )
+def main():
+    st.set_page_config(
+        page_title="IA Delivery – Route Planner", page_icon="🚚", layout="wide"
+    )
 
-        if "passed all validation rules" in result:
-            ui.show_confirmation(result)
-        else:
-            ui.show_errors(result)
+    load_styles()
+    init_state()
+
+    with st.sidebar:
+        choice = st.radio(
+            "Navegación",
+            ["Formulario", "Rutas"],
+            index=0 if st.session_state.page == "form" else 1,
+        )
+
+    st.session_state.page = "form" if choice == "Formulario" else "routes"
+
+    if st.session_state.page == "form":
+        render_form_page()
+    else:
+        render_routes_page()
 
 
 if __name__ == "__main__":
-    run_dashboard()
+    main()

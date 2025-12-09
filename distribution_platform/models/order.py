@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import re
 from datetime import date, datetime
-from typing import Union
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -17,7 +15,8 @@ class Order(BaseModel):
         fecha_pedido (Union[date, str]): Date of the order in YYYY-MM-DD format.
         producto (str): Name of the product.
         cantidad_producto (int): Quantity of the product.
-        precio_venta (Union[float, str]): Sale price of the product (may use comma as decimal separator).
+        precio_venta (Union[float, str]): Sale price of the product
+         (may use comma as decimal separator).
         tiempo_fabricacion_medio (int): Average manufacturing time in hours.
         caducidad (int): Expiry in days.
         destino (str): Destination address.
@@ -27,20 +26,18 @@ class Order(BaseModel):
     """
 
     # Unique identifier for the order
-    pedido_id: int
+    pedido_id: int = Field(description="Unique identifier for the order")
 
     # Date of the order (YYYY-MM-DD format)
-    fecha_pedido: Union[date, str] = Field(
-        description="Order date in YYYY-MM-DD format"
-    )
+    fecha_pedido: date | str = Field(description="Order date in YYYY-MM-DD format")
 
     # Name of the product
-    producto: str
+    producto: str = Field(description="Name of the product")
     # Quantity of the product
-    cantidad_producto: int
+    cantidad_producto: int = Field(description="Quantity of the product")
 
     # Sale price (may use comma as decimal separator)
-    precio_venta: Union[float, str] = Field(
+    precio_venta: float | str = Field(
         description="Product price (may use comma as decimal separator)"
     )
 
@@ -55,12 +52,12 @@ class Order(BaseModel):
     # Destination address
     destino: str
     # Distance in kilometers
-    distancia_km: Union[float, str]
+    distancia_km: float | str = Field(description="Distance in kilometers")
     # GPS coordinates in 'latitud,longitud' format
-    coordenadas_gps: str
+    # coordenadas_gps: str | None
 
     # Customer's email address
-    email_cliente: EmailStr
+    email_cliente: EmailStr = Field(description="Customer's email address")
 
     # -------------------------------------------
     # VALIDATORS
@@ -89,15 +86,3 @@ class Order(BaseModel):
             return datetime.strptime(v, "%Y-%m-%d").date()
         except Exception as err:
             raise ValueError("Date must be in YYYY-MM-DD format") from err
-
-    @field_validator("coordenadas_gps")
-    def validate_gps(cls, v):
-        """
-        Validates GPS coordinates format 'latitud,longitud.'.
-
-        Must match pattern: -?
-        """
-        pattern = r"^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$"
-        if not re.match(pattern, v.strip()):
-            raise ValueError("Coordinates must be in 'latitud,longitud' format")
-        return v.strip()

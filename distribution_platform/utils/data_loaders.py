@@ -9,7 +9,23 @@ from distribution_platform.utils.enums import DataTypesEnum
 
 def _load_data_csv(path_to_data: str | Path) -> pd.DataFrame:
     """Load data from a CSV file."""
-    return pd.read_csv(path_to_data, engine="python")
+    sep = _detect_separator(str(path_to_data))
+
+    return pd.read_csv(path_to_data, sep=sep, engine="python")
+
+
+def _detect_separator(file_path: str) -> str:
+    """Detect whether the CSV uses ';' or ',' as separator."""
+    with open(file_path, encoding="utf-8", errors="ignore") as f:
+        first_line = f.readline()
+
+    # If both exist, ';' usually wins in Spanish CSVs
+    if ";" in first_line and "," in first_line:
+        return ";"
+
+    if ";" in first_line:
+        return ";"
+    return ","
 
 
 def _load_data_excel(
@@ -202,7 +218,6 @@ def load_uploaded_file(uploaded_file) -> pd.DataFrame:
     Load a Streamlit UploadedFile using the internal loader logic.
     Auto-detects file type based on extension.
     """
-
     name = uploaded_file.name.lower()
 
     if name.endswith(".csv"):

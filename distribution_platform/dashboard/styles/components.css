@@ -5,25 +5,25 @@
     margin-bottom: 0.2rem;
 }
 
-/* Card de camión */
+/* Cards de selección */
 .truck-card-title {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 600;
     margin-bottom: 0.4rem;
 }
 
 .truck-divider {
     border: none;
-    border-top: 1px solid rgba(200, 200, 200, 0.4);
-    margin: 0.6rem 0 1rem 0;
-}
-
-/* Quita algo de padding a los contenedores para que se vea más limpio */
-.block-container {
-    padding-top: 1.5rem;
+    border-top: 1px solid rgba(200, 200, 200, 0.35);
+    margin: 0.8rem 0;
 }
 
 /* Sidebar */
 section[data-testid="stSidebar"] {
     background-color: #f8f9fa;
+}
+
+/* Más limpieza visual */
+.block-container {
+    padding-top: 1.5rem;
 }

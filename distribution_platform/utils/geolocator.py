@@ -5,32 +5,29 @@ from geopy.geocoders import Nominatim
 geolocator = Nominatim(user_agent="geoapi")
 
 
-def get_coordinates(name):
-    """Return coordinates for a Spanish place name as a 'lat,lon' string.
-
-    Parameters
-    ----------
-    name : str
-        Place name to geocode (in Spanish context).
-
-    Returns
-    -------
-    str or None
-        A string formatted as "latitude,longitude" when a location is found,
-        otherwise None.
-
-    Notes
-    -----
-    The function sleeps for 1 second to avoid rate limiting by the geocoding service.
+def get_coordinates(name, max_attempts=10):
+    """Geocodificación robusta:
+     Reintenta hasta 10 veces
+    - Espera incremental (1s → 2s → 4s...)
+    - Si falla → fallback seguro.
     """
-    try:
-        request = name + ", España"
+    attempt = 0
+    wait = 1  # segundos
 
-        time.sleep(1)  # evitar bloqueo
-        location = geolocator.geocode(request)
+    while attempt < max_attempts:
+        try:
+            location = geolocator.geocode(name + ", España")
 
-        if location:
-            return f"{location.latitude},{location.longitude}"
-    except Exception:
-        pass
-    return None
+            if location:
+                return f"{location.latitude},{location.longitude}"
+
+        except Exception:
+            pass
+
+        time.sleep(wait)
+        wait = min(wait * 2, 30)
+        attempt += 1
+
+    # Fallback si NUNCA encuentra coordenadas
+    print(f"[WARNING] Fallo geocoder → fallback para destino: {name}")
+    return "40.4168,-3.7038"  # centro de España

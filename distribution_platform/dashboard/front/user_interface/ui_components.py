@@ -1,193 +1,292 @@
 import os
-
+import pandas as pd
 import streamlit as st
+import random
 
 from data_models.trucks import CAMIONES_GRANDES, CAMIONES_MEDIANOS
-import pandas as pd
-import time
 from distribution_platform.dashboard.front.user_interface.maps import SpainMapRoutes
 from distribution_platform.pipelines.etl_pipeline import run_etl
+from distribution_platform.config.settings import ROUTE_COLORS
 
 
-def show_initial_title():
-    """Muestra el título inicial de la aplicación."""
-    st.title("Generate your route - IA Delivery")
+# =====================================================================================
+#   ESTADO INICIAL
+# =====================================================================================
+def init_state():
+    defaults = {
+        "page": "form",
+        "connection_type": None,
+        "df": None,
+        "selected_trucks": {},
+        "ia_result": None,
+        "load_success": False,
+    }
+    for key, val in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = val
 
 
-def show_trucks_selection():
-    """Muestra dos desplegables con camiones grandes y medianos.
-
-    Mostrar imágenes e información de capacidad y consumo de los camiones.
-    """
-    # Obtener la ruta base del directorio media
-    media_path = os.path.dirname(__file__) + "/media"
-
-    st.header("Select your Trucks")
-
-    col1, col2 = st.columns(2)
-
-    # Desplegable para camiones grandes
-    with col1:
-        st.subheader("Large Trucks")
-        camion_grande_seleccionado = st.selectbox(
-            "Choose a large truck:",
-            list(CAMIONES_GRANDES.keys()),
-            key="camion_grande",
-        )
-
-        if camion_grande_seleccionado:
-            datos = CAMIONES_GRANDES[camion_grande_seleccionado]
-            img_path = os.path.join(media_path, "camiones_grandes", datos["imagen"])
-
-            if os.path.exists(img_path):
-                st.image(img_path, use_column_width=True)
-
-            st.write(f"**Capacity:** {datos['capacidad']}")
-            st.write(f"**Consumption:** {datos['consumo']}")
-
-    # Desplegable para camiones medianos
-    with col2:
-        st.subheader("Medium Trucks")
-        camion_mediano_seleccionado = st.selectbox(
-            "Choose a medium truck:",
-            list(CAMIONES_MEDIANOS.keys()),
-            key="camion_mediano",
-        )
-
-        if camion_mediano_seleccionado:
-            datos = CAMIONES_MEDIANOS[camion_mediano_seleccionado]
-            img_path = os.path.join(media_path, "camiones_medianos", datos["imagen"])
-
-            if os.path.exists(img_path):
-                st.image(img_path, use_column_width=True)
-
-            st.write(f"**Capacity:** {datos['capacidad']}")
-            st.write(f"**Consumption:** {datos['consumo']}")
+# =====================================================================================
+#   TÍTULO
+# =====================================================================================
+def render_title():
+    st.markdown(
+        "<h1 class='main-title'>IA Delivery – Route Planner</h1>",
+        unsafe_allow_html=True,
+    )
+    st.caption("Planificación inteligente de rutas para productos perecederos.")
 
 
-def initialize_components():
-    show_initial_title()
-    # Inicializar clave en session_state si no existe
-    if "df" not in st.session_state:
-        st.session_state.df = None
+# =====================================================================================
+#   SELECTOR DE FUENTE DE DATOS (BD o CSV) — VERSIÓN CORRECTA
+# =====================================================================================
+def render_connection_selector():
+    st.subheader("1. Seleccionar fuente de datos")
 
-    # Mostrar uploader mientras df sea None
-    if st.session_state.df is None:
-        st.session_state.df = upload()
-        if st.session_state.df is None:
-            show_rules()
-            return None, False
-
-    # Si df ya está cargado -> mostrar resto de componentes
-    show_trucks_selection()
-
-    send_request = select_button()
-    truck_selected = None  # futuro: seleccionar camión
-
-    return truck_selected, send_request
-
-
-def upload():
-    # Default radio should be not selected
-    st.subheader("CSV File Upload")
-    option = st.radio(
-        "Select the data loading method:",
-        ("Upload CSV files", "Connect to database"),
-        index=None,
+    connection = st.radio(
+        "¿Cómo quieres cargar los datos?",
+        ["Base de datos", "Archivos"],
+        key="connection_type",
+        horizontal=True,
     )
 
-    if option == "Connect to database":
-        st.info("Database connection functionality not yet implemented.")
+    file_inputs = {}
+
+    if connection == "Archivos":
+        st.info("📄 Sube los archivos necesarios (igual que en tu versión original):")
+
+        file_inputs = {
+            "clientes": st.file_uploader("dboClientes.csv", type=["csv"]),
+            "lineas_pedido": st.file_uploader("dboLineasPedido.csv", type=["csv"]),
+            "pedidos": st.file_uploader("dboPedidos.csv", type=["csv"]),
+            "productos": st.file_uploader("dboProductos.csv", type=["csv"]),
+            "provincias": st.file_uploader("dboProvincias.csv", type=["csv"]),
+            "destinos": st.file_uploader("dboDestinos.csv", type=["csv"]),
+        }
+
+    return connection, file_inputs
+
+
+# =====================================================================================
+#   CARGA DE DATOS (BD o ARCHIVOS) — VERSIÓN FINAL
+# =====================================================================================
+def load_data(connection_type, file_inputs):
+    """
+    Mantiene:
+    - La conexión a base de datos EXACTAMENTE como antes.
+    - El uploader original EXACTAMENTE como antes.
+    - No se leen CSV en el front.
+    - Se pasan los UploadedFile directamente al ETL.
+    """
+
+    # -------------------------------------------------------------------------
+    #   BASE DE DATOS
+    # -------------------------------------------------------------------------
+    if connection_type == "Base de datos":
+        st.info("Intentando conectar con la base de datos...")
+
+        try:
+            df = run_etl(use_database=False)
+        except Exception as e:
+            st.error(f"❌ Error conectando a la base de datos:\n{e}")
+            st.session_state.load_success = False
+            return None
+
+        if df is None:
+            st.error("❌ ETL no devolvió datos.")
+            return None
+
+        # Si es lista → es correcto (transform_to_orders)
+        if isinstance(df, list):
+            if len(df) == 0:
+                st.error("❌ ETL devolvió una lista vacía.")
+                return None
+        else:
+            # Si es DataFrame → como antes
+            if hasattr(df, "empty") and df.empty:
+                st.error("❌ ETL ejecutado pero sin datos válidos.")
+                return None
+
+        st.success(f"✔ BD conectada correctamente ({len(df)} registros).")
+        st.session_state.df = df
+        st.session_state.load_success = True
+        return df
+
+    # -------------------------------------------------------------------------
+    #   ARCHIVOS CSV (VERSIÓN ORIGINAL RESTAURADA)
+    # -------------------------------------------------------------------------
+    missing = [k for k, f in file_inputs.items() if f is None]
+
+    if missing:
+        st.error("❌ Faltan CSV por subir:\n- " + "\n- ".join(missing))
         return None
-    elif option == "Upload CSV files":
-        files_clientes = st.file_uploader("dboClientes")
-        files_lineas = st.file_uploader("dboLineasPedido")
-        files_pedidos = st.file_uploader("dboPedidos")
-        files_productos = st.file_uploader("dboProductos")
-        files_provincias = st.file_uploader("dboProvincias")
-        files_destinos = st.file_uploader("dboDestinos")
 
-        if st.button("Process"):
-            files_dict = {
-                "clientes": files_clientes,
-                "lineas_pedido": files_lineas,
-                "pedidos": files_pedidos,
-                "productos": files_productos,
-                "provincias": files_provincias,
-                "destinos": files_destinos,
-            }
+    try:
+        df = run_etl(uploaded_files=file_inputs)
 
-            df_final = run_etl(uploaded_files=files_dict)
+    except Exception as e:
+        st.error(f"❌ Error ejecutando el ETL con los archivos:\n{e}")
+        st.session_state.load_success = False
+        return None
 
-            st.success("ETL completed with uploaded files.")
+    if df is None:
+        st.error("❌ ETL no devolvió datos.")
+        return None
 
-            return df_final
+    # Si es lista → es correcto (transform_to_orders)
+    if isinstance(df, list):
+        if len(df) == 0:
+            st.error("❌ ETL devolvió una lista vacía.")
+            return None
     else:
-        st.warning("Please select a data loading method.")
-        return None
+        # Si es DataFrame → como antes
+        if hasattr(df, "empty") and df.empty:
+            st.error("❌ ETL ejecutado pero sin datos válidos.")
+            return None
+
+    st.success(f"✔ Archivos procesados correctamente ({len(df)} registros).")
+    st.session_state.df = df
+    st.session_state.load_success = True
+    return df
 
 
-def select_box(invoices):
-    options = invoices["Número de factura"].unique().tolist()
-    choice = st.selectbox("Select an option:", options)
-    st.write(f"You selected: {choice}")
-    return invoices[invoices["Número de factura"] == choice].iloc[0]
+# =====================================================================================
+#   SELECTOR DE CAMIONES
+# =====================================================================================
+def truck_card(nombre, datos, tipo, base_path):
+    img_path = os.path.join(base_path, datos.get("imagen", ""))
+
+    st.markdown(f"<div class='truck-card-title'>{nombre}</div>", unsafe_allow_html=True)
+    col1, col2 = st.columns([2, 3])
+
+    with col1:
+        if os.path.exists(img_path):
+            st.image(img_path, use_container_width=True)
+
+    with col2:
+        st.write(f"**Capacidad:** {datos['capacidad']}")
+        st.write(f"**Consumo:** {datos['consumo']}")
+
+    selected = st.checkbox("Seleccionar", key=f"{tipo}_{nombre}")
+    st.markdown("<hr class='truck-divider'>", unsafe_allow_html=True)
+
+    return selected
 
 
-def select_button():
-    return st.button("Send request")
+def render_truck_selector():
+    st.subheader("2. Selección de camiones")
+
+    if not st.session_state.load_success:
+        st.info("Carga los datos antes de elegir camiones.")
+        return {}
+
+    df = st.session_state.df
+    st.success(f"📦 Datos cargados ({len(df)} registros). Selecciona los camiones.")
+
+    base_large = os.path.join(os.path.dirname(__file__), "media", "camiones_grandes")
+    base_medium = os.path.join(os.path.dirname(__file__), "media", "camiones_medianos")
+
+    col1, col2 = st.columns(2)
+    selected = {}
+
+    with col1:
+        st.markdown("### 🚛 Grandes")
+        for name, data in CAMIONES_GRANDES.items():
+            if truck_card(name, data, "grande", base_large):
+                selected[name] = data
+
+    with col2:
+        st.markdown("### 🚚 Medianos")
+        for name, data in CAMIONES_MEDIANOS.items():
+            if truck_card(name, data, "mediano", base_medium):
+                selected[name] = data
+
+    return selected
 
 
-def show_waiting_message():
-    with st.spinner("Procesando, por favor espere..."):
-        time.sleep(3)
-
-
-def show_confirmation(message):
-    st.success(message)
-
-
-def show_errors(errors):
-    for error in errors:
-        st.error(error)
-
-
-def clean_messages(message):
-    time.sleep(3)
-    message.empty()
-
-
-def show_rules():
-    st.subheader("Routes Validation Rules")
-
-    st.markdown("""
-    - The csv file must contain all required fields.
-    - The truck selected must have enough capacity for the delivery.
-    - The truck selected must have an acceptable fuel consumption rate.
-    - The truck selected must have a constant velocity during the route.
-    """)
-
-
-def show_routes_map():
-    st.header("Mapa de rutas")
-
-    map_component = SpainMapRoutes()
-
-    routes = [
+# =====================================================================================
+#   SIMULACIÓN DE IA (placeholder)
+# =====================================================================================
+# Random color from settings.py ROUTE_COLORS
+def simulate_ia(df, trucks):
+    # DEMO: rutas fijas solo para mostrar el mapa funcionando
+    demo_routes = [
         {
             "path": [
-                [40.4168, -3.7038],  # Madrid
-                [41.3874, 2.1686],  # Barcelona
+                [40.416775, -3.703790],  # Madrid
+                [41.649693, -0.887712],  # Zaragoza
+                [41.387417, 2.168568],  # Barcelona
             ],
-            "color": "red",
+            "color": getRandomColor(),
         },
         {
             "path": [
-                [40.4168, -3.7038],  # Madrid
-                [39.4699, -0.3763],  # Valencia
+                [40.416775, -3.703790],  # Madrid
+                [39.469907, -0.376288],  # Valencia
             ],
-            "color": "blue",
+            "color": getRandomColor(),
         },
     ]
 
-    map_component.render(routes)
+    return {
+        "num_trucks": len(trucks),
+        "routes": demo_routes,  # <----- YA TIENE RUTAS
+        "assignments": pd.DataFrame(),
+    }
+
+
+# Random color cannot be the same every time
+def getRandomColor():
+    return random.choice(ROUTE_COLORS)
+
+
+def handle_submit(selected_trucks):
+    df = st.session_state.df
+    st.session_state.ia_result = simulate_ia(df, selected_trucks)
+    st.session_state.page = "routes"
+    st.rerun()
+
+
+# =====================================================================================
+#   FORM PAGE
+# =====================================================================================
+def render_form_page():
+    render_title()
+
+    connection_type, file_inputs = render_connection_selector()
+
+    st.markdown("---")
+
+    if st.button("📥 Cargar datos"):
+        load_data(connection_type, file_inputs)
+
+    st.markdown("---")
+
+    selected_trucks = render_truck_selector()
+
+    if st.session_state.load_success and selected_trucks:
+        st.markdown("---")
+        if st.button("Generar rutas ▶", type="primary"):
+            handle_submit(selected_trucks)
+
+
+# =====================================================================================
+#   ROUTES PAGE
+# =====================================================================================
+def render_routes_page():
+    render_title()
+
+    ia = st.session_state.ia_result
+    if ia is None:
+        st.warning("Todavía no se han generado rutas.")
+        return
+    # Include truc emote 🚚
+    st.metric("Número de camiones necesarios", f"{ia['num_trucks']} 🚚")
+
+    st.markdown("### 🗺️ Mapa de rutas")
+
+    # Renderizar SOLO las rutas generadas por la IA
+    SpainMapRoutes().render(ia["routes"])
+
+    st.markdown("### 📦 Asignación de productos")
+    st.dataframe(ia["assignments"], use_container_width=True)

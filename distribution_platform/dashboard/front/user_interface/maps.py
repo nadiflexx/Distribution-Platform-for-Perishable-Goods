@@ -2,23 +2,29 @@ import folium
 from streamlit_folium import st_folium
 import streamlit as st
 import requests
+from distribution_platform.config.settings import MAP_DEFAULTS
 
 
 class SpainMapRoutes:
     """Map of Spain with real road routes using OSRM."""
 
+    # Servidor muy estable → mejor que project-osrm.org
+    OSRM_SERVER = "https://routing.openstreetmap.de/routed-car"
+
     def __init__(self):
-        self.center = [40.2, -3.5]
-        self.zoom = 6
+        self.center = MAP_DEFAULTS["center"]
+        self.zoom = MAP_DEFAULTS["zoom_start"]
+        self.tiles = MAP_DEFAULTS["tiles"]
 
     def get_osrm_route(self, start, end):
         """
         start = [lat, lon]
-        end = [lat, lon]
+        end   = [lat, lon]
+        Devuelve lista de [lat, lon] con la ruta real por carretera.
         """
 
         url = (
-            f"https://router.project-osrm.org/route/v1/driving/"
+            f"{self.OSRM_SERVER}/route/v1/driving/"
             f"{start[1]},{start[0]};{end[1]},{end[0]}"
             f"?overview=full&geometries=geojson"
         )
@@ -26,22 +32,27 @@ class SpainMapRoutes:
         response = requests.get(url)
 
         if response.status_code != 200:
+            print("OSRM status error:", response.status_code)
             return None
 
         data = response.json()
 
+        if "routes" not in data or len(data["routes"]) == 0:
+            print("OSRM routing error:", data)
+            return None
+
         try:
             coords = data["routes"][0]["geometry"]["coordinates"]
-            # OSRM returns [lon, lat] → Folium uses [lat, lon]
-            return [[lat, lon] for lon, lat in coords]
-        except:
+            return [[lat, lon] for lon, lat in coords]  # swap lon/lat → lat/lon
+        except Exception as e:
+            print("OSRM geometry parse error:", e)
             return None
 
     def render(self, routes):
         """
         routes = [
             {
-                "path": [[lat1, lon1], [lat2, lon2]],
+                "path": [[lat1, lon1], [lat2, lon2], [lat3, lon3]...],
                 "color": "red"
             }
         ]
@@ -52,36 +63,40 @@ class SpainMapRoutes:
         )
 
         for route in routes:
-            start = route["path"][0]
-            end = route["path"][1]
+            path = route["path"]
+            color = route.get("color", "blue")
 
-            # Obtener ruta real por carretera
-            real_path = self.get_osrm_route(start, end)
+            # Dibujar cada tramo consecutivo del path
+            for i in range(len(path) - 1):
+                start = path[i]
+                end = path[i + 1]
 
-            if real_path:
-                folium.PolyLine(
-                    locations=real_path,
-                    color=route.get("color", "blue"),
-                    weight=4,
-                    opacity=0.9,
+                real_path = self.get_osrm_route(start, end)
+
+                if real_path:
+                    folium.PolyLine(
+                        locations=real_path,
+                        color=color,
+                        weight=4,
+                        opacity=0.9,
+                    ).add_to(m)
+                else:
+                    # fallback: línea recta
+                    folium.PolyLine(
+                        locations=[start, end],
+                        color="gray",
+                        weight=3,
+                        dash_array="5,5",
+                    ).add_to(m)
+
+                # Marcar punto inicial de cada tramo
+                folium.CircleMarker(
+                    location=start, radius=6, color="blue", fill=True
                 ).add_to(m)
-            else:
-                # straight route fallback
-                folium.PolyLine(
-                    locations=[start, end],
-                    color="gray",
-                    weight=3,
-                    dash_array="5,5",
-                ).add_to(m)
 
-            # start marker
+            # Marcar último punto
             folium.CircleMarker(
-                location=start, radius=6, color="blue", fill=True
+                location=path[-1], radius=6, color="green", fill=True
             ).add_to(m)
 
-            # end marker
-            folium.CircleMarker(
-                location=end, radius=6, color="green", fill=True
-            ).add_to(m)
-
-        return st_folium(m, width=750, height=550)
+        return st_folium(m, width=850, height=600)

@@ -27,3 +27,5 @@ streamlit>=1.51.0
 pydantic[email]>=2.12.4
 folium>=0.20.0
 streamlit-folium>=0.25.3
+sqlalchemy>=2.0.44
+pyodbc>=4.0.40

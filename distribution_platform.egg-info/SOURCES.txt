@@ -23,21 +23,56 @@ distribution_platform/dashboard/correlations/bridge_loader.py
 distribution_platform/dashboard/correlations/layout.py
 distribution_platform/dashboard/correlations/registry.py
 distribution_platform/dashboard/correlations/visualizations.py
+distribution_platform/dashboard/correlations/__pycache__/__init__.cpython-313.pyc
+distribution_platform/dashboard/correlations/__pycache__/app.cpython-313.pyc
+distribution_platform/dashboard/correlations/__pycache__/app_correaltions.cpython-313.pyc
+distribution_platform/dashboard/correlations/__pycache__/bridge_loader.cpython-313.pyc
+distribution_platform/dashboard/correlations/__pycache__/layout.cpython-313.pyc
+distribution_platform/dashboard/correlations/__pycache__/registry.cpython-313.pyc
+distribution_platform/dashboard/correlations/__pycache__/visualizations.cpython-313.pyc
 distribution_platform/dashboard/correlations/config/config_dashboard.py
+distribution_platform/dashboard/correlations/config/__pycache__/config_dashboard.cpython-313.pyc
+distribution_platform/dashboard/database/__init__.py
+distribution_platform/dashboard/database/connection.py
+distribution_platform/dashboard/database/queries.py
+distribution_platform/dashboard/database/repository.py
 distribution_platform/dashboard/front/routes.py
 distribution_platform/dashboard/front/data_models/__init__.py
+distribution_platform/dashboard/front/data_models/result_validation.py
+distribution_platform/dashboard/front/data_models/truck.py
 distribution_platform/dashboard/front/data_models/trucks.py
+distribution_platform/dashboard/front/data_models/__pycache__/__init__.cpython-313.pyc
+distribution_platform/dashboard/front/data_models/__pycache__/result_validation.cpython-313.pyc
+distribution_platform/dashboard/front/data_models/__pycache__/truck.cpython-313.pyc
+distribution_platform/dashboard/front/data_models/__pycache__/trucks.cpython-313.pyc
 distribution_platform/dashboard/front/inference_engine/__init__.py
 distribution_platform/dashboard/front/inference_engine/engine.py
+distribution_platform/dashboard/front/inference_engine/__pycache__/__init__.cpython-313.pyc
+distribution_platform/dashboard/front/inference_engine/__pycache__/engine.cpython-313.pyc
 distribution_platform/dashboard/front/knowledge_base/__init__.py
 distribution_platform/dashboard/front/knowledge_base/rules.py
+distribution_platform/dashboard/front/knowledge_base/__pycache__/__init__.cpython-313.pyc
+distribution_platform/dashboard/front/knowledge_base/__pycache__/rules.cpython-313.pyc
 distribution_platform/dashboard/front/user_interface/__init__.py
 distribution_platform/dashboard/front/user_interface/maps.py
 distribution_platform/dashboard/front/user_interface/ui_components.py
+distribution_platform/dashboard/front/user_interface/__pycache__/__init__.cpython-313.pyc
+distribution_platform/dashboard/front/user_interface/__pycache__/maps.cpython-313.pyc
+distribution_platform/dashboard/front/user_interface/__pycache__/ui_components.cpython-313.pyc
+distribution_platform/dashboard/front/user_interface/media/camiones_grandes/DAF XF FT.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_grandes/Mercedes-Benz Actros.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_grandes/iveco s-way.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_grandes/scania series r.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_grandes/volvoFH.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_medianos/ISUZU-ELF.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_medianos/IVECO Eurocargo.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_medianos/Mercedes-Benz Atego.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_medianos/iveco daily.jpg
+distribution_platform/dashboard/front/user_interface/media/camiones_medianos/renault trucks d.jpg
 distribution_platform/dashboard/front/user_interface/styles/__init__.py
 distribution_platform/dashboard/front/user_interface/styles/colors.py
+distribution_platform/dashboard/front/user_interface/styles/components.css
 distribution_platform/dashboard/front/user_interface/styles/theme.py
-distribution_platform/data/processed/pedidos.csv
 distribution_platform/data/raw/dboClientes.csv
 distribution_platform/data/raw/dboDestinos.csv
 distribution_platform/data/raw/dboLineasPedido.csv
