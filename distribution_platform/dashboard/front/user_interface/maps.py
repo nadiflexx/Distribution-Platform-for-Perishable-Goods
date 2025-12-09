@@ -1,7 +1,7 @@
 import folium
-from streamlit_folium import st_folium
-import streamlit as st
 import requests
+from streamlit_folium import st_folium
+
 from distribution_platform.config.settings import MAP_DEFAULTS
 
 
@@ -18,11 +18,11 @@ class SpainMapRoutes:
 
     def get_osrm_route(self, start, end):
         """
+        Funtion to get the real road route between two points using OSRM API.
         start = [lat, lon]
         end   = [lat, lon]
-        Devuelve lista de [lat, lon] con la ruta real por carretera.
+        Returns list of [lat, lon] with the real road route.
         """
-
         url = (
             f"{self.OSRM_SERVER}/route/v1/driving/"
             f"{start[1]},{start[0]};{end[1]},{end[0]}"
@@ -50,14 +50,14 @@ class SpainMapRoutes:
 
     def render(self, routes):
         """
+        Render the map with the given routes.
         routes = [
             {
                 "path": [[lat1, lon1], [lat2, lon2], [lat3, lon3]...],
                 "color": "red"
             }
-        ]
+        ].
         """
-
         m = folium.Map(
             location=self.center, zoom_start=self.zoom, tiles="OpenStreetMap"
         )

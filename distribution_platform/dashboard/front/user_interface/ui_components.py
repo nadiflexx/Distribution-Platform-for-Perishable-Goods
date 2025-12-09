@@ -1,12 +1,13 @@
 import os
-import pandas as pd
-import streamlit as st
 import random
 
+import pandas as pd
+import streamlit as st
+
 from data_models.trucks import CAMIONES_GRANDES, CAMIONES_MEDIANOS
+from distribution_platform.config.settings import ROUTE_COLORS
 from distribution_platform.dashboard.front.user_interface.maps import SpainMapRoutes
 from distribution_platform.pipelines.etl_pipeline import run_etl
-from distribution_platform.config.settings import ROUTE_COLORS
 
 
 # =====================================================================================

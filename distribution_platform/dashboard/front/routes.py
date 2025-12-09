@@ -1,10 +1,11 @@
-import streamlit as st
 from pathlib import Path
 
+import streamlit as st
+
 from distribution_platform.dashboard.front.user_interface.ui_components import (
+    init_state,
     render_form_page,
     render_routes_page,
-    init_state,
 )
 
 

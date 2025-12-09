@@ -1,0 +1,34 @@
+# ============================================
+#          RUFF CONFIGURATION
+# ============================================
+
+# Selección de reglas (las más usadas en proyectos reales)
+select = [
+    "E",   # Errores de Pyflakes / PEP8
+    "F",   # Flake8
+    "I",   # Import sorting (isort integrado)
+    "W",   # Warnings
+    "B",   # Bugbear
+    "UP",  # Pyupgrade
+    "C4",  # Comprehensions
+    "SIM", # Simplificaciones
+]
+
+ignore = [
+    "E501", # Desactiva límite de longitud de línea (Black ya lo maneja)
+]
+
+# Formateador integrado de Ruff (reemplaza a Black)
+line-length = 88
+indent-width = 4
+
+[format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+skip-magic-trailing-comma = false
+
+[isort]
+combine-as-imports = true
+known-first-party = ["distribution_platform", "data_models"]
+force-sort-within-sections = true

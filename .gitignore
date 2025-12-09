@@ -70,3 +70,7 @@ build/
 Thumbs.db
 *.bak
 *.old
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

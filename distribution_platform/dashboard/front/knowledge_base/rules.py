@@ -7,11 +7,11 @@ the `InferenceEngine` to generate the final decision.
 """
 
 from collections.abc import Callable
-from typing import List
+
 from distribution_platform.dashboard.front.data_models.truck import Truck
 
 
-def print_rules() -> List[str]:
+def print_rules() -> list[str]:
     """Returns the human-readable list of business rules.
 
     Used by the UI to display the available rules.
@@ -24,7 +24,7 @@ def print_rules() -> List[str]:
     ]
 
 
-def obtain_rules() -> List[Callable[[Truck], str]]:
+def obtain_rules() -> list[Callable[[Truck], str]]:
     """Returns the list of rule functions to be executed by the engine.
 
     Maintain the order of the rules for predictable output.

@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 from collections.abc import Callable, Iterable
-from typing import List
+
 from data_models.result_validation import ResultValidation
 from data_models.truck import Truck
 
@@ -32,7 +33,7 @@ class InferenceMotor:
         starts with "✘".
         """
 
-        reasoning: List[str] = []
+        reasoning: list[str] = []
 
         for rule in self.rules:
             message = rule(truck)
