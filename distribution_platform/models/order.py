@@ -58,7 +58,10 @@ class Order(BaseModel):
 
     # Customer's email address
     email_cliente: EmailStr = Field(description="Customer's email address")
-
+    dias_totales_caducidad: int = Field(
+        description="Total caducity days (1 + fabrication time + caducity)"
+    )
+    fecha_caducidad_final: date | str = Field(description="Final expiry date")
     # -------------------------------------------
     # VALIDATORS
     # -------------------------------------------
@@ -86,3 +89,9 @@ class Order(BaseModel):
             return datetime.strptime(v, "%Y-%m-%d").date()
         except Exception as err:
             raise ValueError("Date must be in YYYY-MM-DD format") from err
+
+    @field_validator("fecha_caducidad_final")
+    def validate_fecha_cad_final(cls, v):
+        if isinstance(v, date):
+            return v
+        return datetime.strptime(v, "%Y-%m-%d").date()

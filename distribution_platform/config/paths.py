@@ -52,8 +52,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_PATH = os.path.join(BASE_DIR, "dashboard", "front", "user_interface", "media")
 
 TRUCK_IMAGES = {
-    "large": os.path.join(MEDIA_PATH, "camiones_grandes"),
-    "medium": os.path.join(MEDIA_PATH, "camiones_medianos"),
+    "large": os.path.join(MEDIA_PATH, "large_trucks"),
+    "medium": os.path.join(MEDIA_PATH, "medium_trucks"),
+    "custom": os.path.join(MEDIA_PATH, "custom_trucks"),
 }
 
 # Animation settings

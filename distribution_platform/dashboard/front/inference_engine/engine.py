@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 
-from data_models.result_validation import ResultValidation
-from data_models.truck import Truck
+from distribution_platform.models.result_validation import ResultValidation
+from distribution_platform.models.truck import Truck
 
 """Inference motor for the expert system.
 

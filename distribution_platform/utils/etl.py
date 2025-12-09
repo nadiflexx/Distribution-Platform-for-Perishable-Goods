@@ -128,6 +128,8 @@ class ETLProcessor:
             axis=1,
         )
 
+        df = self.compute_caducidad_fields(df)
+
         self.df_final = df
 
         # Construir/actualizar cache en base a provincias
@@ -227,7 +229,37 @@ class ETLProcessor:
             axis=1,
         )
 
+        df_final = self.compute_caducidad_fields(df_final)
+
         self.df_final = df_final
+
+    def compute_caducidad_fields(self, df: pd.DataFrame):
+        """
+        Calcula:
+        - dias_totales_caducidad
+        - fecha_caducidad_final
+        """
+
+        # Convertir fecha
+        df["fecha_pedido"] = pd.to_datetime(df["fecha_pedido"], errors="coerce")
+
+        # Convertir numéricos
+        df["tiempo_fabricacion_medio"] = pd.to_numeric(
+            df["tiempo_fabricacion_medio"], errors="coerce"
+        )
+        df["caducidad"] = pd.to_numeric(df["caducidad"], errors="coerce")
+
+        # Calcular días totales: 1 día (fabricación empieza mañana) + fabricación + caducidad
+        df["dias_totales_caducidad"] = (
+            1 + df["tiempo_fabricacion_medio"] + df["caducidad"]
+        )
+
+        # Fecha final
+        df["fecha_caducidad_final"] = df["fecha_pedido"] + pd.to_timedelta(
+            df["dias_totales_caducidad"], unit="D"
+        )
+
+        return df
 
     # ----------------------------------------------------------
     # 4) BUILD COORDINATES CACHE (usa df_provincias)
@@ -317,20 +349,12 @@ class ETLProcessor:
     def transform_to_orders(self, df_pedidos: pd.DataFrame):
         """
         Transform a DataFrame of pedidos into grouped lists of Order objects.
-
-        Parameters
-        ----------
-        df_pedidos : pd.DataFrame
-            DataFrame containing pedidos data to be transformed.
-
-        Returns
-        -------
-        list
-            A list of lists, where each sublist contains Order objects grouped
-            by pedido_id.
         """
+
         orders_grouped = []
-        grouped = df_pedidos.sort_values(by="caducidad").groupby("pedido_id")
+        grouped = df_pedidos.sort_values(by="dias_totales_caducidad").groupby(
+            "pedido_id"
+        )
 
         for _, group in grouped:
             order_lines = []
@@ -345,10 +369,12 @@ class ETLProcessor:
                     caducidad=row["caducidad"],
                     destino=row["destino"],
                     distancia_km=row["distancia_km"],
-                    # coordenadas_gps las podrás recuperar del JSON cuando las necesites
                     email_cliente=row["email_cliente"],
+                    dias_totales_caducidad=row["dias_totales_caducidad"],
+                    fecha_caducidad_final=row["fecha_caducidad_final"],
                 )
                 order_lines.append(order_line)
+
             orders_grouped.append(order_lines)
 
         return orders_grouped

@@ -1,20 +1,20 @@
 import io
 import logging
 
+from config.config_dashboard import DashboardConfig
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from .bridge_loader import clean_dataframe, load_generic_data
-from .registry import PLOT_TYPES
-from .visualizations import generate_plot
-from config.config_dashboard import DashboardConfig
 from ..utils.correaltions import (
     correlation_matrix,
     correlation_pvalue_matrix,
     correlation_with_pvalue,
 )
 from ..utils.enums import CorrelationsEnums, DataTypesEnum
+from .bridge_loader import clean_dataframe, load_generic_data
+from .registry import PLOT_TYPES
+from .visualizations import generate_plot
 
 logger = logging.getLogger(__name__)
 
@@ -178,7 +178,7 @@ def show_correlation_dashboard(config: DashboardConfig | None):
                 color_continuous_scale="RdBu_r",
                 title=f"Correlation Matrix ({method.value})",
             )
-            st.plotly_chart(fig1,  width="stretch")
+            st.plotly_chart(fig1, width="stretch")
 
             st.write("### 🧪 P-value matrix (significance)")
             fig2 = px.imshow(
@@ -187,7 +187,7 @@ def show_correlation_dashboard(config: DashboardConfig | None):
                 color_continuous_scale="Viridis",
                 title=f"P-value Matrix ({method.value})",
             )
-            st.plotly_chart(fig2,  width="stretch")
+            st.plotly_chart(fig2, width="stretch")
 
             st.info("""
     Interpretación:
@@ -225,4 +225,4 @@ def show_correlation_dashboard(config: DashboardConfig | None):
                 trendline="ols",
                 title=f"{method2.value.capitalize()} correlation: {corr:.4f}",
             )
-            st.plotly_chart(fig,  width="stretch")
+            st.plotly_chart(fig, width="stretch")

@@ -1,12 +1,12 @@
-import sys
 from pathlib import Path
+import sys
+
+from predictions.dashboard.config.config_dashboard import DashboardConfig
+from predictions.dashboard.layout import show_correlation_dashboard
 
 # Añade la raíz del proyecto al PYTHONPATH
-ROOT = Path(__file__).resolve().parents[2]  
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
-
-from predictions.dashboard.layout import show_correlation_dashboard
-from predictions.dashboard.config.config_dashboard import DashboardConfig
 
 
 def run_correlations_dashboard(config: DashboardConfig | None = None):
