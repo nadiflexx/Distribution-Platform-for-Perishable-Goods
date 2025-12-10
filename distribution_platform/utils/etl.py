@@ -4,7 +4,7 @@ from distribution_platform.config import paths
 from distribution_platform.core.models.order import Order
 from distribution_platform.infrastructure.database.repository import (
     load_full_dataset,
-    load_provinces,
+    load_provinces_names,
 )
 from distribution_platform.utils import data_cleaning, data_loaders, enums
 from distribution_platform.utils.coordinates_cache import CoordinateCache
@@ -88,7 +88,7 @@ class ETLProcessor:
     def load_from_database(self):
         """Carga ya mergado desde SQL; luego limpiamos y construimos cache."""
         df = load_full_dataset()
-        self.df_provincias = load_provinces()
+        self.df_provincias = load_provinces_names()
 
         df = df.rename(
             columns={

@@ -208,7 +208,7 @@ def render_truck_selector():
             "✔️ Confirmar Vehículo",
             disabled=disabled,
             type="primary",
-            use_container_width=True,
+            width="stretch",
         ):
             truck = validate_and_confirm_truck()
             if truck is not None:
@@ -354,7 +354,7 @@ def _display_truck_details(name, data, img_path):
 
     with c1:
         if os.path.exists(img_path):
-            st.image(img_path, use_container_width=True)
+            st.image(img_path, width="stretch")
         else:
             st.warning("⚠️ Imagen no encontrada")
 
@@ -396,7 +396,7 @@ def _show_custom_truck_form():
             price_driver = st.text_input("👨‍✈️ Coste Hora (€)")
 
         submitted = st.form_submit_button(
-            "Guardar Vehículo", type="primary", use_container_width=True
+            "Guardar Vehículo", type="primary", width="stretch"
         )
 
         if not submitted:
@@ -503,10 +503,9 @@ def render_form_page():
         st.markdown("---")
         c1, c2, c3 = st.columns([1, 2, 1])
         with c2:
-            if st.button(
-                "🚀 GENERAR RUTA ÓPTIMA", type="primary", use_container_width=True
-            ):
+            if st.button("🚀 GENERAR RUTA ÓPTIMA", type="primary", width="stretch"):
                 with st.spinner("🤖 La IA está calculando la ruta óptima..."):
+                    print("Truck selected:", st.session_state.selected_truck_data)
                     st.session_state.ia_result = simulate_ia(
                         st.session_state.df,
                         st.session_state.selected_truck_data,
@@ -553,7 +552,7 @@ def render_routes_page():
 
     # Data Card
     start_card("Detalle de Asignaciones", icon="📊")
-    st.dataframe(ia["assignments"], use_container_width=True)
+    st.dataframe(ia["assignments"], width="stretch")
     end_card()
 
     if st.button("🔄 Nueva Simulación"):

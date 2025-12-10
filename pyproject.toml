@@ -48,6 +48,8 @@ dependencies = [
     "streamlit-folium>=0.25.3",
     "sqlalchemy>=2.0.44",
     "pyodbc>=4.0.40",
+    "google-api-python-client>=2.187.0",
+    "google-auth>=2.43.0",
 ]
 
 [dependency-groups]

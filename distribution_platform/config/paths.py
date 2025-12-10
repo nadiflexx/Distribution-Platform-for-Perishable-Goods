@@ -95,3 +95,8 @@ RULES_INFO = [
     "🚗 The truck must maintain constant velocity during routes",
     "📍 All delivery locations must be within service area",
 ]
+
+# =========================================================
+# DRIVE AUTH
+# =========================================================
+SCOPES = ["https://www.googleapis.com/auth/drive"]
