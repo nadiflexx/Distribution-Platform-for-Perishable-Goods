@@ -15,62 +15,66 @@ env/
 *.env
 
 # ============================================
-#  DATOS LOCALES (NO SUBIR A GIT)
+#  DATOS (CONTROL FINO)
 # ============================================
-data/
-data_raw/
-data_processed/
-datasets/
-uploads/
+
+# Ignorar todo data por defecto
+data/*
+
+# PERMITIR storage (datos de dominio)
+!data/storage/
+!data/storage/**
+
+# Ignorar datos regenerables
+data/raw/
+data/processed/
+data/cache/
+
+# NO ignorar JSON de storage
+!data/storage/*.json
+
+# ============================================
+#  ARCHIVOS DE DATOS GENÉRICOS (FUERA DE STORAGE)
+# ============================================
 *.csv
 *.xlsx
 *.xls
-*.json
 *.parquet
 *.feather
 
 # ============================================
-#  CACHE Y ARCHIVOS TEMPORALES
+#  CACHE Y TEMPORALES
 # ============================================
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.swp
-*.swo
-*.tmp
-*.log
 .cache/
 .ipynb_checkpoints/
 
 # ============================================
 #  STREAMLIT
 # ============================================
-.streamlit/secrets.toml
-.streamlit/state.json
+.streamlit
 
 # ============================================
-#  CONFIGURACIÓN DE EDITORES / IDE
+#  CONFIGURACIÓN DE EDITORES
 # ============================================
 .vscode/
 .idea/
 *.iml
 
 # ============================================
-#  COMPILACIÓN / DISTRIBUCIÓN
+#  BUILD / DIST
 # ============================================
 dist/
 build/
 *.spec
 
 # ============================================
-#  OTROS ARCHIVOS QUE NO DEBEN SUBIRSE
+#  SISTEMA
 # ============================================
 .DS_Store
 Thumbs.db
 *.bak
 *.old
-__pycache__/
-*.pyc
-*.pyo
-*.pyd

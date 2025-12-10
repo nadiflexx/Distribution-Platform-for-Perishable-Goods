@@ -1,0 +1,37 @@
+{
+  "Prueba 1": {
+    "capacidad": 120,
+    "consumo": 30,
+    "velocidad_constante": 75,
+    "precio_conductor_hora": 20,
+    "imagen": "truck_default.png"
+  },
+  "ej2": {
+    "capacidad": 140,
+    "consumo": 30,
+    "velocidad_constante": 89,
+    "precio_conductor_hora": 20,
+    "imagen": "truck_default.png"
+  },
+  "ej3": {
+    "capacidad": 80,
+    "consumo": 40,
+    "velocidad_constante": 80,
+    "precio_conductor_hora": 20,
+    "imagen": "truck_default.png"
+  },
+  "test": {
+    "capacidad": "12",
+    "consumo": "12",
+    "velocidad_constante": "30",
+    "precio_conductor_hora": "15",
+    "imagen": "test.jpg"
+  },
+  "nrw": {
+    "capacidad": "23",
+    "consumo": "12",
+    "velocidad_constante": "30",
+    "precio_conductor_hora": "15",
+    "imagen": "nrw.jpg"
+  }
+}

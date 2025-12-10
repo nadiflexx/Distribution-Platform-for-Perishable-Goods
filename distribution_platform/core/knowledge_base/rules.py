@@ -9,7 +9,7 @@ the `InferenceEngine` to generate the final decision.
 from collections.abc import Callable
 import re
 
-from distribution_platform.models.truck import Truck
+from distribution_platform.core.models.truck import Truck
 
 
 def print_rules() -> list[str]:

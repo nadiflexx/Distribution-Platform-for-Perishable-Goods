@@ -1,43 +1,42 @@
 """Carga y gestión de datos de camiones desde archivos JSON."""
 
 import json
-import os
+from pathlib import Path
 
-from distribution_platform.config.paths import TRUCK_IMAGES
+from distribution_platform.config.paths import STORAGE_DIR, TRUCK_IMAGES
 
 # ============================================
 #  HELPERS DE RUTAS
 # ============================================
 
 
-def _get_data_dir() -> str:
+def _get_data_dir() -> Path:
     """Directorio donde están los JSON de camiones."""
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data_models"))
+    return STORAGE_DIR
 
 
 def _load_json_file(filename: str) -> dict:
-    """Carga un archivo JSON y devuelve un diccionario seguro."""
-    filepath = os.path.join(_get_data_dir(), filename)
+    filepath = _get_data_dir() / filename
 
-    if not os.path.exists(filepath):
+    if not filepath.exists():
         print(f"⚠️ JSON no encontrado: {filepath}")
         return {}
 
     try:
-        with open(filepath, encoding="utf-8") as f:
-            return json.load(f)
+        return json.loads(filepath.read_text(encoding="utf-8"))
     except Exception as e:
         print(f"⚠️ Error leyendo {filepath}: {e}")
         return {}
 
 
 def _save_json_file(filename: str, data: dict) -> bool:
-    """Guarda un diccionario en JSON."""
-    filepath = os.path.join(_get_data_dir(), filename)
+    filepath = _get_data_dir() / filename
 
     try:
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+        filepath.write_text(
+            json.dumps(data, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
         return True
     except Exception as e:
         print(f"❌ Error guardando JSON {filepath}: {e}")
@@ -71,26 +70,24 @@ def get_camiones_personalizados() -> dict:
 def save_custom_truck_image(uploaded_file, truck_name: str) -> str:
     """
     Guarda imágenes en:
-        media/custom_trucks/<nombre>.png
+        assets/images/custom_trucks/<nombre>.<ext>
     """
 
-    custom_dir = TRUCK_IMAGES["custom"]  # viene directo desde paths.py
-    os.makedirs(custom_dir, exist_ok=True)
+    custom_dir: Path = TRUCK_IMAGES["custom"]
+    custom_dir.mkdir(parents=True, exist_ok=True)
 
     # Si no sube imagen → default
     if uploaded_file is None:
         return "truck_default.png"
 
-    # Safe filename
     ext = uploaded_file.name.split(".")[-1].lower()
     safe_name = "".join(c for c in truck_name if c.isalnum() or c in (" ", "-", "_"))
     filename = f"{safe_name}.{ext}"
 
-    filepath = os.path.join(custom_dir, filename)
+    filepath = custom_dir / filename
 
     try:
-        with open(filepath, "wb") as f:
-            f.write(uploaded_file.getbuffer())
+        filepath.write_bytes(uploaded_file.getbuffer())
         return filename
     except Exception as e:
         print(f"❌ Error guardando imagen personalizada: {e}")
@@ -110,21 +107,14 @@ def add_camion_personalizado(
     precio_conductor_hora: str,
     imagen: str = "truck_default.png",
 ) -> bool:
-    """
-    Añade un camión personalizado sin sobrescribir los existentes.
-    Guarda en camiones_personalizados.json.
-    """
-
-    camiones = get_camiones_personalizados()
-    if not isinstance(camiones, dict):
-        camiones = {}
+    camiones = get_camiones_personalizados() or {}
 
     camiones[nombre] = {
         "capacidad": capacidad,
         "consumo": consumo,
         "velocidad_constante": velocidad_constante,
         "precio_conductor_hora": precio_conductor_hora,
-        "imagen": imagen,  # solo el nombre del archivo
+        "imagen": imagen,
     }
 
     return _save_json_file("camiones_personalizados.json", camiones)

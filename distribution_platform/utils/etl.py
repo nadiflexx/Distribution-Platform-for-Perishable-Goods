@@ -1,11 +1,11 @@
 import pandas as pd
 
 from distribution_platform.config import paths
-from distribution_platform.dashboard.database.repository import (
+from distribution_platform.core.models.order import Order
+from distribution_platform.infrastructure.database.repository import (
     load_full_dataset,
     load_provinces,
 )
-from distribution_platform.models.order import Order
 from distribution_platform.utils import data_cleaning, data_loaders, enums
 from distribution_platform.utils.coordinates_cache import CoordinateCache
 from distribution_platform.utils.data_loaders import (

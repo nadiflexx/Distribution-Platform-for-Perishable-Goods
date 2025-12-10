@@ -99,4 +99,4 @@ class SpainMapRoutes:
                 location=path[-1], radius=6, color="green", fill=True
             ).add_to(m)
 
-        return st_folium(m, width=850, height=600)
+        return st_folium(m, width=None, height=520)

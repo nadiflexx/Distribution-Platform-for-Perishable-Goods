@@ -1,14 +1,32 @@
-import os
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
 """General settings for the application."""
 
-DATA_RAW = ROOT / "data" / "raw"
-DATA_PROCESSED = ROOT / "data" / "processed"
-"""Application-wide settings and constants."""
+# =========================================================
+# BASE PATHS
+# =========================================================
 
-# Application metadata
+ROOT = Path(__file__).resolve().parents[2]
+
+DATA_DIR = ROOT / "data"
+DATA_RAW = DATA_DIR / "raw"
+DATA_PROCESSED = DATA_DIR / "processed"
+STORAGE_DIR = DATA_DIR / "storage"
+MAIN_DIR = ROOT / "distribution_platform"
+ASSETS_DIR = MAIN_DIR / "assets"
+MEDIA_PATH = ASSETS_DIR / "images"
+CSS_PATH = ASSETS_DIR / "styles" / "components.css"
+
+TRUCK_IMAGES = {
+    "large": MEDIA_PATH / "large_trucks",
+    "medium": MEDIA_PATH / "medium_trucks",
+    "custom": MEDIA_PATH / "custom_trucks",
+}
+
+# =========================================================
+# APPLICATION METADATA
+# =========================================================
+
 APP_CONFIG = {
     "title": "🚛 IA Delivery - Smart Route Optimizer",
     "page_icon": "🚛",
@@ -16,13 +34,19 @@ APP_CONFIG = {
     "initial_sidebar_state": "collapsed",
 }
 
-# Page identifiers
+# =========================================================
+# PAGE IDENTIFIERS
+# =========================================================
+
 PAGES = {
     "FORM": "form_page",
     "ROUTES": "routes_page",
 }
 
-# Session state keys
+# =========================================================
+# SESSION STATE KEYS
+# =========================================================
+
 SESSION_KEYS = {
     "page": "current_page",
     "dataframe": "loaded_dataframe",
@@ -33,7 +57,10 @@ SESSION_KEYS = {
     "form_submitted": "form_was_submitted",
 }
 
-# File upload settings
+# =========================================================
+# FILE UPLOAD SETTINGS
+# =========================================================
+
 UPLOAD_CONFIG = {
     "max_file_size": 200,  # MB
     "allowed_extensions": ["csv"],
@@ -47,24 +74,20 @@ UPLOAD_CONFIG = {
     ],
 }
 
-# Media paths
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MEDIA_PATH = os.path.join(BASE_DIR, "dashboard", "front", "user_interface", "media")
+# =========================================================
+# UI / ANIMATION SETTINGS
+# =========================================================
 
-TRUCK_IMAGES = {
-    "large": os.path.join(MEDIA_PATH, "large_trucks"),
-    "medium": os.path.join(MEDIA_PATH, "medium_trucks"),
-    "custom": os.path.join(MEDIA_PATH, "custom_trucks"),
-}
-
-# Animation settings
 ANIMATION_CONFIG = {
     "spinner_text": "🤖 AI is calculating optimal routes...",
-    "loading_time": 2,  # seconds for demo
+    "loading_time": 2,  # seconds (demo)
     "transition_time": 0.3,  # seconds
 }
 
-# Validation rules display
+# =========================================================
+# VALIDATION RULES DISPLAY
+# =========================================================
+
 RULES_INFO = [
     "📋 The CSV file must contain all required fields",
     "📦 The truck must have sufficient capacity for all deliveries",
