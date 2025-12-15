@@ -1,0 +1,76 @@
+{
+"camiones_grandes": {
+    "Volvo FH": {
+    "capacidad": 1000,
+    "consumo": 28,
+    "velocidad_constante": 73.5,
+    "precio_conductor_hora": 15.0,
+    "imagen": "volvoFH.jpg"
+    },
+    "Scania Series R": {
+    "capacidad": 950,
+    "consumo": 26,
+    "velocidad_constante": 74.5,
+    "precio_conductor_hora": 15.0,
+    "imagen": "scania series r.jpg"
+    },
+    "Mercedes-Benz Actros": {
+    "capacidad": 1000,
+    "consumo": 27,
+    "velocidad_constante": 72.5,
+    "precio_conductor_hora": 16.0,
+    "imagen": "Mercedes-Benz Actros.jpg"
+    },
+    "IVECO S-Way": {
+    "capacidad": 980,
+    "consumo": 26.5,
+    "velocidad_constante": 71.5,
+    "precio_conductor_hora": 15.0,
+    "imagen": "iveco s-way.jpg"
+    },
+    "DAF XF FT": {
+    "capacidad": 1000,
+    "consumo": 27,
+    "velocidad_constante": 73.5,
+    "precio_conductor_hora": 15.5,
+    "imagen": "DAF XF FT.jpg"
+    }
+},
+"camiones_medianos": {
+    "Renault Trucks D": {
+    "capacidad": 750,
+    "consumo": 30,
+    "velocidad_constante": 79.0,
+    "precio_conductor_hora": 14.0,
+    "imagen": "renault trucks d.jpg"
+    },
+    "Mercedes-Benz Atego": {
+    "capacidad": 750,
+    "consumo": 31,
+    "velocidad_constante": 77.5,
+    "precio_conductor_hora": 14.5,
+    "imagen": "Mercedes-Benz Atego.jpg"
+    },
+    "IVECO Eurocargo": {
+    "capacidad": 700,
+    "consumo": 32,
+    "velocidad_constante": 78.5,
+    "precio_conductor_hora": 14.0,
+    "imagen": "IVECO Eurocargo.jpg"
+    },
+    "IVECO Daily": {
+    "capacidad": 500,
+    "consumo": 25,
+    "velocidad_constante": 84.5,
+    "precio_conductor_hora": 12.0,
+    "imagen": "iveco daily.jpg"
+    },
+    "ISUZU ELF": {
+    "capacidad": 450,
+    "consumo": 22,
+    "velocidad_constante": 85.0,
+    "precio_conductor_hora": 12.0,
+    "imagen": "ISUZU-ELF.jpg"
+    }
+}
+}

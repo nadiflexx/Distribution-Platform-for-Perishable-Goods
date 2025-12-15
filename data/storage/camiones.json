@@ -1,35 +1,35 @@
 {
   "camiones_grandes": {
     "Volvo FH": {
-      "capacidad": 150,
+      "capacidad": 9500,
       "consumo": 28,
       "velocidad_constante": 73.5,
       "precio_conductor_hora": 30,
       "imagen": "volvoFH.jpg"
     },
     "Scania Series R": {
-      "capacidad": 145,
+      "capacidad": 10000,
       "consumo": 26,
       "velocidad_constante": 74.5,
       "precio_conductor_hora": 30,
       "imagen": "scania series r.jpg"
     },
     "Mercedes-Benz Actros": {
-      "capacidad": 160,
+      "capacidad": 10000,
       "consumo": 27,
       "velocidad_constante": 72.5,
       "precio_conductor_hora": 30,
       "imagen": "Mercedes-Benz Actros.jpg"
     },
     "IVECO S-Way": {
-      "capacidad": 150,
+      "capacidad": 9500,
       "consumo": 26.5,
       "velocidad_constante": 71.5,
       "precio_conductor_hora": 30,
       "imagen": "iveco s-way.jpg"
     },
     "DAF XF FT": {
-      "capacidad": 155,
+      "capacidad": 10000,
       "consumo": 27,
       "velocidad_constante": 73.5,
       "precio_conductor_hora": 30,
@@ -38,35 +38,35 @@
   },
   "camiones_medianos": {
     "Renault Trucks D": {
-      "capacidad": 100,
+      "capacidad": 7000,
       "consumo": 30,
       "velocidad_constante": 79.0,
       "precio_conductor_hora": 22,
       "imagen": "renault trucks d.jpg"
     },
     "Mercedes-Benz Atego": {
-      "capacidad": 95,
+      "capacidad": 7500,
       "consumo": 31,
       "velocidad_constante": 77.5,
       "precio_conductor_hora": 22,
       "imagen": "Mercedes-Benz Atego.jpg"
     },
     "IVECO Eurocargo": {
-      "capacidad": 105,
+      "capacidad": 7000,
       "consumo": 32,
       "velocidad_constante": 78.5,
       "precio_conductor_hora": 22,
       "imagen": "IVECO Eurocargo.jpg"
     },
     "IVECO Daily": {
-      "capacidad": 50,
+      "capacidad": 5000,
       "consumo": 25,
       "velocidad_constante": 84.5,
       "precio_conductor_hora": 22,
       "imagen": "iveco daily.jpg"
     },
     "ISUZU ELF": {
-      "capacidad": 45,
+      "capacidad": 4500,
       "consumo": 22,
       "velocidad_constante": 85.0,
       "precio_conductor_hora": 22,
