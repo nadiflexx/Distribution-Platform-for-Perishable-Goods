@@ -7,12 +7,12 @@
 :root {
     --primary: #4F46E5; /* Indigo */
     --primary-light: #EEF2FF;
-    --secondary: #6366F1;
+    --secondary: #1F2937;
     --accent: #10B981; /* Emerald for success */
-    --bg-app: #464950; /* Light gray background */
+    --bg-app: #252525; /* Light gray background */
     --bg-card: #272525;
     --text-dark: #1F2937;
-    --text-gray: #6B7280;
+    --text-gray: #878a8f;
     --border-radius: 12px;
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -31,6 +31,13 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
 }
 
+.st-emotion-cache-14vh5up {
+    background: #252525;
+}
+
+.st-emotion-cache-155jwzh {
+    background: linear-gradient(90deg, #2d2984 0%, #4640c2 100% ) !important;
+}
 /* --- Main Title Styling --- */
 .main-header {
     text-align: center;
@@ -40,7 +47,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .main-header h1 {
     font-size: 3rem;
-    background: linear-gradient(90deg, #4F46E5 0%, #EC4899 100%);
+    background: linear-gradient(90deg, #4F46E5 0%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 0.5rem;
@@ -58,9 +65,11 @@ h1, h2, h3, h4, h5, h6 {
     padding: 2rem;
     margin-bottom: 2rem;
     box-shadow: var(--shadow-md);
-    border: 1px solid #E5E7EB;
+    border: 2px solid #4F46E5;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+
 
 .modern-card:hover {
     box-shadow: var(--shadow-lg);
@@ -70,7 +79,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #F3F4F6;
+    border-bottom: 2px solid #4F46E5;
     padding-bottom: 1rem;
 }
 
@@ -128,7 +137,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f4f3f6;
     color: var(--text-dark);
 }
 
@@ -138,7 +147,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Button Styling Override --- */
 div.stButton > button {
-    background: var(--primary);
+    background: #4F46E5;
     color: white;
     border: none;
     border-radius: 8px;
@@ -150,7 +159,7 @@ div.stButton > button {
 }
 
 div.stButton > button:hover {
-    background: #4338ca;
+    background: #4F46E5;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
     color: white;
@@ -160,23 +169,25 @@ div.stButton > button:active {
     transform: translateY(0);
 }
 
-/* Secondary Button (Load Data) */
+/* Secondary Button (Cargar Datos) */
 div.stButton > button[kind="secondary"] {
-    background-color: white;
-    color: var(--text-dark);
-    border: 1px solid #D1D5DB;
+    background-color: #4F46E5;
+    color: white;
+    border: none;
 }
 
 div.stButton > button[kind="secondary"]:hover {
-    background-color: #F9FAFB;
-    border-color: var(--primary);
-    color: var(--primary);
+    background-color: #4338ca;
+    border-color: #4F46E5;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 /* --- Input Fields --- */
 .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
     border-radius: 8px;
-    border: 1px solid #D1D5DB;
+    border: 1px solid #4F46E5;
     padding: 0.5rem;
 }
 
