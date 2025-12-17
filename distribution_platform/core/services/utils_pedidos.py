@@ -4,6 +4,7 @@ Utilidades para procesar y consolidar pedidos.
 Este módulo proporciona funciones auxiliares para preparar los datos
 de pedidos antes de la optimización de rutas.
 """
+
 from distribution_platform.core.models.order import Order
 
 

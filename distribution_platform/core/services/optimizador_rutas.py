@@ -5,6 +5,7 @@ Este módulo implementa un algoritmo genético para optimizar las rutas
 de entrega minimizando distancia, tiempo y costos de combustible,
 respetando restricciones de capacidad, caducidad y jornada laboral.
 """
+
 import random
 
 import pandas as pd
@@ -43,9 +44,7 @@ class OptimizadorGenetico:
         self.origen = origen_base
         self.gestor_grafo = gestor_grafo
 
-    def _simular_cronograma(
-        self, distancia_km: float
-    ) -> tuple[float, float]:
+    def _simular_cronograma(self, distancia_km: float) -> tuple[float, float]:
         """
         Simula el viaje con las reglas estrictas:
         - 2h conducción -> 20min descanso.
@@ -64,7 +63,9 @@ class OptimizadorGenetico:
         tiempo_pendiente_conducir = distancia_km / self.config.velocidad_constante
 
         tiempo_viaje_reloj = 0.0  # El tiempo que pasa en el mundo real
-        tiempo_pagable = tiempo_pendiente_conducir  # El conductor cobra por lo que conduce
+        tiempo_pagable = (
+            tiempo_pendiente_conducir  # El conductor cobra por lo que conduce
+        )
 
         # Contadores temporales para la simulación
         conduccion_acumulada_dia = 0.0
@@ -132,7 +133,10 @@ class OptimizadorGenetico:
                 continue
 
             # Validar que la ciudad exista en la matriz
-            if ciudad_actual not in self.matriz.index or p.destino not in self.matriz.columns:
+            if (
+                ciudad_actual not in self.matriz.index
+                or p.destino not in self.matriz.columns
+            ):
                 penalizacion += 50000
                 continue
 
@@ -144,7 +148,7 @@ class OptimizadorGenetico:
 
             tiempo_reloj_total += t_reloj
             tiempo_conduccion_total += t_conduccion
-            
+
             # Guardar tiempo de llegada para este pedido
             tiempos_llegada.append(tiempo_reloj_total)
 
@@ -153,7 +157,7 @@ class OptimizadorGenetico:
             dias_pasados = tiempo_reloj_total / 24.0
 
             # Verificar si el producto caduca antes de la entrega
-            if hasattr(p, 'dias_totales_caducidad'):
+            if hasattr(p, "dias_totales_caducidad"):
                 dias_limite = p.dias_totales_caducidad
             else:
                 # Fallback: usar solo caducidad del producto
@@ -175,7 +179,9 @@ class OptimizadorGenetico:
                 distancia_total += dist_vuelta
 
                 # Simular tiempo de vuelta
-                t_reloj_vuelta, t_conduccion_vuelta = self._simular_cronograma(dist_vuelta)
+                t_reloj_vuelta, t_conduccion_vuelta = self._simular_cronograma(
+                    dist_vuelta
+                )
                 tiempo_reloj_total += t_reloj_vuelta
                 tiempo_conduccion_total += t_conduccion_vuelta
 
@@ -243,10 +249,23 @@ class OptimizadorGenetico:
         if len(lista_pedidos) <= 2:
             # Calcular fitness directamente
             fit_res = self._calcular_fitness_ruta(lista_pedidos)
-            (_, valida, dist, t_reloj, t_cond, litros, c_total, c_chof, c_gas, t_llegadas) = fit_res
+            (
+                _,
+                valida,
+                dist,
+                t_reloj,
+                t_cond,
+                litros,
+                c_total,
+                c_chof,
+                c_gas,
+                t_llegadas,
+            ) = fit_res
 
             # Incluir origen al principio y al final (ida y vuelta)
-            ciudades = [self.origen] + [p.destino for p in lista_pedidos] + [self.origen]
+            ciudades = (
+                [self.origen] + [p.destino for p in lista_pedidos] + [self.origen]
+            )
 
             # Recuperar coordenadas (incluye vuelta al origen)
             coords_ruta: list[tuple[float, float]] = []
@@ -270,7 +289,7 @@ class OptimizadorGenetico:
                 problemas = []
 
                 for p in lista_pedidos:
-                    dias_limite = getattr(p, 'dias_totales_caducidad', p.caducidad)
+                    dias_limite = getattr(p, "dias_totales_caducidad", p.caducidad)
                     if tiempo_dias > dias_limite:
                         problemas.append("⚠️ Productos podrían caducar")
                         break
@@ -280,9 +299,13 @@ class OptimizadorGenetico:
                     for p in lista_pedidos
                 )
                 if peso_total > self.config.capacidad_carga:
-                    problemas.append(f"⚠️ Excede capacidad: {peso_total:.1f} kg > {self.config.capacidad_carga:.1f} kg")
+                    problemas.append(
+                        f"⚠️ Excede capacidad: {peso_total:.1f} kg > {self.config.capacidad_carga:.1f} kg"
+                    )
 
-                mensaje = " | ".join(problemas) if problemas else "⚠️ Restricciones Violadas"
+                mensaje = (
+                    " | ".join(problemas) if problemas else "⚠️ Restricciones Violadas"
+                )
 
             # Calcular ingresos y beneficios
             ingresos = sum(p.precio_venta for p in lista_pedidos)
@@ -359,9 +382,7 @@ class OptimizadorGenetico:
 
             # Selección (Torneo simple o ordenar)
             scores.sort(key=lambda x: x[0])  # Ordenar por menor score
-            seleccionados = [
-                x[1] for x in scores[: int(poblacion_tam / 2)]
-            ]  # Top 50%
+            seleccionados = [x[1] for x in scores[: int(poblacion_tam / 2)]]  # Top 50%
 
             # Cruce y Mutación para rellenar población
             nueva_poblacion = seleccionados.copy()
@@ -391,9 +412,18 @@ class OptimizadorGenetico:
         # Construir Resultado Final
         pedidos_final = mejor_ruta_pack[0]
         # fit_res: score, valida, dist, t_reloj, t_cond, litros, coste_tot, coste_chof, coste_gas, tiempos_llegada
-        (_, valida, dist, t_reloj, t_cond, litros, c_total, c_chof, c_gas, t_llegadas) = (
-            mejor_ruta_pack[1]
-        )
+        (
+            _,
+            valida,
+            dist,
+            t_reloj,
+            t_cond,
+            litros,
+            c_total,
+            c_chof,
+            c_gas,
+            t_llegadas,
+        ) = mejor_ruta_pack[1]
 
         # Incluir origen al principio y al final (ida y vuelta)
         ciudades = [self.origen] + [p.destino for p in pedidos_final] + [self.origen]
@@ -422,7 +452,7 @@ class OptimizadorGenetico:
 
             # Verificar caducidad
             for p in pedidos_final:
-                dias_limite = getattr(p, 'dias_totales_caducidad', p.caducidad)
+                dias_limite = getattr(p, "dias_totales_caducidad", p.caducidad)
                 if tiempo_dias > dias_limite:
                     problemas.append("⚠️ Productos podrían caducar")
                     break
@@ -433,7 +463,9 @@ class OptimizadorGenetico:
                 for p in pedidos_final
             )
             if peso_total > self.config.capacidad_carga:
-                problemas.append(f"⚠️ Excede capacidad: {peso_total:.1f} kg > {self.config.capacidad_carga:.1f} kg")
+                problemas.append(
+                    f"⚠️ Excede capacidad: {peso_total:.1f} kg > {self.config.capacidad_carga:.1f} kg"
+                )
 
             mensaje = " | ".join(problemas) if problemas else "⚠️ Restricciones Violadas"
 

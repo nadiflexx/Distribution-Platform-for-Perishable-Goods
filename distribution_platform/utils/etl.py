@@ -274,6 +274,7 @@ class ETLProcessor:
         - Guarda en coordinates.json
         """
         destinos = df[destino_col].dropna().astype(str).str.strip().unique()
+        destinos = list(destinos) + ["Mataró"]
 
         for destino in destinos:
             if not destino:

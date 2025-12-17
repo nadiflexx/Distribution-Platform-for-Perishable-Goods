@@ -4,6 +4,7 @@ Módulo integrador del sistema de optimización de rutas Braincore.
 Este módulo proporciona una interfaz de alto nivel para utilizar
 el sistema completo de clustering, grafos y optimización genética.
 """
+
 from distribution_platform.core.models.order import Order
 from distribution_platform.utils.coordinates_cache import CoordinateCache
 
@@ -100,24 +101,38 @@ class OptimizadorSistema:
 
         # AUTO-CONSOLIDACIÓN: detectar si son pedidos agrupados y consolidar
         if pedidos and isinstance(pedidos[0], list):
-            print("🔄 Detectados pedidos agrupados. Consolidando líneas por pedido_id...")
+            print(
+                "🔄 Detectados pedidos agrupados. Consolidando líneas por pedido_id..."
+            )
             pedidos_original = len(sum(pedidos, []))  # Total líneas
             pedidos = consolidar_pedidos(pedidos)
-            print(f"   ✅ {pedidos_original} líneas → {len(pedidos)} pedidos consolidados\n")
+            print(
+                f"   ✅ {pedidos_original} líneas → {len(pedidos)} pedidos consolidados\n"
+            )
 
         # FILTRAR DESTINOS IMPOSIBLES (Islas sin conexión terrestre)
         destinos_imposibles = {
-            "Las Palmas", "Santa Cruz de Tenerife", "Islas Baleares",
-            "Palma de Mallorca", "Ibiza", "Menorca", "Formentera",
-            "Tenerife", "Gran Canaria", "Lanzarote", "Fuerteventura",
-            "La Palma", "La Gomera", "El Hierro"
+            "Las Palmas",
+            "Santa Cruz de Tenerife",
+            "Islas Baleares",
+            "Palma de Mallorca",
+            "Ibiza",
+            "Menorca",
+            "Formentera",
+            "Tenerife",
+            "Gran Canaria",
+            "Lanzarote",
+            "Fuerteventura",
+            "La Palma",
+            "La Gomera",
+            "El Hierro",
         }
 
         pedidos_entregables = []
         pedidos_no_entregables = []
 
         print(f"DEBUG: Iniciando filtrado de {len(pedidos)} pedidos")
-        
+
         for pedido in pedidos:
             # Normalizar destino para comparación
             destino_normalizado = pedido.destino.strip()
@@ -130,21 +145,29 @@ class OptimizadorSistema:
 
             if es_imposible:
                 pedidos_no_entregables.append(pedido)
-                print(f"DEBUG: Pedido {pedido.pedido_id} → {destino_normalizado} ES IMPOSIBLE")
+                print(
+                    f"DEBUG: Pedido {pedido.pedido_id} → {destino_normalizado} ES IMPOSIBLE"
+                )
             else:
                 pedidos_entregables.append(pedido)
 
-        print(f"DEBUG: Resultado filtrado: {len(pedidos_entregables)} entregables, {len(pedidos_no_entregables)} imposibles")
-        
+        print(
+            f"DEBUG: Resultado filtrado: {len(pedidos_entregables)} entregables, {len(pedidos_no_entregables)} imposibles"
+        )
+
         # Guardar pedidos no entregables para devolverlos al final
         self._pedidos_no_entregables = pedidos_no_entregables
 
         # Mostrar advertencia si hay pedidos no entregables
         if pedidos_no_entregables:
-            print(f"\n⚠️ ADVERTENCIA: {len(pedidos_no_entregables)} pedidos a destinos INACCESIBLES por carretera:")
+            print(
+                f"\n⚠️ ADVERTENCIA: {len(pedidos_no_entregables)} pedidos a destinos INACCESIBLES por carretera:"
+            )
             for pedido in pedidos_no_entregables:
-                print(f"   ❌ Pedido {pedido.pedido_id} → {pedido.destino} (isla sin conexión terrestre)")
-            print(f"\n   ℹ️ Estos pedidos requieren transporte marítimo o aéreo.\n")
+                print(
+                    f"   ❌ Pedido {pedido.pedido_id} → {pedido.destino} (isla sin conexión terrestre)"
+                )
+            print("\n   ℹ️ Estos pedidos requieren transporte marítimo o aéreo.\n")
 
         # Si no hay pedidos entregables, retornar con info de no entregables
         if not pedidos_entregables:
@@ -163,6 +186,7 @@ class OptimizadorSistema:
 
         # Calcular número MÍNIMO de camiones necesarios por PESO
         import math
+
         n_camiones_minimo = math.ceil(peso_total / capacidad_por_camion)
 
         # Asegurar al menos 1 camión
@@ -184,7 +208,7 @@ class OptimizadorSistema:
             pedidos,
             n_camiones,
             peso_unitario=self.config_camion.peso_unitario_default,
-            capacidad_maxima=capacidad_por_camion
+            capacidad_maxima=capacidad_por_camion,
         )
 
         if not grupos_camiones:
@@ -216,7 +240,9 @@ class OptimizadorSistema:
                 pedido.cantidad_producto * self.config_camion.peso_unitario_default
                 for pedido in lista_pedidos
             )
-            porcentaje_ocupacion = (peso_camion / self.config_camion.capacidad_carga) * 100
+            porcentaje_ocupacion = (
+                peso_camion / self.config_camion.capacidad_carga
+            ) * 100
 
             # Validar que no exceda capacidad
             if peso_camion > self.config_camion.capacidad_carga:
@@ -227,9 +253,7 @@ class OptimizadorSistema:
                 resultados[camion_id] = None
                 continue
 
-            print(
-                f"\n🚚 CAMIÓN {camion_id + 1}:"
-            )
+            print(f"\n🚚 CAMIÓN {camion_id + 1}:")
             print(
                 f"   Pedidos: {len(lista_pedidos)} | "
                 f"Peso: {peso_camion:.2f} kg | "
@@ -246,10 +270,13 @@ class OptimizadorSistema:
 
                 # Agrupar ciudades únicas con conteo
                 from collections import Counter
+
                 ciudad_counts = Counter(resultado.ciudades_ordenadas)
                 ruta_resumida = " → ".join(
-                    [f"{ciudad} ({count})" if count > 1 else ciudad
-                     for ciudad, count in ciudad_counts.items()]
+                    [
+                        f"{ciudad} ({count})" if count > 1 else ciudad
+                        for ciudad, count in ciudad_counts.items()
+                    ]
                 )
 
                 # Mostrar resumen
@@ -269,9 +296,9 @@ class OptimizadorSistema:
                 print(f"   ❌ No se pudo optimizar ruta para Camión {camion_id + 1}")
 
         # Mostrar resumen de aprovechamiento de flota
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("📊 RESUMEN DE APROVECHAMIENTO DE FLOTA")
-        print("="*70)
+        print("=" * 70)
 
         total_productos_transportados = 0
         capacidad_total_disponible = 0
@@ -285,18 +312,26 @@ class OptimizadorSistema:
                 total_productos_transportados += peso_en_camion
                 capacidad_total_disponible += self.config_camion.capacidad_carga
                 ocupacion = (peso_en_camion / self.config_camion.capacidad_carga) * 100
-                print(f"🚛 Camión {camion_id + 1}: {peso_en_camion:.1f}/{self.config_camion.capacidad_carga:.1f} kg ({ocupacion:.1f}% ocupación)")
+                print(
+                    f"🚛 Camión {camion_id + 1}: {peso_en_camion:.1f}/{self.config_camion.capacidad_carga:.1f} kg ({ocupacion:.1f}% ocupación)"
+                )
 
-        aprovechamiento_global = (total_productos_transportados / capacidad_total_disponible) * 100 if capacidad_total_disponible > 0 else 0
+        aprovechamiento_global = (
+            (total_productos_transportados / capacidad_total_disponible) * 100
+            if capacidad_total_disponible > 0
+            else 0
+        )
         print(f"\n✅ Aprovechamiento global de la flota: {aprovechamiento_global:.1f}%")
         print(f"📦 Total peso transportado: {total_productos_transportados:.1f} kg")
         print(f"🚛 Capacidad total disponible: {capacidad_total_disponible:.1f} kg")
-        print("="*70 + "\n")
+        print("=" * 70 + "\n")
 
         # Añadir pedidos no entregables al resultado si existen
-        if hasattr(self, '_pedidos_no_entregables') and self._pedidos_no_entregables:
+        if hasattr(self, "_pedidos_no_entregables") and self._pedidos_no_entregables:
             resultados["pedidos_no_entregables"] = self._pedidos_no_entregables
-            print(f"DEBUG OPTIMIZADOR: Añadiendo {len(self._pedidos_no_entregables)} pedidos no entregables al resultado")
+            print(
+                f"DEBUG OPTIMIZADOR: Añadiendo {len(self._pedidos_no_entregables)} pedidos no entregables al resultado"
+            )
 
         return resultados
 

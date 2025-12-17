@@ -51,14 +51,6 @@ class SpainMapRoutes:
     def render(self, routes):
         """
         Render the map with the given routes.
-        routes = [
-            {
-                "path": [[lat1, lon1], [lat2, lon2], [lat3, lon3]...],
-                "color": "red",
-                "pedidos": [Order1, Order2, ...],  # Optional: order info for popups
-                "camion_id": 1  # Optional: truck ID
-            }
-        ].
         """
         m = folium.Map(
             location=self.center, zoom_start=self.zoom, tiles="OpenStreetMap"
@@ -69,13 +61,15 @@ class SpainMapRoutes:
             color = route.get("color", "blue")
             pedidos = route.get("pedidos", [])
             camion_id = route.get("camion_id", "?")
-            tiempos_llegada = route.get("tiempos_llegada", [])  # Tiempos en horas
+            tiempos_llegada = route.get("tiempos_llegada", [])
 
-            # Dibujar cada tramo consecutivo del path
+            # 1. DIBUJAR LÍNEAS (Tramos de carretera)
+            # Dibujamos toda la ruta física primero (incluyendo la vuelta)
             for i in range(len(path) - 1):
                 start = path[i]
                 end = path[i + 1]
 
+                # Obtener ruta real OSRM
                 real_path = self.get_osrm_route(start, end)
 
                 if real_path:
@@ -83,10 +77,10 @@ class SpainMapRoutes:
                         locations=real_path,
                         color=color,
                         weight=4,
-                        opacity=0.9,
+                        opacity=0.8,
                     ).add_to(m)
                 else:
-                    # fallback: línea recta
+                    # Fallback línea recta
                     folium.PolyLine(
                         locations=[start, end],
                         color="gray",
@@ -94,119 +88,85 @@ class SpainMapRoutes:
                         dash_array="5,5",
                     ).add_to(m)
 
-                # Marcar punto inicial (origen - Mataró)
-                if i == 0:
-                    folium.Marker(
-                        location=start,
-                        popup=folium.Popup(f"<b>🏢 Origen</b><br>Mataró<br>Camión {camion_id}", max_width=200),
-                        icon=folium.Icon(color="blue", icon="home", prefix="fa"),
-                    ).add_to(m)
-                else:
-                    # Marcadores de destino con información del pedido
-                    # i-1 porque el primer punto es origen, los demás son pedidos
-                    if i - 1 < len(pedidos):
-                        pedido = pedidos[i - 1]
-                        
-                        # Obtener tiempo de llegada
-                        tiempo_llegada_h = tiempos_llegada[i - 1] if i - 1 < len(tiempos_llegada) else 0
-                        dias_llegada = tiempo_llegada_h / 24.0
-                        
-                        # Verificar si llega a tiempo
-                        dias_limite = getattr(pedido, 'dias_totales_caducidad', pedido.caducidad)
-                        margen_dias = dias_limite - dias_llegada
-                        
-                        # Determinar color y estado
-                        if margen_dias < 0:
-                            estado_emoji = "❌"
-                            estado_texto = f"CADUCADO ({abs(margen_dias):.1f} días tarde)"
-                            color_estado = "red"
-                        elif margen_dias < 1:
-                            estado_emoji = "⚠️"
-                            estado_texto = f"JUSTO A TIEMPO (margen {margen_dias:.1f} días)"
-                            color_estado = "orange"
-                        else:
-                            estado_emoji = "✅"
-                            estado_texto = f"A TIEMPO (margen {margen_dias:.1f} días)"
-                            color_estado = "green"
-                        
-                        popup_html = f"""
-                        <div style="font-family: Arial; min-width: 200px;">
-                            <h4 style="margin: 0 0 8px 0; color: #1f77b4;">📦 Pedido #{pedido.pedido_id}</h4>
-                            <hr style="margin: 5px 0;">
-                            <b>📍 Destino:</b> {pedido.destino}<br>
-                            <b>⚖️ Peso:</b> {pedido.cantidad_producto:.1f} kg<br>
-                            <b>⏰ Caducidad:</b> {pedido.caducidad} días<br>
-                            <b>🕐 Tiempo llegada:</b> {dias_llegada:.1f} días<br>
-                            <b>💶 Valor:</b> {pedido.precio_venta:.2f} €<br>
-                            <b>🚛 Camión:</b> {camion_id}<br>
-                            <hr style="margin: 5px 0;">
-                            <div style="background: {color_estado}; color: white; padding: 5px; border-radius: 3px; text-align: center;">
-                                <b>{estado_emoji} {estado_texto}</b>
-                            </div>
-                        </div>
-                        """
-                        folium.Marker(
-                            location=start,
-                            popup=folium.Popup(popup_html, max_width=280),
-                            icon=folium.Icon(color="orange", icon="box", prefix="fa"),
-                        ).add_to(m)
-                    else:
-                        # Fallback si no hay info del pedido
-                        folium.CircleMarker(
-                            location=start, radius=6, color="orange", fill=True
-                        ).add_to(m)
+            # 2. MARCADOR DE ORIGEN (HOME) 🏠
+            # Siempre es el primer punto del path
+            if len(path) > 0:
+                folium.Marker(
+                    location=path[0],
+                    popup=folium.Popup(
+                        f"<b>🏢 BASE (Mataró)</b><br>Salida y Retorno<br>Camión {camion_id}",
+                        max_width=200,
+                    ),
+                    icon=folium.Icon(color="darkblue", icon="home", prefix="fa"),
+                    zIndexOffset=1000,  # Para que quede por encima de las líneas
+                ).add_to(m)
 
-            # Marcar último punto con información del último pedido
-            if pedidos:
-                ultimo_pedido = pedidos[-1]
-                
-                # Obtener tiempo de llegada del último pedido
-                tiempo_llegada_h = tiempos_llegada[-1] if tiempos_llegada else 0
+            # 3. MARCADORES DE PEDIDOS (ENTREGAS) 📦 -> ✅
+            # Los pedidos corresponden a path[1], path[2]... path[n]
+            # path[0] es origen, path[-1] es vuelta a origen (si hay vuelta)
+
+            for i, pedido in enumerate(pedidos):
+                # La coordenada del pedido i está en path[i+1]
+                if i + 1 >= len(path):
+                    break  # Seguridad por si el path no cuadra
+
+                coord_pedido = path[i + 1]
+
+                # Datos para el popup
+                tiempo_llegada_h = tiempos_llegada[i] if i < len(tiempos_llegada) else 0
                 dias_llegada = tiempo_llegada_h / 24.0
-                
-                # Verificar si llega a tiempo
-                dias_limite = getattr(ultimo_pedido, 'dias_totales_caducidad', ultimo_pedido.caducidad)
+                dias_limite = getattr(
+                    pedido, "dias_totales_caducidad", pedido.caducidad
+                )
                 margen_dias = dias_limite - dias_llegada
-                
-                # Determinar estado
+
+                # Determinar estado de tiempo
                 if margen_dias < 0:
                     estado_emoji = "❌"
                     estado_texto = f"CADUCADO ({abs(margen_dias):.1f} días tarde)"
                     color_estado = "red"
                 elif margen_dias < 1:
                     estado_emoji = "⚠️"
-                    estado_texto = f"JUSTO A TIEMPO (margen {margen_dias:.1f} días)"
+                    estado_texto = f"LÍMITE (margen {margen_dias:.1f} días)"
                     color_estado = "orange"
                 else:
                     estado_emoji = "✅"
                     estado_texto = f"A TIEMPO (margen {margen_dias:.1f} días)"
                     color_estado = "green"
-                
+
+                # Lógica: ¿Es el último pedido o uno intermedio?
+                es_ultimo = i == len(pedidos) - 1
+
+                if es_ultimo:
+                    # ÚLTIMA ENTREGA: Icono Verde con Check o Bandera
+                    icon_color = "green"
+                    icon_name = "flag-checkered"  # o "check"
+                    titulo_html = f'<h4 style="margin:0; color:green;">🏁 Última Entrega: #{pedido.pedido_id}</h4>'
+                else:
+                    # ENTREGA INTERMEDIA: Icono Naranja Caja
+                    icon_color = "orange"
+                    icon_name = "box"
+                    titulo_html = f'<h4 style="margin:0; color:#1f77b4;">📦 Pedido #{pedido.pedido_id}</h4>'
+
                 popup_html = f"""
                 <div style="font-family: Arial; min-width: 200px;">
-                    <h4 style="margin: 0 0 8px 0; color: #2ca02c;">📦 Pedido #{ultimo_pedido.pedido_id}</h4>
+                    {titulo_html}
                     <hr style="margin: 5px 0;">
-                    <b>📍 Destino:</b> {ultimo_pedido.destino}<br>
-                    <b>⚖️ Peso:</b> {ultimo_pedido.cantidad_producto:.1f} kg<br>
-                    <b>⏰ Caducidad:</b> {ultimo_pedido.caducidad} días<br>
-                    <b>🕐 Tiempo llegada:</b> {dias_llegada:.1f} días<br>
-                    <b>💶 Valor:</b> {ultimo_pedido.precio_venta:.2f} €<br>
-                    <b>🚛 Camión:</b> {camion_id}<br>
-                    <span style="color: #2ca02c;">✅ Última entrega</span>
+                    <b>📍 Destino:</b> {pedido.destino}<br>
+                    <b>⚖️ Peso:</b> {pedido.cantidad_producto:.1f} kg<br>
+                    <b>⏰ Caducidad:</b> {pedido.caducidad} días<br>
+                    <b>🕐 Llegada:</b> día {dias_llegada:.1f}<br>
                     <hr style="margin: 5px 0;">
-                    <div style="background: {color_estado}; color: white; padding: 5px; border-radius: 3px; text-align: center;">
+                    <div style="background: {color_estado}; color: white; padding: 4px; border-radius: 4px; text-align: center; font-size: 0.9em;">
                         <b>{estado_emoji} {estado_texto}</b>
                     </div>
                 </div>
                 """
+
                 folium.Marker(
-                    location=path[-1],
-                    popup=folium.Popup(popup_html, max_width=250),
-                    icon=folium.Icon(color="green", icon="check", prefix="fa"),
-                ).add_to(m)
-            else:
-                folium.CircleMarker(
-                    location=path[-1], radius=6, color="green", fill=True
+                    location=coord_pedido,
+                    popup=folium.Popup(popup_html, max_width=280),
+                    icon=folium.Icon(color=icon_color, icon=icon_name, prefix="fa"),
                 ).add_to(m)
 
         return st_folium(m, width=None, height=520)

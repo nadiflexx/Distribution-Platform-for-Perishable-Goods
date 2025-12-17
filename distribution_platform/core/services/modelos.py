@@ -4,7 +4,7 @@ Modelos de datos para el sistema de optimización de rutas braincore.
 Este módulo define las configuraciones de camión y resultados de rutas.
 El modelo de Pedido se reutiliza de distribution_platform.models.order.Order
 """
-from typing import List
+
 from pydantic import BaseModel, Field
 
 from distribution_platform.core.models.order import Order
@@ -44,7 +44,7 @@ class ResultadoRuta(BaseModel):
     # NUEVO: Coordenadas ordenadas para pintar la línea en el mapa sin buscar en JSON
     ruta_coordenadas: list[tuple[float, float]]
     # Tiempos de llegada a cada pedido (en horas desde el origen)
-    tiempos_llegada: List[float] = Field(default_factory=list)
+    tiempos_llegada: list[float] = Field(default_factory=list)
 
     # Estadísticas Físicas
     distancia_total_km: float

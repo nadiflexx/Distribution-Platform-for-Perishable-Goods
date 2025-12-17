@@ -4,6 +4,7 @@ Gestor de clustering para agrupar pedidos usando Machine Learning.
 Este módulo utiliza K-Means para agrupar pedidos por ubicación geográfica
 y urgencia de entrega basada en la caducidad del producto.
 """
+
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -46,9 +47,7 @@ class GestorClustering:
             # Obtener coordenadas del cache
             coord_str = self.coord_cache.get(p.destino)
             if coord_str is None:
-                print(
-                    f"⚠️ Advertencia: No hay coordenadas para destino '{p.destino}'"
-                )
+                print(f"⚠️ Advertencia: No hay coordenadas para destino '{p.destino}'")
                 continue
 
             try:
@@ -195,7 +194,9 @@ class GestorClustering:
                 break
 
             if iteracion == 0:
-                print(f"   ⚙️ Balanceando {len(sobrecargados)} clusters sobrecargados por peso...")
+                print(
+                    f"   ⚙️ Balanceando {len(sobrecargados)} clusters sobrecargados por peso..."
+                )
 
             # Limitar redistribuciones por iteración para evitar loops infinitos
             max_redistribuciones_por_iter = 10
@@ -205,11 +206,11 @@ class GestorClustering:
             for cluster_id, _ in sobrecargados:
                 if redistribuciones_iter >= max_redistribuciones_por_iter:
                     break
-                    
+
                 # Sacar solo UN pedido pesado por iteración
                 if not clusters[cluster_id]:
                     continue
-                    
+
                 peso_actual = calcular_peso_total_cache(clusters[cluster_id])
                 if peso_actual <= capacidad_maxima:
                     continue
@@ -252,17 +253,22 @@ class GestorClustering:
 
         # PASO FINAL: Verificar si quedan sobrecargas y crear camiones adicionales
         clusters_sobrecargados = [
-            (k, v) for k, v in clusters.items()
+            (k, v)
+            for k, v in clusters.items()
             if calcular_peso_total_cache(v) > capacidad_maxima
         ]
 
         if clusters_sobrecargados:
-            print(f"   ⚠️ {len(clusters_sobrecargados)} camiones aún sobrecargados. Añadiendo camiones adicionales...")
+            print(
+                f"   ⚠️ {len(clusters_sobrecargados)} camiones aún sobrecargados. Añadiendo camiones adicionales..."
+            )
             # Encontrar el siguiente ID disponible
             next_id = max(clusters.keys()) + 1
 
             for cluster_id, _ in clusters_sobrecargados:
-                while calcular_peso_total_cache(clusters[cluster_id]) > capacidad_maxima:
+                while (
+                    calcular_peso_total_cache(clusters[cluster_id]) > capacidad_maxima
+                ):
                     if not clusters[cluster_id]:
                         break
 
@@ -271,8 +277,13 @@ class GestorClustering:
                     peso_pedido = peso_cache[id(pedido)]
 
                     # Si un solo pedido pesa más que la capacidad, no se puede hacer nada
-                    if peso_pedido > capacidad_maxima and len(clusters[cluster_id]) == 1:
-                        print(f"   ⚠️ Camión {cluster_id+1}: Pedido único de {peso_pedido:.2f} kg excede capacidad")
+                    if (
+                        peso_pedido > capacidad_maxima
+                        and len(clusters[cluster_id]) == 1
+                    ):
+                        print(
+                            f"   ⚠️ Camión {cluster_id + 1}: Pedido único de {peso_pedido:.2f} kg excede capacidad"
+                        )
                         break
 
                     clusters[cluster_id].remove(pedido)
@@ -280,7 +291,10 @@ class GestorClustering:
                     # Buscar un camión existente con espacio
                     camion_con_espacio = None
                     for k in clusters:
-                        if calcular_peso_total_cache(clusters[k]) + peso_pedido <= capacidad_maxima:
+                        if (
+                            calcular_peso_total_cache(clusters[k]) + peso_pedido
+                            <= capacidad_maxima
+                        ):
                             camion_con_espacio = k
                             break
 
@@ -299,7 +313,7 @@ class GestorClustering:
             porcentaje = (peso / capacidad_maxima) * 100
             estado = "✅" if peso <= capacidad_maxima else "⚠️"
             print(
-                f"      {estado} Camión {k+1}: {len(v)} pedidos, "
+                f"      {estado} Camión {k + 1}: {len(v)} pedidos, "
                 f"{peso:.2f} kg ({porcentaje:.1f}% capacidad)"
             )
 

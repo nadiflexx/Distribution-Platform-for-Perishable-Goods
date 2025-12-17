@@ -147,7 +147,7 @@ def load_data(connection_type, file_inputs):
     if connection_type == "Database":
         with st.spinner("🔌 Conectando a la base de datos..."):
             try:
-                orders = run_etl(use_database=True)
+                orders = run_etl(use_database=False)
             except Exception as e:
                 st.error(f"❌ Error conectando a BD:\n{e}")
                 st.session_state.load_success = False
@@ -494,14 +494,12 @@ def simulate_ia(df, truck_data):
         # Crear optimizador
         optimizador = OptimizadorSistema(
             config_camion=config_camion,
-            origen_base="Mataró"  # Origen fijo en Mataró
+            origen_base="Mataró",  # Origen fijo en Mataró
         )
 
         # Optimizar entregas
         resultados = optimizador.optimizar_entregas(
-            pedidos=df,
-            generaciones=100,
-            poblacion_tam=40
+            pedidos=df, generaciones=100, poblacion_tam=40
         )
 
         # Convertir resultados a formato compatible con la UI
@@ -515,19 +513,25 @@ def simulate_ia(df, truck_data):
 
         # Extraer pedidos no entregables si existen
         pedidos_no_entregables = resultados.get("pedidos_no_entregables", [])
-        print(f"DEBUG: pedidos_no_entregables encontrados: {len(pedidos_no_entregables)}")
-        
+        print(
+            f"DEBUG: pedidos_no_entregables encontrados: {len(pedidos_no_entregables)}"
+        )
+
         if pedidos_no_entregables:
             print(f"DEBUG: Procesando {len(pedidos_no_entregables)} pedidos imposibles")
             for pedido in pedidos_no_entregables:
-                pedidos_imposibles_data.append({
-                    "Pedido ID": pedido.pedido_id,
-                    "Destino": pedido.destino,
-                    "Peso (kg)": pedido.cantidad_producto,
-                    "Caducidad (días)": pedido.caducidad,
-                    "Motivo": "❌ Isla sin conexión terrestre"
-                })
-            print(f"DEBUG: pedidos_imposibles_data tiene {len(pedidos_imposibles_data)} elementos")
+                pedidos_imposibles_data.append(
+                    {
+                        "Pedido ID": pedido.pedido_id,
+                        "Destino": pedido.destino,
+                        "Peso (kg)": pedido.cantidad_producto,
+                        "Caducidad (días)": pedido.caducidad,
+                        "Motivo": "❌ Isla sin conexión terrestre",
+                    }
+                )
+            print(
+                f"DEBUG: pedidos_imposibles_data tiene {len(pedidos_imposibles_data)} elementos"
+            )
 
         for key, resultado in resultados.items():
             # Saltar la clave especial de pedidos no entregables
@@ -544,7 +548,9 @@ def simulate_ia(df, truck_data):
                     "color": random.choice(ROUTE_COLORS),
                     "pedidos": resultado.lista_pedidos_ordenada,  # Información de pedidos para popups
                     "camion_id": resultado.camion_id,
-                    "tiempos_llegada": getattr(resultado, 'tiempos_llegada', []),  # Tiempos de llegada en horas
+                    "tiempos_llegada": getattr(
+                        resultado, "tiempos_llegada", []
+                    ),  # Tiempos de llegada en horas
                 }
                 routes.append(route)
 
@@ -556,28 +562,45 @@ def simulate_ia(df, truck_data):
             except Exception as e:
                 st.error(f"Error procesando resultado del camión {key}: {str(e)}")
                 import traceback
+
                 st.error(traceback.format_exc())
                 continue
 
             # Crear filas de asignaciones
             for pedido in resultado.lista_pedidos_ordenada:
-                assignments_data.append({
-                    "Camión": resultado.camion_id,
-                    "Pedido ID": pedido.pedido_id,
-                    "Destino": pedido.destino,
-                    "Peso (kg)": pedido.cantidad_producto,
-                    "Caducidad (días)": pedido.caducidad,
-                })
+                assignments_data.append(
+                    {
+                        "Camión": resultado.camion_id,
+                        "Pedido ID": pedido.pedido_id,
+                        "Destino": pedido.destino,
+                        "Peso (kg)": pedido.cantidad_producto,
+                        "Caducidad (días)": pedido.caducidad,
+                    }
+                )
 
         # Crear DataFrames
-        assignments_df = pd.DataFrame(assignments_data) if assignments_data else pd.DataFrame()
-        pedidos_imposibles_df = pd.DataFrame(pedidos_imposibles_data) if pedidos_imposibles_data else pd.DataFrame()
-        
-        print(f"DEBUG: DataFrame pedidos_imposibles creado con {len(pedidos_imposibles_df)} filas")
+        assignments_df = (
+            pd.DataFrame(assignments_data) if assignments_data else pd.DataFrame()
+        )
+        pedidos_imposibles_df = (
+            pd.DataFrame(pedidos_imposibles_data)
+            if pedidos_imposibles_data
+            else pd.DataFrame()
+        )
+
+        print(
+            f"DEBUG: DataFrame pedidos_imposibles creado con {len(pedidos_imposibles_df)} filas"
+        )
         print(f"DEBUG: pedidos_imposibles_df.empty = {pedidos_imposibles_df.empty}")
 
         return {
-            "num_trucks": len([r for r in resultados.values() if r is not None and r != pedidos_no_entregables]),
+            "num_trucks": len(
+                [
+                    r
+                    for r in resultados.values()
+                    if r is not None and r != pedidos_no_entregables
+                ]
+            ),
             "routes": routes,
             "assignments": assignments_df,
             "pedidos_imposibles": pedidos_imposibles_df,
@@ -585,7 +608,9 @@ def simulate_ia(df, truck_data):
             "total_coste": round(total_coste, 2),
             "total_ingresos": round(total_ingresos, 2),
             "total_beneficio": round(total_beneficio, 2),
-            "resultados_detallados": {k: v for k, v in resultados.items() if k != "pedidos_no_entregables"},
+            "resultados_detallados": {
+                k: v for k, v in resultados.items() if k != "pedidos_no_entregables"
+            },
         }
 
     except Exception as e:
@@ -594,7 +619,7 @@ def simulate_ia(df, truck_data):
             "num_trucks": 0,
             "routes": [],
             "assignments": pd.DataFrame(),
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -662,12 +687,12 @@ def render_routes_page():
     with c3:
         st.metric("💰 Coste Total", f"{ia.get('total_coste', 0):.2f} €")
     with c4:
-        beneficio = ia.get('total_beneficio', 0)
+        beneficio = ia.get("total_beneficio", 0)
         st.metric(
             "💵 Beneficio Neto",
             f"{beneficio:.2f} €",
             delta=f"{beneficio:.2f} €" if beneficio > 0 else None,
-            delta_color="normal" if beneficio > 0 else "off"
+            delta_color="normal" if beneficio > 0 else "off",
         )
 
     # Segunda fila con ingresos
@@ -676,43 +701,59 @@ def render_routes_page():
     with c1:
         st.metric("💶 Ingresos Totales", f"{ia.get('total_ingresos', 0):.2f} €")
     with c2:
-        margen = (beneficio / ia.get('total_ingresos', 1)) * 100 if ia.get('total_ingresos', 0) > 0 else 0
+        margen = (
+            (beneficio / ia.get("total_ingresos", 1)) * 100
+            if ia.get("total_ingresos", 0) > 0
+            else 0
+        )
         st.metric("📊 Margen de Beneficio", f"{margen:.1f}%")
 
     st.markdown("---")
 
     # ========== PEDIDOS IMPOSIBLES - MOSTRAR SIEMPRE SI EXISTEN ==========
     pedidos_imposibles = ia.get("pedidos_imposibles")
-    
+
     print(f"DEBUG RENDER: pedidos_imposibles = {pedidos_imposibles}")
     print(f"DEBUG RENDER: type = {type(pedidos_imposibles)}")
     if pedidos_imposibles is not None:
-        print(f"DEBUG RENDER: len = {len(pedidos_imposibles)}, empty = {pedidos_imposibles.empty}")
-    
+        print(
+            f"DEBUG RENDER: len = {len(pedidos_imposibles)}, empty = {pedidos_imposibles.empty}"
+        )
+
     if pedidos_imposibles is not None and not pedidos_imposibles.empty:
-        st.error(f"🚫 **ADVERTENCIA CRÍTICA:** {len(pedidos_imposibles)} pedidos NO pueden entregarse por carretera")
-        
+        st.error(
+            f"🚫 **ADVERTENCIA CRÍTICA:** {len(pedidos_imposibles)} pedidos NO pueden entregarse por carretera"
+        )
+
         with st.expander("⛔ Ver Detalles de Pedidos Inaccesibles", expanded=True):
             st.warning(
                 "**🏝️ Destinos insulares sin conexión terrestre detectados:**\n\n"
                 "Estos pedidos requieren transporte **marítimo** ⛴️ o **aéreo** ✈️"
             )
-            
+
             # Mostrar tabla con formato
             st.dataframe(
                 pedidos_imposibles,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 column_config={
-                    "Pedido ID": st.column_config.NumberColumn("📦 Pedido ID", format="%d"),
+                    "Pedido ID": st.column_config.NumberColumn(
+                        "📦 Pedido ID", format="%d"
+                    ),
                     "Destino": st.column_config.TextColumn("🏝️ Destino Insular"),
-                    "Peso (kg)": st.column_config.NumberColumn("⚖️ Peso (kg)", format="%.1f"),
-                    "Caducidad (días)": st.column_config.NumberColumn("⏰ Caducidad", format="%d días"),
+                    "Peso (kg)": st.column_config.NumberColumn(
+                        "⚖️ Peso (kg)", format="%.1f"
+                    ),
+                    "Caducidad (días)": st.column_config.NumberColumn(
+                        "⏰ Caducidad", format="%d días"
+                    ),
                     "Motivo": st.column_config.TextColumn("❌ Motivo"),
-                }
+                },
             )
-            
-            st.info(f"💡 **Total de peso no entregable:** {pedidos_imposibles['Peso (kg)'].sum():.1f} kg")
+
+            st.info(
+                f"💡 **Total de peso no entregable:** {pedidos_imposibles['Peso (kg)'].sum():.1f} kg"
+            )
 
     st.markdown("---")
 
@@ -729,20 +770,22 @@ def render_routes_page():
                 p.cantidad_producto for p in resultado.lista_pedidos_ordenada
             )
 
-            resumen_data.append({
-                "Camión": f"🚛 {resultado.camion_id}",
-                "Pedidos": len(resultado.lista_pedidos_ordenada),
-                "Peso (kg)": f"{peso_total:.1f}",
-                "Distancia (km)": f"{resultado.distancia_total_km:.1f}",
-                "Tiempo (h)": f"{resultado.tiempo_total_viaje_horas:.1f}",
-                "Coste (€)": f"{resultado.coste_total_ruta:.2f}",
-                "Ingresos (€)": f"{resultado.ingresos_totales:.2f}",
-                "Beneficio (€)": f"{resultado.beneficio_neto:.2f}",
-                "Estado": "✅" if resultado.valida else "⚠️"
-            })
+            resumen_data.append(
+                {
+                    "Camión": f"🚛 {resultado.camion_id}",
+                    "Pedidos": len(resultado.lista_pedidos_ordenada),
+                    "Peso (kg)": f"{peso_total:.1f}",
+                    "Distancia (km)": f"{resultado.distancia_total_km:.1f}",
+                    "Tiempo (h)": f"{resultado.tiempo_total_viaje_horas:.1f}",
+                    "Coste (€)": f"{resultado.coste_total_ruta:.2f}",
+                    "Ingresos (€)": f"{resultado.ingresos_totales:.2f}",
+                    "Beneficio (€)": f"{resultado.beneficio_neto:.2f}",
+                    "Estado": "✅" if resultado.valida else "⚠️",
+                }
+            )
 
         if resumen_data:
-            st.dataframe(pd.DataFrame(resumen_data), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(resumen_data), width="stretch", hide_index=True)
     end_card()
 
     st.markdown("---")
@@ -762,7 +805,7 @@ def render_routes_page():
             selected_truck = st.selectbox(
                 "Selecciona un camión para ver su ruta detallada:",
                 camiones_disponibles,
-                format_func=lambda x: f"🚛 Camión {x}"
+                format_func=lambda x: f"🚛 Camión {x}",
             )
 
             # Mostrar detalles del camión seleccionado
@@ -789,10 +832,16 @@ def render_routes_page():
                 with col1:
                     st.metric("💰 Coste Total", f"{resultado.coste_total_ruta:.2f} €")
                 with col2:
-                    margen = (resultado.beneficio_neto / resultado.ingresos_totales * 100) if resultado.ingresos_totales > 0 else 0
+                    margen = (
+                        (resultado.beneficio_neto / resultado.ingresos_totales * 100)
+                        if resultado.ingresos_totales > 0
+                        else 0
+                    )
                     st.metric("📊 Margen", f"{margen:.1f}%")
                 with col3:
-                    peso_total = sum(p.cantidad_producto for p in resultado.lista_pedidos_ordenada)
+                    peso_total = sum(
+                        p.cantidad_producto for p in resultado.lista_pedidos_ordenada
+                    )
                     st.metric("⚖️ Carga", f"{peso_total:.1f} kg")
 
                 st.markdown("---")
@@ -821,8 +870,12 @@ def render_routes_page():
                 with col_left:
                     st.write("**📊 Métricas de Ruta:**")
                     st.write(f"- Distancia total: {resultado.distancia_total_km} km")
-                    st.write(f"- Tiempo total: {resultado.tiempo_total_viaje_horas:.2f} h")
-                    st.write(f"- Tiempo conducción: {resultado.tiempo_conduccion_pura_horas:.2f} h")
+                    st.write(
+                        f"- Tiempo total: {resultado.tiempo_total_viaje_horas:.2f} h"
+                    )
+                    st.write(
+                        f"- Tiempo conducción: {resultado.tiempo_conduccion_pura_horas:.2f} h"
+                    )
                     st.write(f"- Consumo: {resultado.consumo_litros:.2f} L")
 
                 with col_right:
@@ -849,13 +902,19 @@ def render_routes_page():
                 st.write("**📦 Pedidos Asignados:**")
                 pedidos_data = []
                 for pedido in resultado.lista_pedidos_ordenada:
-                    pedidos_data.append({
-                        "Pedido ID": pedido.pedido_id,
-                        "Destino": pedido.destino,
-                        "Peso (kg)": pedido.cantidad_producto,
-                        "Caducidad (días)": pedido.caducidad,
-                    })
-                st.dataframe(pd.DataFrame(pedidos_data), use_container_width=True, hide_index=True)
+                    pedidos_data.append(
+                        {
+                            "Pedido ID": pedido.pedido_id,
+                            "Destino": pedido.destino,
+                            "Peso (kg)": pedido.cantidad_producto,
+                            "Caducidad (días)": pedido.caducidad,
+                        }
+                    )
+                st.dataframe(
+                    pd.DataFrame(pedidos_data),
+                    width="stretch",
+                    hide_index=True,
+                )
 
         end_card()
 
@@ -864,7 +923,7 @@ def render_routes_page():
     # Data Card - Asignaciones globales
     start_card("Tabla Global de Asignaciones", icon="📊")
     if not ia["assignments"].empty:
-        st.dataframe(ia["assignments"], use_container_width=True)
+        st.dataframe(ia["assignments"], width="stretch")
     else:
         st.info("No hay asignaciones para mostrar")
     end_card()

@@ -5,6 +5,7 @@ Este módulo utiliza el sistema de caché de coordenadas existente
 en distribution_platform para obtener coordenadas GPS y calcular
 distancias usando la fórmula de Haversine.
 """
+
 import math
 
 import pandas as pd
