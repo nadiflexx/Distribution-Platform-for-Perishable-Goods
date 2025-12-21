@@ -4,25 +4,25 @@ import random
 import pandas as pd
 import streamlit as st
 
-from distribution_platform.config.paths import TRUCK_IMAGES
-from distribution_platform.config.settings import ROUTE_COLORS
+# Mantenemos todas las importaciones originales
+from distribution_platform.config.settings import MapConfig, Paths
 from distribution_platform.core.inference_engine.engine import InferenceMotor
 from distribution_platform.core.knowledge_base import rules
 from distribution_platform.core.knowledge_base.rules import (
     obtain_format_validation_rules,
     parse_truck_data,
 )
-from distribution_platform.core.services.modelos import ConfigCamion
-from distribution_platform.core.services.optimizador_sistema import OptimizadorSistema
-from distribution_platform.infrastructure.etl.etl_pipeline import run_etl
-from distribution_platform.infrastructure.maps.maps import SpainMapRoutes
-from distribution_platform.infrastructure.repositories.truck_repository import (
-    CAMIONES_GRANDES,
-    CAMIONES_MEDIANOS,
-    add_camion_personalizado,
-    get_camiones_personalizados,
-    save_custom_truck_image,
+from distribution_platform.core.models.optimization import SimulationConfig
+from distribution_platform.core.services.etl_service import run_etl
+from distribution_platform.core.services.optimization_orchestrator import (
+    OptimizationOrchestrator,
 )
+from distribution_platform.infrastructure.external.maps import SpainMapRoutes
+from distribution_platform.infrastructure.persistence.truck_repository import (
+    TruckRepository,
+)
+
+repository = TruckRepository()
 
 # ======================================================================
 #   HELPER: STYLING WRAPPERS
@@ -265,9 +265,13 @@ def show_trucks_selection():
 
     with col_disp:
         if truck_type == "Camión Grande":
-            _show_standard_truck(CAMIONES_GRANDES, TRUCK_IMAGES["large"])
+            _show_standard_truck(
+                repository.get_trucks("large"), Paths.TRUCK_IMAGES["large"]
+            )
         elif truck_type == "Camión Mediano":
-            _show_standard_truck(CAMIONES_MEDIANOS, TRUCK_IMAGES["medium"])
+            _show_standard_truck(
+                repository.get_trucks("medium"), Paths.TRUCK_IMAGES["medium"]
+            )
         else:
             _show_custom_truck_selection()
 
@@ -305,7 +309,7 @@ def _show_standard_truck(trucks_dict, folder_path):
 
 
 def _show_custom_truck_selection():
-    camiones_personalizados = get_camiones_personalizados()
+    camiones_personalizados = repository.get_trucks("custom")
 
     if camiones_personalizados:
         option = st.radio(
@@ -332,7 +336,7 @@ def _show_existing_custom_truck(camiones):
 
     if custom_truck:
         data = camiones[custom_truck]
-        img_path = os.path.join(TRUCK_IMAGES["custom"], data["imagen"])
+        img_path = os.path.join(Paths.TRUCK_IMAGES["custom"], data["imagen"])
         _display_truck_details(custom_truck, data, img_path)
         st.session_state.selected_truck_data = data | {"nombre": custom_truck}
 
@@ -343,13 +347,6 @@ def _show_existing_custom_truck(camiones):
 
 
 def _display_truck_details(name, data, img_path):
-    # Determine image source
-    if os.path.exists(img_path):
-        # We need to render the image via streamlit to get the correct path if local,
-        # but for HTML embedding in 'truck-display', simple paths are tricky in Streamlit.
-        # So we use a hybrid approach: Columns inside the parent container.
-        pass
-
     st.markdown(f"#### 📋 Ficha Técnica: {name}")
 
     c1, c2 = st.columns([1, 1.5])
@@ -429,17 +426,17 @@ def _show_custom_truck_form():
             return
 
         # Save image
-        image_name = save_custom_truck_image(image_file, name)
+        image_name = repository.save_image(image_file, name)
 
+        new_truck_data = {
+            "capacidad": capacity,
+            "consumo": consumption,
+            "velocidad_constante": speed,
+            "precio_conductor_hora": price_driver,
+            "imagen": image_name,
+        }
         # Save truck
-        ok = add_camion_personalizado(
-            nombre=name,
-            capacidad=capacity,
-            consumo=consumption,
-            velocidad_constante=speed,
-            precio_conductor_hora=price_driver,
-            imagen=image_name,
-        )
+        ok = repository.save_custom_truck(name, new_truck_data)
 
         if ok:
             st.success("🎉 ¡Camión creado exitosamente!")
@@ -460,49 +457,38 @@ def _show_custom_truck_form():
 # ======================================================================
 
 
-def simulate_ia(df, truck_data):
+def simulate_ia(df, truck_data, algorithm="genetic"):
     """
-    Ejecuta optimización de rutas usando el sistema braincore.
-
-    Parameters
-    ----------
-    df : pd.DataFrame o list[list[Order]]
-        Datos de pedidos del ETL.
-    truck_data : dict
-        Datos del camión seleccionado con claves:
-        - capacidad: capacidad en kg
-        - consumo: consumo en L/100km
-        - velocidad_constante: velocidad en km/h
-        - precio_conductor_hora: coste conductor €/h
-
-    Returns
-    -------
-    dict
-        Resultados con rutas optimizadas.
+    Ejecuta la optimización usando la nueva arquitectura (Orchestrator + Strategy).
     """
     try:
-        # Configurar camión desde los datos seleccionados
-        config_camion = ConfigCamion(
+        # 1. Configurar camión (Mapeo del dict UI -> Modelo Pydantic)
+        config_camion = SimulationConfig(
             velocidad_constante=float(truck_data.get("velocidad_constante", 90.0)),
             consumo_combustible=float(truck_data.get("consumo", 30.0)),
             capacidad_carga=float(truck_data.get("capacidad", 1000.0)),
             salario_conductor_hora=float(truck_data.get("precio_conductor_hora", 15.0)),
-            precio_combustible_litro=1.50,
+            precio_combustible_litro=1.50,  # Valor por defecto
             peso_unitario_default=1.0,
         )
 
-        # Crear optimizador
-        optimizador = OptimizadorSistema(
-            config_camion=config_camion,
-            origen_base="Mataró",  # Origen fijo en Mataró
+        # 2. Instanciar el Orquestador
+        # (Reemplaza a la antigua clase OptimizadorSistema)
+        optimizador = OptimizationOrchestrator(
+            config=config_camion,
+            origin_base="Mataró",
         )
 
-        # Optimizar entregas
-        resultados = optimizador.optimizar_entregas(
-            pedidos=df, generaciones=100, poblacion_tam=40
+        # 3. Ejecutar Optimización
+        # (Llama internamente a GeneticStrategy o ILSStrategy)
+        resultados = optimizador.optimize_deliveries(
+            orders=df,
+            algorithm=algorithm,  # <--- AQUÍ SE USA
+            generations=100,
+            pop_size=40,
         )
 
-        # Convertir resultados a formato compatible con la UI
+        # 4. Transformar resultados para la UI (Tu lógica original intacta)
         routes = []
         assignments_data = []
         pedidos_imposibles_data = []
@@ -511,14 +497,9 @@ def simulate_ia(df, truck_data):
         total_ingresos = 0
         total_beneficio = 0
 
-        # Extraer pedidos no entregables si existen
+        # A) Procesar Pedidos Imposibles
         pedidos_no_entregables = resultados.get("pedidos_no_entregables", [])
-        print(
-            f"DEBUG: pedidos_no_entregables encontrados: {len(pedidos_no_entregables)}"
-        )
-
         if pedidos_no_entregables:
-            print(f"DEBUG: Procesando {len(pedidos_no_entregables)} pedidos imposibles")
             for pedido in pedidos_no_entregables:
                 pedidos_imposibles_data.append(
                     {
@@ -529,54 +510,44 @@ def simulate_ia(df, truck_data):
                         "Motivo": "❌ Isla sin conexión terrestre",
                     }
                 )
-            print(
-                f"DEBUG: pedidos_imposibles_data tiene {len(pedidos_imposibles_data)} elementos"
-            )
 
+        # B) Procesar Rutas Válidas
         for key, resultado in resultados.items():
-            # Saltar la clave especial de pedidos no entregables
-            if key == "pedidos_no_entregables":
-                continue
-
-            if resultado is None:
+            if key == "pedidos_no_entregables" or resultado is None:
                 continue
 
             try:
-                # Crear ruta para el mapa
+                # Datos para el Mapa
                 route = {
                     "path": resultado.ruta_coordenadas,
-                    "color": random.choice(ROUTE_COLORS),
-                    "pedidos": resultado.lista_pedidos_ordenada,  # Información de pedidos para popups
+                    "color": random.choice(MapConfig.ROUTE_COLORS),
+                    "pedidos": resultado.lista_pedidos_ordenada,
                     "camion_id": resultado.camion_id,
-                    "tiempos_llegada": getattr(
-                        resultado, "tiempos_llegada", []
-                    ),  # Tiempos de llegada en horas
+                    "tiempos_llegada": getattr(resultado, "tiempos_llegada", []),
                 }
                 routes.append(route)
 
-                # Acumular métricas
+                # Métricas Globales
                 total_distancia += resultado.distancia_total_km
                 total_coste += resultado.coste_total_ruta
                 total_ingresos += resultado.ingresos_totales
                 total_beneficio += resultado.beneficio_neto
+
+                # Datos para Tabla de Asignaciones
+                for pedido in resultado.lista_pedidos_ordenada:
+                    assignments_data.append(
+                        {
+                            "Camión": resultado.camion_id,
+                            "Pedido ID": pedido.pedido_id,
+                            "Destino": pedido.destino,
+                            "Peso (kg)": pedido.cantidad_producto,
+                            "Caducidad (días)": pedido.caducidad,
+                        }
+                    )
+
             except Exception as e:
-                st.error(f"Error procesando resultado del camión {key}: {str(e)}")
-                import traceback
-
-                st.error(traceback.format_exc())
+                st.error(f"Error procesando camión {key}: {str(e)}")
                 continue
-
-            # Crear filas de asignaciones
-            for pedido in resultado.lista_pedidos_ordenada:
-                assignments_data.append(
-                    {
-                        "Camión": resultado.camion_id,
-                        "Pedido ID": pedido.pedido_id,
-                        "Destino": pedido.destino,
-                        "Peso (kg)": pedido.cantidad_producto,
-                        "Caducidad (días)": pedido.caducidad,
-                    }
-                )
 
         # Crear DataFrames
         assignments_df = (
@@ -588,17 +559,12 @@ def simulate_ia(df, truck_data):
             else pd.DataFrame()
         )
 
-        print(
-            f"DEBUG: DataFrame pedidos_imposibles creado con {len(pedidos_imposibles_df)} filas"
-        )
-        print(f"DEBUG: pedidos_imposibles_df.empty = {pedidos_imposibles_df.empty}")
-
         return {
             "num_trucks": len(
                 [
                     r
-                    for r in resultados.values()
-                    if r is not None and r != pedidos_no_entregables
+                    for k, r in resultados.items()
+                    if k != "pedidos_no_entregables" and r
                 ]
             ),
             "routes": routes,
@@ -615,12 +581,7 @@ def simulate_ia(df, truck_data):
 
     except Exception as e:
         st.error(f"❌ Error en optimización: {str(e)}")
-        return {
-            "num_trucks": 0,
-            "routes": [],
-            "assignments": pd.DataFrame(),
-            "error": str(e),
-        }
+        return None
 
 
 # ======================================================================
@@ -645,14 +606,30 @@ def render_form_page():
     # 3. Generate Action
     if st.session_state.truck_validated:
         st.markdown("---")
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c2:
+
+        # --- NUEVO: Selector de Algoritmo ---
+        c_algo, c_btn, _ = st.columns([1, 2, 1])
+
+        with c_algo:
+            algo_choice = st.selectbox(
+                "🧠 Algoritmo de IA:",
+                options=[
+                    "Genético (Híbrido)",
+                    "Google OR-Tools (Solver Exacto)",
+                ],
+                index=0,
+                help="El Genético es más exploratorio. OR-Tools es mucho mejor, más preciso y rápido.",
+            )
+            # Mapeo de selección
+            algo_key = "genetic" if "Genético" in algo_choice else "ortools"
+        with c_btn:
             if st.button("🚀 GENERAR RUTA ÓPTIMA", type="primary", width="stretch"):
-                with st.spinner("🤖 La IA está calculando la ruta óptima..."):
-                    print("Truck selected:", st.session_state.selected_truck_data)
+                with st.spinner(f"🤖 Ejecutando algoritmo {algo_choice}..."):
+                    # Pasamos el algoritmo seleccionado a la función de simulación
                     st.session_state.ia_result = simulate_ia(
                         st.session_state.df,
                         st.session_state.selected_truck_data,
+                        algorithm=algo_key,  # <--- NUEVO ARGUMENTO
                     )
                     st.session_state.page = "routes"
                     st.rerun()
@@ -712,13 +689,6 @@ def render_routes_page():
 
     # ========== PEDIDOS IMPOSIBLES - MOSTRAR SIEMPRE SI EXISTEN ==========
     pedidos_imposibles = ia.get("pedidos_imposibles")
-
-    print(f"DEBUG RENDER: pedidos_imposibles = {pedidos_imposibles}")
-    print(f"DEBUG RENDER: type = {type(pedidos_imposibles)}")
-    if pedidos_imposibles is not None:
-        print(
-            f"DEBUG RENDER: len = {len(pedidos_imposibles)}, empty = {pedidos_imposibles.empty}"
-        )
 
     if pedidos_imposibles is not None and not pedidos_imposibles.empty:
         st.error(
@@ -849,7 +819,6 @@ def render_routes_page():
                 # Mapa individual de este camión
                 st.subheader("🗺️ Ruta en el Mapa")
                 # Encontrar la ruta correspondiente a este camión en ia["routes"]
-                # Las rutas están en el mismo orden que resultados_detallados
                 truck_routes = []
                 for idx, (_, res) in enumerate(ia["resultados_detallados"].items()):
                     if res and res.camion_id == selected_truck:
@@ -858,6 +827,7 @@ def render_routes_page():
                         break
 
                 if truck_routes:
+                    # Aquí es donde ocurre la magia del caché y la carga
                     SpainMapRoutes().render(truck_routes)
                 else:
                     st.warning("No se pudo cargar el mapa para este camión")

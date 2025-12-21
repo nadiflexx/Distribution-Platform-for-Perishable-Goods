@@ -50,7 +50,7 @@ class Order(BaseModel):
     caducidad: int = Field(description="Expiry in days")
 
     # Destination address
-    destino: str
+    destino: str = Field(description="Destination province")
     # Distance in kilometers
     distancia_km: float | str = Field(description="Distance in kilometers")
     # GPS coordinates in 'latitud,longitud' format

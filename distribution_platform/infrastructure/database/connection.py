@@ -1,6 +1,7 @@
 import os
-from sqlalchemy import create_engine
+
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
 
 # Cargar variables de entorno desde .env
 load_dotenv()

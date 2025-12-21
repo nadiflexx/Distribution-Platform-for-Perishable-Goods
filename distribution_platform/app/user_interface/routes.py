@@ -6,13 +6,15 @@ from distribution_platform.app.user_interface.ui_components import (
     render_form_page,
     render_routes_page,
 )
-from distribution_platform.config.paths import CSS_PATH
+from distribution_platform.config.settings import Paths
 
 
 def load_styles():
     # Asegúrate de que la ruta coincida con donde guardaste components.css
-    if CSS_PATH.exists():
-        st.markdown(f"<style>{CSS_PATH.read_text()}</style>", unsafe_allow_html=True)
+    if Paths.CSS_FILE.exists():
+        st.markdown(
+            f"<style>{Paths.CSS_FILE.read_text()}</style>", unsafe_allow_html=True
+        )
     else:
         # Fallback simple por si la ruta falla
         st.warning("Estilos no encontrados, usando estilos por defecto.")
