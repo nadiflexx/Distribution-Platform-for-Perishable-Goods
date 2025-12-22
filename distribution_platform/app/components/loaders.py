@@ -16,7 +16,7 @@ class LoaderOverlay:
             html, body, .stApp {
                 background: #030305 !important;
             }
-            
+
             /* Immediate dark overlay while page loads */
             .stApp::before {
                 content: '';
@@ -30,7 +30,7 @@ class LoaderOverlay:
                 pointer-events: none;
                 animation: fadeOutShield 0.5s ease-out 0.3s forwards;
             }
-            
+
             @keyframes fadeOutShield {
                 to { opacity: 0; visibility: hidden; }
             }
@@ -52,11 +52,11 @@ class LoaderOverlay:
             f"""
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=JetBrains+Mono:wght@400&display=swap');
-                
+
                 html, body, .stApp {{
                     background: #030305 !important;
                 }}
-                
+
                 .static-loader-overlay {{
                     position: fixed;
                     top: 0; left: 0;
@@ -136,7 +136,7 @@ class LoaderOverlay:
                 }}
                 .static-loader-dots span:nth-child(2) {{ animation-delay: 0.2s; }}
                 .static-loader-dots span:nth-child(3) {{ animation-delay: 0.4s; }}
-                
+
                 @keyframes static-spin {{ to {{ transform: rotate(360deg); }} }}
                 @keyframes static-scan {{ 0% {{ left: -40%; }} 100% {{ left: 100%; }} }}
                 @keyframes static-pulse-dot {{
@@ -144,7 +144,7 @@ class LoaderOverlay:
                     40% {{ transform: scale(1); opacity: 1; }}
                 }}
             </style>
-            
+
             <div class="static-loader-overlay">
                 <div class="static-loader-logo">
                     <div class="static-logo-ring"></div>
@@ -169,12 +169,12 @@ class LoaderOverlay:
             """
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=JetBrains+Mono:wght@400&display=swap');
-                
+
                 /* Force dark background immediately */
                 html, body, .stApp {
                     background: #030305 !important;
                 }
-                
+
                 #persistentMapLoader {
                     position: fixed;
                     top: 0; left: 0;
@@ -268,7 +268,7 @@ class LoaderOverlay:
                 }
                 .persist-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
                 .persist-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
-                
+
                 @keyframes persist-spin { to { transform: rotate(360deg); } }
                 @keyframes persist-scan { 0% { left: -40%; } 100% { left: 100%; } }
                 @keyframes persist-pulse-dot {
@@ -276,7 +276,7 @@ class LoaderOverlay:
                     40% { transform: scale(1); opacity: 1; }
                 }
             </style>
-            
+
             <div id="persistentMapLoader">
                 <div class="persist-loader-logo">
                     <div class="persist-logo-ring"></div>
@@ -303,14 +303,14 @@ class LoaderOverlay:
             <script>
                 (function() {
                     const parentDoc = window.parent.document;
-                    
+
                     function updateStatus(msg) {
                         try {
                             const status = parentDoc.getElementById('persistLoaderStatus');
                             if (status) status.textContent = msg;
                         } catch (e) {}
                     }
-                    
+
                     function hideOverlay() {
                         try {
                             const overlay = parentDoc.getElementById('persistentMapLoader');
@@ -320,7 +320,7 @@ class LoaderOverlay:
                             }
                         } catch (e) {}
                     }
-                    
+
                     function checkMapLoaded() {
                         try {
                             const iframes = parentDoc.querySelectorAll('iframe');
@@ -336,27 +336,27 @@ class LoaderOverlay:
                         } catch (e) {}
                         return false;
                     }
-                    
+
                     let attempts = 0;
                     const maxAttempts = 120;
-                    
+
                     function poll() {
                         attempts++;
                         updateStatus('Loading map... (' + Math.round(attempts * 0.1) + 's)');
-                        
+
                         if (checkMapLoaded()) {
                             updateStatus('Finalizing render...');
                             setTimeout(hideOverlay, 2000);
                             return;
                         }
-                        
+
                         if (attempts < maxAttempts) {
                             setTimeout(poll, 100);
                         } else {
                             hideOverlay();
                         }
                     }
-                    
+
                     setTimeout(poll, 500);
                     setTimeout(hideOverlay, 15000); // Ultimate fallback
                 })();

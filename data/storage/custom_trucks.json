@@ -20,27 +20,6 @@
     "precio_conductor_hora": 20,
     "imagen": "truck_default.png"
   },
-  "test": {
-    "capacidad": "12",
-    "consumo": "12",
-    "velocidad_constante": "30",
-    "precio_conductor_hora": "15",
-    "imagen": "test.jpg"
-  },
-  "nrw": {
-    "capacidad": "23",
-    "consumo": "12",
-    "velocidad_constante": "30",
-    "precio_conductor_hora": "15",
-    "imagen": "nrw.jpg"
-  },
-  "testing2": {
-    "capacidad": "190",
-    "consumo": "50",
-    "velocidad_constante": "50",
-    "precio_conductor_hora": "15",
-    "imagen": "testing2.jpg"
-  },
   "X-1": {
     "capacidad": 3000,
     "consumo": 25.0,

@@ -1,13 +1,16 @@
 """
-Results/Dashboard View - Complete Version
+Results/Dashboard View - Final Version (Fixed Products & Ruff)
 """
 
+from datetime import datetime, timedelta
+from typing import Any
 from urllib.parse import quote
 
 import pandas as pd
 import streamlit as st
 
 from distribution_platform.app.components.cards import KPICard
+from distribution_platform.app.components.charts import AlgorithmVisualizer
 from distribution_platform.app.components.displays import SectionHeader, Timeline
 from distribution_platform.app.components.loaders import LoaderOverlay
 from distribution_platform.app.config.constants import AppPhase
@@ -21,15 +24,14 @@ class ResultsView:
     def render(self):
         result = SessionManager.get("ia_result")
 
-        # Inject loader first (covers screen)
+        # Inject loader first
         LoaderOverlay.persistent_map_loader()
 
-        # Render content behind loader
         self._render_header()
         self._render_main_kpis(result)
         self._render_tabs(result)
 
-        # Inject map detector (hides loader when ready)
+        # Inject map detector
         LoaderOverlay.inject_map_detector()
 
     def _render_header(self):
@@ -43,7 +45,7 @@ class ResultsView:
             unsafe_allow_html=True,
         )
 
-        col_back, col_space, col_actions = st.columns([1, 3, 2])
+        col_back, _, col_actions = st.columns([1, 3, 2])
         with col_back:
             if st.button("← BACK TO CONTROL", type="secondary"):
                 SessionManager.set_phase(AppPhase.FORM)
@@ -51,22 +53,28 @@ class ResultsView:
         with col_actions:
             col_exp1, col_exp2 = st.columns(2)
             with col_exp1:
-                if st.button(
-                    "📥 EXPORT CSV", type="secondary", use_container_width=True
-                ):
-                    self._export_results()
+                self._export_results_button()
             with col_exp2:
-                if st.button(
-                    "🔄 RE-OPTIMIZE", type="secondary", use_container_width=True
-                ):
+                if st.button("🔄 RE-OPTIMIZE", type="secondary", width="stretch"):
                     SessionManager.set_phase(AppPhase.PROCESSING)
+
+    def _export_results_button(self):
+        result = SessionManager.get("ia_result")
+        if result and "assignments" in result:
+            csv = result["assignments"].to_csv(index=False)
+            st.download_button(
+                label="📥 EXPORT CSV",
+                data=csv,
+                file_name="route_assignments.csv",
+                mime="text/csv",
+                width="stretch",
+            )
 
     def _render_main_kpis(self, result: dict):
         st.markdown("<div class='kpi-section'>", unsafe_allow_html=True)
 
         cols = st.columns(6)
 
-        # Calculate additional metrics
         trucks_data = [
             v
             for k, v in result["resultados_detallados"].items()
@@ -91,13 +99,13 @@ class ResultsView:
             ("📈", "Net Profit", f"{result['total_beneficio']:,.0f}", " €"),
         ]
 
-        for col, (icon, label, value, unit) in zip(cols, kpis):
+        # FIX: Added strict=False to zip to satisfy Ruff B905
+        for col, (icon, label, value, unit) in zip(cols, kpis, strict=False):
             with col:
                 KPICard.render(icon, label, value, unit)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # Efficiency bar
         self._render_efficiency_bar(efficiency, result)
 
     def _render_efficiency_bar(self, efficiency: float, result: dict):
@@ -131,20 +139,20 @@ class ResultsView:
         )
 
     def _render_tabs(self, result: dict):
-        tab_geo, tab_fleet, tab_orders, tab_inspector = st.tabs(
+        tab_geo, tab_inspector, tab_orders, tab_algo = st.tabs(
             [
                 "🌍 GEOSPATIAL MAP",
-                "📊 FLEET ANALYTICS",
-                "📦 ORDER MANIFEST",
                 "🔍 ROUTE INSPECTOR",
+                "📦 ORDER MANIFEST",
+                "🧬 ALGORITHM VISUALIZER",
             ]
         )
 
         with tab_geo:
             self._render_geospatial_tab(result)
 
-        with tab_fleet:
-            self._render_fleet_analytics_tab(result)
+        with tab_algo:
+            self._render_algorithm_tab(result)
 
         with tab_orders:
             self._render_orders_tab(result)
@@ -157,279 +165,297 @@ class ResultsView:
         SpainMapRoutes().render(result["routes"])
         st.markdown("</div>", unsafe_allow_html=True)
 
-    def _render_fleet_analytics_tab(self, result: dict):
-        trucks_data = [
-            v
-            for k, v in result["resultados_detallados"].items()
-            if k != "pedidos_no_entregables"
-        ]
+    def _render_algorithm_tab(self, result: dict):
+        SectionHeader.render("🧬", "Algorithm Execution Visualizer")
 
-        if not trucks_data:
-            st.warning("No fleet data available.")
+        traces = result.get("algorithm_trace", {})
+        if not traces:
+            st.info("Algorithm trace not available.")
             return
 
-        col_table, col_chart = st.columns([1.5, 1])
+        truck_options = list(traces.keys())
+        selected_truck = st.selectbox(
+            "Select Route",
+            options=truck_options,
+            format_func=lambda x: f"🚛 {x.upper().replace('_', ' ')}",
+        )
 
-        with col_table:
-            SectionHeader.render("📋", "Fleet Performance Summary")
-
-            fleet_df = pd.DataFrame(
-                [
-                    {
-                        "Unit": f"UNIT-{t.camion_id:03d}",
-                        "Stops": len(t.ciudades_ordenadas)
-                        - 2,  # Exclude origin and return
-                        "Orders": len(t.lista_pedidos_ordenada),
-                        "Distance (km)": f"{t.distancia_total_km:,.1f}",
-                        "Cost (€)": f"{t.coste_total_ruta:,.2f}",
-                        "Revenue (€)": f"{t.beneficio_neto + t.coste_total_ruta:,.2f}",
-                        "Profit (€)": f"{t.beneficio_neto:,.2f}",
-                        "Efficiency": f"{(t.beneficio_neto / t.coste_total_ruta * 100) if t.coste_total_ruta > 0 else 0:.1f}%",
-                    }
-                    for t in trucks_data
-                ]
+        if selected_truck and selected_truck in traces:
+            AlgorithmVisualizer.render_graph_animation(
+                traces[selected_truck], container_key=selected_truck
             )
-
-            st.dataframe(
-                fleet_df,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Unit": st.column_config.TextColumn("🚛 Unit", width="small"),
-                    "Stops": st.column_config.NumberColumn("📍 Stops", width="small"),
-                    "Orders": st.column_config.NumberColumn("📦 Orders", width="small"),
-                    "Distance (km)": st.column_config.TextColumn(
-                        "📏 Distance", width="small"
-                    ),
-                    "Cost (€)": st.column_config.TextColumn("💰 Cost", width="small"),
-                    "Revenue (€)": st.column_config.TextColumn(
-                        "💵 Revenue", width="small"
-                    ),
-                    "Profit (€)": st.column_config.TextColumn(
-                        "📈 Profit", width="small"
-                    ),
-                    "Efficiency": st.column_config.TextColumn("⚡ ROI", width="small"),
-                },
-            )
-
-        with col_chart:
-            SectionHeader.render("📊", "Distribution Analysis")
-
-            # Distance distribution
-            chart_data = pd.DataFrame(
-                {
-                    "Unit": [f"U-{t.camion_id:03d}" for t in trucks_data],
-                    "Distance": [t.distancia_total_km for t in trucks_data],
-                    "Profit": [t.beneficio_neto for t in trucks_data],
-                }
-            )
-
-            st.bar_chart(chart_data.set_index("Unit")["Distance"], color="#6366f1")
-            st.caption("Distance per truck (km)")
-
-            st.bar_chart(chart_data.set_index("Unit")["Profit"], color="#10b981")
-            st.caption("Profit per truck (€)")
-
-        # Undelivered orders section
-        if not result.get("pedidos_imposibles", pd.DataFrame()).empty:
-            st.markdown("---")
-            SectionHeader.render("⚠️", "Undeliverable Orders")
-            st.warning(
-                f"**{len(result['pedidos_imposibles'])} orders** could not be assigned due to capacity constraints."
-            )
-            with st.expander("View undeliverable orders"):
-                st.dataframe(
-                    result["pedidos_imposibles"],
-                    use_container_width=True,
-                    hide_index=True,
-                )
 
     def _render_orders_tab(self, result: dict):
+        """Enhanced Order Manifest with full details."""
         trucks_data = [
             v
             for k, v in result["resultados_detallados"].items()
             if k != "pedidos_no_entregables"
         ]
 
-        SectionHeader.render("📦", "Complete Order Manifest")
+        # === PRODUCT RECONSTRUCTION ENGINE ===
+        # Recorremos los datos ORIGINALES (raw) para recuperar el desglose completo
+        original_data_source = SessionManager.get("df")
+        product_master_map: dict[int, list[dict[str, Any]]] = {}
 
-        # Build complete orders dataframe
-        all_orders = []
-        for truck in trucks_data:
-            for i, pedido in enumerate(truck.lista_pedidos_ordenada):
-                arrival_time = (
-                    truck.tiempos_llegada[i]
-                    if i < len(truck.tiempos_llegada)
-                    else "N/A"
+        if original_data_source:
+            # Flatten data structure (usually list of lists per category)
+            all_raw_orders = [o for sublist in original_data_source for o in sublist]
+
+            for o in all_raw_orders:
+                oid = o.pedido_id
+                if oid not in product_master_map:
+                    product_master_map[oid] = []
+
+                # Extraer info básica de este item
+                # El CSV tiene 1 fila por producto, así que 'o' es un producto
+                item_name = getattr(
+                    o,
+                    "producto_nombre",
+                    getattr(o, "nombre_producto", getattr(o, "producto", "Unknown")),
                 )
+                item_qty = getattr(o, "cantidad_producto", getattr(o, "cantidad", 1))
+                item_price = getattr(
+                    o, "precio_unitario", getattr(o, "precio_venta", 0)
+                )
+
+                product_master_map[oid].append(
+                    {"nombre": item_name, "cantidad": item_qty, "precio": item_price}
+                )
+
+        # Build complete orders list
+        all_orders = []
+        base_time = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+
+        for truck in trucks_data:
+            cumulative_time = 0
+            for i, pedido in enumerate(truck.lista_pedidos_ordenada):
+                if i < len(truck.tiempos_llegada):
+                    eta_str = truck.tiempos_llegada[i]
+                else:
+                    cumulative_time += 45
+                    eta = base_time + timedelta(minutes=cumulative_time)
+                    eta_str = eta.strftime("%H:%M")
+
+                # Attributes extraction
+                email = getattr(pedido, "email_cliente", "N/A") or "N/A"
+                price = (
+                    getattr(pedido, "precio_venta", getattr(pedido, "precio", 0)) or 0
+                )
+                priority = getattr(pedido, "prioridad", "Normal") or "Normal"
+
+                # === USE MASTER MAP IF AVAILABLE ===
+                products = []
+                product_names = []
+
+                if pedido.pedido_id in product_master_map:
+                    # Recuperamos los datos originales sin consolidar
+                    raw_products = product_master_map[pedido.pedido_id]
+                    for p in raw_products:
+                        products.append(
+                            {
+                                "nombre": p["nombre"],
+                                "cantidad": p["cantidad"],
+                                "precio": p["precio"],
+                            }
+                        )
+                        product_names.append(p["nombre"])
+                else:
+                    # Fallback: intentar leer del objeto consolidado
+                    raw_lines = getattr(pedido, "lineas", []) or getattr(
+                        pedido, "productos", []
+                    )
+                    if raw_lines:
+                        for line in raw_lines:
+                            p_name = getattr(
+                                line,
+                                "producto_nombre",
+                                getattr(line, "nombre", "Unknown"),
+                            )
+                            p_qty = getattr(line, "cantidad", 1)
+                            p_price = getattr(line, "precio", 0)
+                            products.append(
+                                {"nombre": p_name, "cantidad": p_qty, "precio": p_price}
+                            )
+                            product_names.append(p_name)
+                    else:
+                        # Fallback final
+                        p_name = getattr(pedido, "producto_nombre", "General Cargo")
+                        products = [{"nombre": p_name, "cantidad": 1, "precio": price}]
+                        product_names = [p_name]
+
                 all_orders.append(
                     {
                         "truck_id": truck.camion_id,
                         "order_id": pedido.pedido_id,
                         "destination": pedido.destino,
                         "weight": pedido.cantidad_producto,
-                        "arrival": arrival_time,
-                        # Add more fields if available
-                        "price": getattr(
-                            pedido, "precio_venta", getattr(pedido, "precio", 0)
-                        ),
-                        "client": getattr(
-                            pedido, "cliente_id", getattr(pedido, "cliente", "N/A")
-                        ),
+                        "eta": eta_str,
+                        "price": float(price),
+                        "email_cliente": email,
+                        "priority": priority,
+                        "status": "Scheduled",
+                        "stop_number": i + 1,
+                        "products": products,
+                        "product_names": product_names,
+                        "fecha_pedido": getattr(pedido, "fecha_pedido", None),
                     }
                 )
 
         orders_df = pd.DataFrame(all_orders)
 
-        # Filters
-        col_filter1, col_filter2, col_filter3 = st.columns(3)
+        SectionHeader.render("📦", "Complete Order Manifest")
 
-        with col_filter1:
-            truck_filter = st.multiselect(
-                "Filter by Truck",
-                options=[f"UNIT-{t.camion_id:03d}" for t in trucks_data],
-                default=None,
-                placeholder="All trucks",
-            )
+        # Search
+        col_f1, col_f2 = st.columns([1, 2])
+        with col_f1:
+            search = st.text_input("🔎 Search", placeholder="Order ID, Email...")
 
-        with col_filter2:
-            dest_filter = st.multiselect(
-                "Filter by Destination",
-                options=sorted(orders_df["destination"].unique()),
-                default=None,
-                placeholder="All destinations",
-            )
-
-        with col_filter3:
-            search = st.text_input(
-                "🔍 Search Order ID", placeholder="Enter order ID..."
-            )
-
-        # Apply filters
         filtered_df = orders_df.copy()
-        if truck_filter:
-            truck_ids = [int(t.split("-")[1]) for t in truck_filter]
-            filtered_df = filtered_df[filtered_df["truck_id"].isin(truck_ids)]
-        if dest_filter:
-            filtered_df = filtered_df[filtered_df["destination"].isin(dest_filter)]
         if search:
+            s = search.lower()
             filtered_df = filtered_df[
-                filtered_df["order_id"].astype(str).str.contains(search, case=False)
+                filtered_df["order_id"].astype(str).str.contains(s)
+                | filtered_df["email_cliente"].str.lower().str.contains(s)
             ]
 
-        # Display stats
-        st.markdown(
-            f"""
-            <div class="orders-stats">
-                <span>📊 Showing <strong>{len(filtered_df)}</strong> of <strong>{len(orders_df)}</strong> orders</span>
-                <span>📦 Total Weight: <strong>{filtered_df["weight"].sum():,.0f} kg</strong></span>
-                <span>💰 Total Value: <strong>€{filtered_df["price"].sum():,.2f}</strong></span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Display table
-        display_df = filtered_df.copy()
+        # Main Table
+        display_df = filtered_df[
+            [
+                "order_id",
+                "truck_id",
+                "destination",
+                "weight",
+                "price",
+                "eta",
+                "priority",
+                "email_cliente",
+            ]
+        ].copy()
         display_df["truck_id"] = display_df["truck_id"].apply(lambda x: f"UNIT-{x:03d}")
+        display_df["price"] = display_df["price"].apply(lambda x: f"€{x:,.2f}")
+        display_df["weight"] = display_df["weight"].apply(lambda x: f"{x:,} kg")
         display_df.columns = [
+            "📋 Order",
             "🚛 Truck",
-            "📋 Order ID",
             "📍 Destination",
-            "⚖️ Weight (kg)",
+            "⚖️ Weight",
+            "💰 Value",
             "🕐 ETA",
-            "💰 Value (€)",
-            "👤 Client",
+            "⚡ Priority",
+            "📧 Client",
         ]
 
-        st.dataframe(
-            display_df,
-            use_container_width=True,
-            hide_index=True,
-            height=400,
-        )
+        st.dataframe(display_df, width="stretch", hide_index=True, height=300)
 
-        # Order detail expander
         st.markdown("---")
+
+        # === ORDER DETAIL VIEWER ===
         SectionHeader.render("🔎", "Order Detail Viewer")
 
-        selected_order = st.selectbox(
-            "Select an order to view details",
-            options=orders_df["order_id"].tolist(),
-            format_func=lambda x: f"Order #{x}",
+        # Selector moved to top
+        selected_order_id = st.selectbox(
+            "Select Order to View Details",
+            options=filtered_df["order_id"].tolist(),
+            format_func=lambda x: f"📦 Order #{x}",
             index=None,
             placeholder="Choose an order...",
         )
 
-        if selected_order:
-            self._render_order_detail(selected_order, trucks_data)
+        if selected_order_id:
+            st.markdown("<br>", unsafe_allow_html=True)
+            order_data = filtered_df[filtered_df["order_id"] == selected_order_id].iloc[
+                0
+            ]
 
-    def _render_order_detail(self, order_id: int, trucks_data: list):
-        """Render detailed view of a specific order."""
-        # Find the order
-        order = None
-        parent_truck = None
+            # Info Cards
+            col_i1, col_i2, col_i3, col_i4 = st.columns(4)
+            with col_i1:
+                st.markdown(
+                    f"""<div class="order-info-card"><div class="info-icon">📋</div><div class="info-content"><span class="info-label">Order ID</span><span class="info-value">#{order_data["order_id"]}</span></div></div>""",
+                    unsafe_allow_html=True,
+                )
+            with col_i2:
+                st.markdown(
+                    f"""<div class="order-info-card"><div class="info-icon">🕐</div><div class="info-content"><span class="info-label">ETA</span><span class="info-value">{order_data["eta"]}</span></div></div>""",
+                    unsafe_allow_html=True,
+                )
+            with col_i3:
+                priority_colors = {
+                    "Normal": "#3b82f6",
+                    "High": "#f59e0b",
+                    "Urgent": "#ef4444",
+                }
+                color = priority_colors.get(order_data["priority"], "#6366f1")
+                st.markdown(
+                    f"""<div class="order-info-card" style="border-left-color: {color};"><div class="info-icon">⚡</div><div class="info-content"><span class="info-label">Priority</span><span class="info-value" style="color: {color};">{order_data["priority"]}</span></div></div>""",
+                    unsafe_allow_html=True,
+                )
 
-        for truck in trucks_data:
-            for pedido in truck.lista_pedidos_ordenada:
-                if pedido.pedido_id == order_id:
-                    order = pedido
-                    parent_truck = truck
-                    break
-            if order:
-                break
+            # Details Layout
+            col_left, col_right = st.columns([1, 1.5], gap="large")
 
-        if not order:
-            st.error("Order not found")
-            return
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.markdown(
-                f"""
-                <div class="order-detail-card">
-                    <h4>📋 Order #{order.pedido_id}</h4>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Destination</span>
-                            <span class="detail-value">{order.destino}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Weight</span>
-                            <span class="detail-value">{order.cantidad_producto:,} kg</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Assigned Truck</span>
-                            <span class="detail-value">UNIT-{parent_truck.camion_id:03d}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Client ID</span>
-                            <span class="detail-value">{getattr(order, "cliente_id", "N/A")}</span>
+            with col_left:
+                st.markdown(
+                    f"""
+                    <div class="order-detail-card">
+                        <h4>📍 Delivery Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item full-width"><span class="detail-label">Destination</span><span class="detail-value">{order_data["destination"]}</span></div>
+                            <div class="detail-item"><span class="detail-label">Assigned Truck</span><span class="detail-value">UNIT-{order_data["truck_id"]:03d}</span></div>
+                            <div class="detail-item"><span class="detail-label">Stop Number</span><span class="detail-value">#{order_data["stop_number"]}</span></div>
+                            <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value status-scheduled">✅ {order_data["status"]}</span></div>
+                            <div class="detail-item"><span class="detail-label">Date</span><span class="detail-value">{order_data.get("fecha_pedido", "N/A") or "Today"}</span></div>
                         </div>
                     </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-        with col2:
-            # Products in order (if available)
-            productos = getattr(order, "productos", getattr(order, "lineas", None))
+                st.markdown("<br>", unsafe_allow_html=True)
 
-            if productos:
-                st.markdown("**📦 Products in this order:**")
-                if isinstance(productos, list):
-                    for prod in productos:
-                        prod_name = getattr(
-                            prod, "nombre", getattr(prod, "producto", str(prod))
-                        )
-                        prod_qty = getattr(prod, "cantidad", 1)
-                        st.markdown(f"- {prod_name} (x{prod_qty})")
-                else:
-                    st.info("Product details not available")
-            else:
-                st.info("Product details not available for this order")
+                st.markdown(
+                    f"""
+                    <div class="order-detail-card">
+                        <h4>👤 Client Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item full-width">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value">{order_data["email_cliente"]}</span>
+                            </div>
+                        </div>
+                        <br>
+                        {"<a href='mailto:" + order_data["email_cliente"] + "?subject=Order " + str(order_data["order_id"]) + "' class='custom-button primary' target='_blank'>📧 Contact Client</a>" if order_data["email_cliente"] != "N/A" else "<div class='custom-button disabled'>📧 No Email</div>"}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+            with col_right:
+                # Financial Summary (FIX: Shows list of names)
+                product_list_html = "<ul style='margin: 0; padding-left: 20px; color: white; font-size: 0.85rem; max-height: 150px; overflow-y: auto;'>"
+                for name in order_data["product_names"]:
+                    product_list_html += f"<li>{name}</li>"
+                product_list_html += "</ul>"
+
+                st.markdown(
+                    f"""
+                    <div class="order-detail-card">
+                        <h4>💰 Financial Summary</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item"><span class="detail-label">Total Value</span><span class="detail-value">€{order_data["price"]:,.2f}</span></div>
+                            <div class="detail-item"><span class="detail-label">Total Weight</span><span class="detail-value">{order_data["weight"]:,} kg</span></div>
+                            <div class="detail-item full-width" style="grid-column: 1 / -1;">
+                                <span class="detail-label">Included Items</span>
+                                <div class="detail-value" style="margin-top: 8px;">
+                                    {product_list_html}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
     def _render_route_inspector_tab(self, result: dict):
         trucks = [
@@ -442,7 +468,6 @@ class ResultsView:
             st.warning("No routes generated.")
             return
 
-        # Truck selector with preview
         col_sel, col_preview = st.columns([1, 2])
 
         with col_sel:
@@ -456,21 +481,13 @@ class ResultsView:
 
         with col_preview:
             if truck:
-                efficiency = (
+                (
                     (truck.beneficio_neto / truck.coste_total_ruta * 100)
                     if truck.coste_total_ruta > 0
                     else 0
                 )
                 st.markdown(
-                    f"""
-                    <div class="truck-preview-bar">
-                        <span>📏 {truck.distancia_total_km:,.1f} km</span>
-                        <span>📦 {len(truck.lista_pedidos_ordenada)} orders</span>
-                        <span>💰 €{truck.coste_total_ruta:,.2f} cost</span>
-                        <span>📈 €{truck.beneficio_neto:,.2f} profit</span>
-                        <span>⚡ {efficiency:.1f}% ROI</span>
-                    </div>
-                    """,
+                    f"""<div class="truck-preview-bar"><span>📏 {truck.distancia_total_km:,.1f} km</span><span>📦 {len(truck.lista_pedidos_ordenada)} orders</span><span>💰 €{truck.coste_total_ruta:,.2f} cost</span></div>""",
                     unsafe_allow_html=True,
                 )
 
@@ -479,71 +496,38 @@ class ResultsView:
 
         st.markdown("---")
 
-        # Main content
         col_left, col_right = st.columns([1, 2])
 
         with col_left:
             SectionHeader.render("📍", "Itinerary Trace")
             Timeline.render(truck.ciudades_ordenadas)
 
-            # Navigation button
             st.markdown("<div style='margin-top: 20px;'>", unsafe_allow_html=True)
-            if st.button(
-                "🧭 START NAVIGATION", type="primary", use_container_width=True
-            ):
-                maps_url = self._generate_google_maps_url(truck)
-                st.markdown(
-                    f"""
-                    <script>window.open("{maps_url}", "_blank");</script>
-                    <div class="nav-link-box">
-                        <a href="{maps_url}" target="_blank">🗺️ Open in Google Maps</a>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            st.markdown("</div>", unsafe_allow_html=True)
+            maps_url = self._generate_google_maps_url(truck)
+            st.markdown(
+                f"""<a href="{maps_url}" target="_blank" class="custom-button primary" style="display:block;text-align:center;">🧭 START NAVIGATION</a>""",
+                unsafe_allow_html=True,
+            )
 
-            # Route stats card
             st.markdown(
                 f"""
                 <div class="route-stats-card">
                     <h5>📊 Route Statistics</h5>
-                    <div class="stat-row">
-                        <span>Total Distance</span>
-                        <strong>{truck.distancia_total_km:,.1f} km</strong>
-                    </div>
-                    <div class="stat-row">
-                        <span>Estimated Duration</span>
-                        <strong>{truck.distancia_total_km / 80:.1f} hrs</strong>
-                    </div>
-                    <div class="stat-row">
-                        <span>Fuel Estimate</span>
-                        <strong>{truck.distancia_total_km * 0.3:.0f} L</strong>
-                    </div>
-                    <div class="stat-row">
-                        <span>Operating Cost</span>
-                        <strong>€{truck.coste_total_ruta:,.2f}</strong>
-                    </div>
-                    <div class="stat-row">
-                        <span>Total Revenue</span>
-                        <strong>€{truck.beneficio_neto + truck.coste_total_ruta:,.2f}</strong>
-                    </div>
-                    <div class="stat-row highlight">
-                        <span>Net Profit</span>
-                        <strong>€{truck.beneficio_neto:,.2f}</strong>
-                    </div>
+                    <div class="stat-row"><span>Total Distance</span><strong>{truck.distancia_total_km:,.1f} km</strong></div>
+                    <div class="stat-row"><span>Estimated Duration</span><strong>{truck.distancia_total_km / 80:.1f} hrs</strong></div>
+                    <div class="stat-row"><span>Fuel Estimate</span><strong>{truck.distancia_total_km * 0.3:.0f} L</strong></div>
+                    <div class="stat-row"><span>Operating Cost</span><strong>€{truck.coste_total_ruta:,.2f}</strong></div>
+                    <div class="stat-row highlight"><span>Net Profit</span><strong>€{truck.beneficio_neto:,.2f}</strong></div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
         with col_right:
-            # Map
             SectionHeader.render("🗺️", "Route Topology")
             route_single = [r for r in result["routes"] if r["camion_id"] == sel_id]
             SpainMapRoutes().render(route_single)
 
-            # Cargo manifest with arrival times
             st.markdown("<div style='margin-top: 24px;'>", unsafe_allow_html=True)
             SectionHeader.render("📦", "Cargo Manifest & Schedule")
 
@@ -561,72 +545,32 @@ class ResultsView:
                         "Destination": pedido.destino,
                         "Weight (kg)": pedido.cantidad_producto,
                         "ETA": eta,
-                        "Value (€)": getattr(
-                            pedido, "precio_venta", getattr(pedido, "precio", 0)
-                        ),
                     }
                 )
 
-            cargo_df = pd.DataFrame(cargo_data)
+            st.dataframe(pd.DataFrame(cargo_data), width="stretch", hide_index=True)
 
-            st.dataframe(
-                cargo_df,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Stop": st.column_config.NumberColumn("📍", width="small"),
-                    "Order ID": st.column_config.TextColumn("Order", width="small"),
-                    "Destination": st.column_config.TextColumn(
-                        "Destination", width="medium"
-                    ),
-                    "Weight (kg)": st.column_config.NumberColumn(
-                        "Weight", format="%d kg", width="small"
-                    ),
-                    "ETA": st.column_config.TextColumn("🕐 ETA", width="small"),
-                    "Value (€)": st.column_config.NumberColumn(
-                        "Value", format="€%.2f", width="small"
-                    ),
-                },
-            )
-
-            # Summary row
             total_weight = sum(
                 p.cantidad_producto for p in truck.lista_pedidos_ordenada
             )
-            total_value = sum(
-                getattr(p, "precio_venta", getattr(p, "precio", 0))
-                for p in truck.lista_pedidos_ordenada
-            )
-
             st.markdown(
-                f"""
-                <div class="cargo-summary">
-                    <span>📦 <strong>{len(truck.lista_pedidos_ordenada)}</strong> orders</span>
-                    <span>⚖️ <strong>{total_weight:,}</strong> kg total</span>
-                    <span>💰 <strong>€{total_value:,.2f}</strong> total value</span>
-                </div>
-                """,
+                f"""<div class="cargo-summary"><span>📦 <strong>{len(truck.lista_pedidos_ordenada)}</strong> orders</span><span>⚖️ <strong>{total_weight:,}</strong> kg total</span></div>""",
                 unsafe_allow_html=True,
             )
-
             st.markdown("</div>", unsafe_allow_html=True)
 
     def _generate_google_maps_url(self, truck) -> str:
-        """Generate Google Maps directions URL for the route."""
-        # Get coordinates from the route
         coords = truck.ruta_coordenadas
 
         if not coords or len(coords) < 2:
             return "https://www.google.com/maps"
 
-        # Origin and destination
         origin = f"{coords[0][0]},{coords[0][1]}"
         destination = f"{coords[-1][0]},{coords[-1][1]}"
 
-        # Waypoints (intermediate stops)
         waypoints = []
         for i, coord in enumerate(coords[1:-1]):
-            if i < 10:  # Google Maps limit
+            if i < 10:
                 waypoints.append(f"{coord[0]},{coord[1]}")
 
         waypoints_str = "|".join(waypoints) if waypoints else ""
@@ -637,17 +581,3 @@ class ResultsView:
         url += "&travelmode=driving"
 
         return url
-
-    def _export_results(self):
-        """Export results to CSV."""
-        result = SessionManager.get("ia_result")
-
-        if result and "assignments" in result:
-            csv = result["assignments"].to_csv(index=False)
-            st.download_button(
-                label="📥 Download CSV",
-                data=csv,
-                file_name="route_assignments.csv",
-                mime="text/csv",
-            )
-            st.toast("Export ready!", icon="✅")

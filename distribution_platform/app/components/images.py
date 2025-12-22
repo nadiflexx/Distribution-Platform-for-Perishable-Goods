@@ -13,23 +13,12 @@ class ImageLoader:
     @staticmethod
     def render(img_input, width=None):
         try:
-            use_container_width = width == "stretch"
-            actual_width = None if use_container_width else width
-
             if hasattr(img_input, "type"):
                 # Uploaded file
-                st.image(
-                    img_input,
-                    use_container_width=use_container_width,
-                    width=actual_width,
-                )
+                st.image(img_input, width="stretch")
             elif os.path.exists(str(img_input)):
                 # File path
-                st.image(
-                    str(img_input),
-                    use_container_width=use_container_width,
-                    width=actual_width,
-                )
+                st.image(str(img_input), width="stretch")
             else:
                 ImageLoader._placeholder()
         except Exception:

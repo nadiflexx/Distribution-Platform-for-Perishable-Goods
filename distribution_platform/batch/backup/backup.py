@@ -1,5 +1,5 @@
 from datetime import datetime
-import io  # <--- 1. Importar librería para manejar streams en memoria
+import io
 import os
 
 from dotenv import load_dotenv

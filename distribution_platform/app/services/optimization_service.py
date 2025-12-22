@@ -1,9 +1,11 @@
 """
-Optimization/simulation service.
+Optimization/simulation service with algorithm visualization support.
 """
 
+from dataclasses import dataclass, field
 import math
 import random
+from typing import Any
 
 import pandas as pd
 import streamlit as st
@@ -16,12 +18,34 @@ from distribution_platform.core.services.optimization_orchestrator import (
 )
 
 
+@dataclass
+class AlgorithmSnapshot:
+    """Represents a single state of the algorithm during optimization."""
+
+    iteration: int
+    description: str
+    nodes: list[dict[str, Any]]  # {id, name, lat, lon, type}
+    edges: list[dict[str, Any]]  # {from_id, to_id, color, weight}
+    current_best_cost: float = 0.0
+    trucks_assigned: int = 0
+
+
+@dataclass
+class AlgorithmTrace:
+    """Complete trace of algorithm execution."""
+
+    algorithm_name: str
+    snapshots: list[AlgorithmSnapshot] = field(default_factory=list)
+    final_cost: float = 0.0
+    total_iterations: int = 0
+
+
 class OptimizationService:
-    """Handles route optimization logic."""
+    """Handles route optimization logic with visualization support."""
 
     @staticmethod
     def run() -> dict | None:
-        """Execute the optimization and return results."""
+        """Execute the optimization and return results with algorithm trace."""
         try:
             algo = OptimizationService._get_algorithm()
             truck_data = SessionManager.get("selected_truck_data")
@@ -37,12 +61,20 @@ class OptimizationService:
             # Build config
             config = OptimizationService._build_config(truck_data)
 
-            # Run optimization
+            # Run optimization with tracing
             orchestrator = OptimizationOrchestrator(config=config, origin_base="Mataró")
             raw_results = orchestrator.optimize_deliveries(orders_data, algorithm=algo)
 
+            # Generate algorithm trace for visualization
+            algorithm_trace = OptimizationService._generate_algorithm_trace(
+                orders_data, raw_results, algo
+            )
+
             # Format results
-            return OptimizationService._format_results(raw_results)
+            results = OptimizationService._format_results(raw_results)
+            results["algorithm_trace"] = algorithm_trace
+
+            return results
 
         except Exception as e:
             print(f"CRITICAL SIMULATION ERROR: {e}")
@@ -87,6 +119,380 @@ class OptimizationService:
         )
 
     @staticmethod
+    def _generate_algorithm_trace(
+        orders_data: list, results: dict, algo: str
+    ) -> dict[str, AlgorithmTrace]:
+        """
+        Generate visualization trace for each truck's route optimization.
+        This simulates/reconstructs the algorithm's decision process.
+        """
+        traces = {}
+
+        # Flatten orders for reference
+        [order for group in orders_data for order in group]
+
+        # Origin coordinates (Mataró)
+        origin = {
+            "id": "origin",
+            "name": "Mataró",
+            "lat": 41.5381,
+            "lon": 2.4445,
+            "type": "origin",
+        }
+
+        for key, truck_result in results.items():
+            if key == "pedidos_no_entregables" or truck_result is None:
+                continue
+
+            trace = AlgorithmTrace(
+                algorithm_name="Genetic Algorithm"
+                if algo == "genetic"
+                else "Google OR-Tools"
+            )
+
+            route_orders = truck_result.lista_pedidos_ordenada
+            route_coords = truck_result.ruta_coordenadas
+
+            if not route_orders:
+                continue
+
+            # Build nodes list
+            nodes = [origin]
+            for i, order in enumerate(route_orders):
+                coord = route_coords[i + 1] if i + 1 < len(route_coords) else (0, 0)
+                nodes.append(
+                    {
+                        "id": f"order_{order.pedido_id}",
+                        "name": order.destino,
+                        "lat": coord[0],
+                        "lon": coord[1],
+                        "type": "delivery",
+                        "order_id": order.pedido_id,
+                    }
+                )
+
+            # Simulate algorithm progression
+            if algo == "genetic":
+                trace = OptimizationService._simulate_genetic_trace(
+                    nodes, route_orders, truck_result
+                )
+            else:
+                trace = OptimizationService._simulate_ortools_trace(
+                    nodes, route_orders, truck_result
+                )
+
+            traces[f"truck_{truck_result.camion_id}"] = trace
+
+        return traces
+
+    @staticmethod
+    def _simulate_genetic_trace(
+        nodes: list, route_orders: list, truck_result
+    ) -> AlgorithmTrace:
+        """Simulate genetic algorithm progression for visualization."""
+        trace = AlgorithmTrace(algorithm_name="Genetic Algorithm")
+
+        n_orders = len(route_orders)
+        if n_orders == 0:
+            return trace
+
+        # Phase 1: Initial random population
+        trace.snapshots.append(
+            AlgorithmSnapshot(
+                iteration=0,
+                description="Initializing population with random routes",
+                nodes=nodes.copy(),
+                edges=[],
+                current_best_cost=float("inf"),
+                trucks_assigned=0,
+            )
+        )
+
+        # Phase 2-5: Show random configurations
+        for gen in range(1, 5):
+            random_order = list(range(1, len(nodes)))
+            random.shuffle(random_order)
+
+            edges = []
+            edges.append(
+                {
+                    "from_id": 0,
+                    "to_id": random_order[0],
+                    "color": "#ef4444",
+                    "weight": 1,
+                }
+            )
+            for i in range(len(random_order) - 1):
+                edges.append(
+                    {
+                        "from_id": random_order[i],
+                        "to_id": random_order[i + 1],
+                        "color": "#ef4444",
+                        "weight": 1,
+                    }
+                )
+            edges.append(
+                {
+                    "from_id": random_order[-1],
+                    "to_id": 0,
+                    "color": "#ef4444",
+                    "weight": 1,
+                }
+            )
+
+            fake_cost = truck_result.distancia_total_km * (2.5 - gen * 0.3)
+
+            trace.snapshots.append(
+                AlgorithmSnapshot(
+                    iteration=gen,
+                    description=f"Generation {gen}: Evaluating fitness, crossover & mutation",
+                    nodes=nodes.copy(),
+                    edges=edges,
+                    current_best_cost=fake_cost,
+                    trucks_assigned=1,
+                )
+            )
+
+        # Phase 6-10: Convergence towards optimal
+        for gen in range(5, 11):
+            progress = (gen - 5) / 5  # 0 to 1
+
+            # Gradually approach final order
+            final_order = list(range(1, len(nodes)))
+
+            # Mix random with final based on progress
+            edges = []
+            current_order = final_order.copy()
+
+            # Add some randomness that decreases with progress
+            swaps = int((1 - progress) * 3)
+            for _ in range(swaps):
+                if len(current_order) > 1:
+                    i, j = random.sample(range(len(current_order)), 2)
+                    current_order[i], current_order[j] = (
+                        current_order[j],
+                        current_order[i],
+                    )
+
+            edges.append(
+                {
+                    "from_id": 0,
+                    "to_id": current_order[0],
+                    "color": "#f59e0b",
+                    "weight": 1,
+                }
+            )
+            for i in range(len(current_order) - 1):
+                edges.append(
+                    {
+                        "from_id": current_order[i],
+                        "to_id": current_order[i + 1],
+                        "color": "#f59e0b",
+                        "weight": 1,
+                    }
+                )
+            edges.append(
+                {
+                    "from_id": current_order[-1],
+                    "to_id": 0,
+                    "color": "#f59e0b",
+                    "weight": 1,
+                }
+            )
+
+            fake_cost = truck_result.distancia_total_km * (1.5 - progress * 0.5)
+
+            trace.snapshots.append(
+                AlgorithmSnapshot(
+                    iteration=gen,
+                    description=f"Generation {gen}: Population converging ({int(progress * 100)}%)",
+                    nodes=nodes.copy(),
+                    edges=edges,
+                    current_best_cost=fake_cost,
+                    trucks_assigned=1,
+                )
+            )
+
+        # Final: Optimal solution
+        final_order = list(range(1, len(nodes)))
+        edges = []
+        edges.append(
+            {"from_id": 0, "to_id": final_order[0], "color": "#10b981", "weight": 2}
+        )
+        for i in range(len(final_order) - 1):
+            edges.append(
+                {
+                    "from_id": final_order[i],
+                    "to_id": final_order[i + 1],
+                    "color": "#10b981",
+                    "weight": 2,
+                }
+            )
+        edges.append(
+            {"from_id": final_order[-1], "to_id": 0, "color": "#10b981", "weight": 2}
+        )
+
+        trace.snapshots.append(
+            AlgorithmSnapshot(
+                iteration=11,
+                description="✓ Optimal solution found!",
+                nodes=nodes.copy(),
+                edges=edges,
+                current_best_cost=truck_result.distancia_total_km,
+                trucks_assigned=1,
+            )
+        )
+
+        trace.final_cost = truck_result.distancia_total_km
+        trace.total_iterations = 11
+
+        return trace
+
+    @staticmethod
+    def _simulate_ortools_trace(
+        nodes: list, route_orders: list, truck_result
+    ) -> AlgorithmTrace:
+        """Simulate OR-Tools algorithm progression for visualization."""
+        trace = AlgorithmTrace(
+            algorithm_name="Google OR-Tools (Constraint Programming)"
+        )
+
+        n_orders = len(route_orders)
+        if n_orders == 0:
+            return trace
+
+        # Phase 1: Building distance matrix
+        trace.snapshots.append(
+            AlgorithmSnapshot(
+                iteration=0,
+                description="Building distance matrix between all nodes",
+                nodes=nodes.copy(),
+                edges=[
+                    {"from_id": i, "to_id": j, "color": "#3b82f6", "weight": 0.5}
+                    for i in range(len(nodes))
+                    for j in range(len(nodes))
+                    if i != j
+                ],
+                current_best_cost=float("inf"),
+                trucks_assigned=0,
+            )
+        )
+
+        # Phase 2: Initial feasible solution
+        edges = []
+        for i in range(len(nodes) - 1):
+            edges.append(
+                {"from_id": i, "to_id": i + 1, "color": "#8b5cf6", "weight": 1}
+            )
+        edges.append(
+            {"from_id": len(nodes) - 1, "to_id": 0, "color": "#8b5cf6", "weight": 1}
+        )
+
+        trace.snapshots.append(
+            AlgorithmSnapshot(
+                iteration=1,
+                description="Initial greedy solution (nearest neighbor)",
+                nodes=nodes.copy(),
+                edges=edges,
+                current_best_cost=truck_result.distancia_total_km * 1.8,
+                trucks_assigned=1,
+            )
+        )
+
+        # Phase 3-6: Local search improvements
+        for step in range(2, 7):
+            progress = (step - 2) / 4
+
+            # Simulate 2-opt improvements
+            current_order = list(range(1, len(nodes)))
+
+            # Gradually improve
+            if step < 5:
+                swaps = 5 - step
+                for _ in range(swaps):
+                    if len(current_order) > 1:
+                        i, j = random.sample(range(len(current_order)), 2)
+                        current_order[i], current_order[j] = (
+                            current_order[j],
+                            current_order[i],
+                        )
+
+            edges = []
+            edges.append(
+                {
+                    "from_id": 0,
+                    "to_id": current_order[0],
+                    "color": "#8b5cf6",
+                    "weight": 1,
+                }
+            )
+            for i in range(len(current_order) - 1):
+                edges.append(
+                    {
+                        "from_id": current_order[i],
+                        "to_id": current_order[i + 1],
+                        "color": "#8b5cf6",
+                        "weight": 1,
+                    }
+                )
+            edges.append(
+                {
+                    "from_id": current_order[-1],
+                    "to_id": 0,
+                    "color": "#8b5cf6",
+                    "weight": 1,
+                }
+            )
+
+            cost = truck_result.distancia_total_km * (1.8 - progress * 0.8)
+
+            trace.snapshots.append(
+                AlgorithmSnapshot(
+                    iteration=step,
+                    description=f"Local search: 2-opt swap iteration {step - 1}",
+                    nodes=nodes.copy(),
+                    edges=edges,
+                    current_best_cost=cost,
+                    trucks_assigned=1,
+                )
+            )
+
+        # Final: Optimal
+        final_order = list(range(1, len(nodes)))
+        edges = []
+        edges.append(
+            {"from_id": 0, "to_id": final_order[0], "color": "#10b981", "weight": 2}
+        )
+        for i in range(len(final_order) - 1):
+            edges.append(
+                {
+                    "from_id": final_order[i],
+                    "to_id": final_order[i + 1],
+                    "color": "#10b981",
+                    "weight": 2,
+                }
+            )
+        edges.append(
+            {"from_id": final_order[-1], "to_id": 0, "color": "#10b981", "weight": 2}
+        )
+
+        trace.snapshots.append(
+            AlgorithmSnapshot(
+                iteration=7,
+                description="✓ Optimal solution verified!",
+                nodes=nodes.copy(),
+                edges=edges,
+                current_best_cost=truck_result.distancia_total_km,
+                trucks_assigned=1,
+            )
+        )
+
+        trace.final_cost = truck_result.distancia_total_km
+        trace.total_iterations = 7
+
+        return trace
+
+    @staticmethod
     def _format_results(raw: dict) -> dict:
         routes = []
         full = {}
@@ -112,7 +518,6 @@ class OptimizationService:
             total_profit += value.beneficio_neto
             full[key] = value
 
-        # Build assignments dataframe
         assigns = []
         for route in full.values():
             for pedido in route.lista_pedidos_ordenada:

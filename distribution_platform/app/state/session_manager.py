@@ -58,14 +58,12 @@ class SessionManager:
         """Check if all conditions are met to launch optimization."""
         return cls.get("truck_validated") and cls.get("load_success")
 
-    # --- Convenience Properties ---
-
     @classmethod
-    @property
-    def selected_truck(cls) -> dict | None:
+    def get_selected_truck(cls) -> dict | None:
+        """Get the currently selected truck data."""
         return cls.get("selected_truck_data")
 
     @classmethod
-    @property
-    def optimization_result(cls) -> dict | None:
+    def get_optimization_result(cls) -> dict | None:
+        """Get the AI optimization result."""
         return cls.get("ia_result")

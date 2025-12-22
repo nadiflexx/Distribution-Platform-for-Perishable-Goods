@@ -56,7 +56,7 @@ class FormView:
 
         st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
 
-        if st.button("⚡ SYNC DATA STREAM", type="secondary", use_container_width=True):
+        if st.button("⚡ SYNC DATA STREAM", type="secondary", width="stretch"):
             if source == "Database":
                 if DataService.load_from_database():
                     st.rerun()
@@ -90,11 +90,13 @@ class FormView:
         if SessionManager.get("truck_validated"):
             ValidationBadge.success()
         else:
-            if st.button(
-                "🔒 VERIFY VEHICLE INTEGRITY", type="primary", use_container_width=True
+            if (
+                st.button(
+                    "🔒 VERIFY VEHICLE INTEGRITY", type="primary", width="stretch"
+                )
+                and ValidationService.validate_truck()
             ):
-                if ValidationService.validate_truck():
-                    st.rerun()
+                st.rerun()
 
     def _render_standard_fleet(self, category: str):
         cat_key = VehicleCategory.to_key(category)
@@ -173,7 +175,7 @@ class FormView:
         st.markdown("</div>", unsafe_allow_html=True)
         st.markdown("<div style='height: 15px'></div>", unsafe_allow_html=True)
 
-        if st.button("💾 SAVE TO DATABASE", type="secondary", use_container_width=True):
+        if st.button("💾 SAVE TO DATABASE", type="secondary", width="stretch"):
             img_filename = self.repository.save_image(uploaded_img, name)
             truck_data = {
                 "capacidad": cap,
@@ -207,7 +209,5 @@ class FormView:
                 label_visibility="collapsed",
             )
 
-            if st.button(
-                "🚀 INITIATE SEQUENCE", type="primary", use_container_width=True
-            ):
+            if st.button("🚀 INITIATE SEQUENCE", type="primary", width="stretch"):
                 SessionManager.set_phase(AppPhase.PROCESSING)

@@ -43,11 +43,11 @@ class Application:
                     margin: 0;
                     padding: 0;
                 }
-                
+
                 .stApp {
                     background: #030305 !important;
                 }
-                
+
                 /* Hide Streamlit branding during load */
                 #MainMenu, footer, header {
                     visibility: hidden;
