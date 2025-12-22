@@ -1,15 +1,17 @@
+import math
 import os
 import random
+import time
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
-# Mantenemos todas las importaciones originales
+# --- Internal Core Imports ---
 from distribution_platform.config.settings import MapConfig, Paths
 from distribution_platform.core.inference_engine.engine import InferenceMotor
 from distribution_platform.core.knowledge_base import rules
 from distribution_platform.core.knowledge_base.rules import (
-    obtain_format_validation_rules,
     parse_truck_data,
 )
 from distribution_platform.core.models.optimization import SimulationConfig
@@ -22,882 +24,1172 @@ from distribution_platform.infrastructure.persistence.truck_repository import (
     TruckRepository,
 )
 
+# Initialize Repository
 repository = TruckRepository()
 
-# ======================================================================
-#   HELPER: STYLING WRAPPERS
-# ======================================================================
+# Supported file types for data upload
+SUPPORTED_FILE_TYPES = ["csv", "txt", "xlsx"]
 
+# ==============================================================================
+#   VISUAL COMPONENT LIBRARY
+# ==============================================================================
 
-def start_card(title, icon="🔹"):
-    """Inicia un contenedor visual estilo tarjeta."""
-    st.markdown(
-        f"""
-    <div class="modern-card">
-        <div class="card-header">
-            <span class="card-icon">{icon}</span>
-            <h3 class="card-title">{title}</h3>
-        </div>
-    """,
-        unsafe_allow_html=True,
-    )
 
+class UI:
+    """Static library for reusable UI components matching the CSS theme."""
 
-def end_card():
-    """Cierra el contenedor de tarjeta."""
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
-# ======================================================================
-#   INITIAL STATE
-# ======================================================================
-
-
-def init_state():
-    defaults = {
-        "page": "form",
-        "connection_type": None,
-        "df": None,
-        "selected_truck_data": None,
-        "ia_result": None,
-        "load_success": False,
-        "truck_validated": False,
-        "truck_creation_in_progress": False,
-        "truck_created_successfully": False,
-        "selected_truck": None,
-        "orders_df": None,
-    }
-    for key, val in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = val
-
-
-# ======================================================================
-#   TITLE
-# ======================================================================
-
-
-def render_title():
-    st.markdown(
-        """
-        <div class="main-header">
-            <h1>🚚 AI Delivery Planner</h1>
-            <p>Planificación inteligente de rutas para productos perecederos.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-# ======================================================================
-#   DATA SOURCE SELECTOR
-# ======================================================================
-
-
-def render_connection_selector():
-    start_card("Fuente de Datos", icon="📂")
-
-    col1, col2 = st.columns([1, 3])
-
-    with col1:
-        st.info("Selecciona el origen de tus datos para comenzar el análisis.")
-
-    with col2:
-        connection = st.radio(
-            "¿Cómo deseas cargar los datos?",
-            ["Database", "Files"],
-            key="connection_type",
-            horizontal=True,
-            help="Elige 'Database' para conexión directa o 'Files' para subir CSV/XLSX/TXT.",
-        )
-
-    file_inputs = {}
-
-    if connection == "Files":
-        st.markdown("---")
-        st.write("#### 📄 Subida de Archivos CSV")
-
-        # Grid layout for file uploaders
-        c1, c2 = st.columns(2)
-        with c1:
-            file_inputs["clientes"] = st.file_uploader("👤 Clientes (dboClientes)")
-            file_inputs["lineas_pedido"] = st.file_uploader(
-                "📝 Líneas Pedido (dboLineasPedido)"
-            )
-            file_inputs["pedidos"] = st.file_uploader("📦 Pedidos (dboPedidos)")
-        with c2:
-            file_inputs["productos"] = st.file_uploader("🍎 Productos (dboProductos)")
-            file_inputs["provincias"] = st.file_uploader(
-                "📍 Provincias (dboProvincias)"
-            )
-            file_inputs["destinos"] = st.file_uploader("🏁 Destinos (dboDestinos)")
-
-    end_card()
-    return connection, file_inputs
-
-
-# ======================================================================
-#   DATA LOADING
-# ======================================================================
-
-
-def load_data(connection_type, file_inputs):
-    """Load data from database or CSV files."""
-
-    if connection_type == "Database":
-        with st.spinner("🔌 Conectando a la base de datos..."):
-            try:
-                orders = run_etl(use_database=False)
-            except Exception as e:
-                st.error(f"❌ Error conectando a BD:\n{e}")
-                st.session_state.load_success = False
-                return None
-    else:
-        missing = [k for k, f in file_inputs.items() if f is None]
-        if missing:
-            st.error("❌ Faltan archivos:\n- " + "\n- ".join(missing))
-            return None
-
-        try:
-            with st.spinner("🔄 Procesando archivos ETL..."):
-                orders = run_etl(uploaded_files=file_inputs)
-        except Exception as e:
-            st.error(f"❌ Error ejecutando ETL con archivos:\n{e}")
-            st.session_state.load_success = False
-            return None
-
-    # Validate result
-    if orders is None or (hasattr(orders, "empty") and orders.empty):
-        st.error("❌ El proceso ETL no retornó datos válidos.")
-        return None
-
-    st.toast(f"✅ Datos cargados correctamente ({len(orders)} registros).", icon="🎉")
-    st.session_state.df = orders
-    st.session_state.load_success = True
-
-
-# ======================================================================
-#   TRUCK SELECTOR
-# ======================================================================
-
-
-def render_truck_selector():
-    start_card("Configuración de Flota", icon="🚛")
-
-    if not st.session_state.load_success:
-        st.warning(
-            "⚠️ Por favor, carga los datos en la sección anterior para continuar."
-        )
-        end_card()
-        return
-
-    st.success("📦 Datos listos. Selecciona el vehículo para la ruta.")
-    st.markdown("---")
-
-    show_trucks_selection()
-
-    disabled = (
-        st.session_state.truck_creation_in_progress
-        and not st.session_state.truck_created_successfully
-    )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Centered button
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button(
-            "✔️ Confirmar Vehículo",
-            disabled=disabled,
-            type="primary",
-            width="stretch",
-        ):
-            truck = validate_and_confirm_truck()
-            if truck is not None:
-                st.session_state.selected_truck = truck
-
-    end_card()
-
-
-def validate_and_confirm_truck():
-    truck_data = st.session_state.selected_truck_data
-
-    if not truck_data:
-        st.error("❌ No se ha seleccionado ningún camión.")
-        return
-
-    is_valid, result = parse_truck_data(truck_data)
-
-    if not is_valid:
-        st.error(f"❌ Error convirtiendo datos: {result.get('error')}")
-        return
-
-    with st.spinner("🔍 El motor de IA está validando el vehículo..."):
-        motor = InferenceMotor(rules.obtain_rules())
-        validation_result = motor.evaluate(result)
-
-    if validation_result.is_valid:
-        st.success("✅ El camión seleccionado es VÁLIDO")
-        st.session_state.truck_validated = True
-        return result
-    else:
-        st.error("❌ El camión NO cumple los requisitos")
-        st.session_state.truck_validated = False
-
-    return None
-
-
-def show_trucks_selection():
-    col_opt, col_disp = st.columns([1, 2])
-
-    with col_opt:
-        st.write("**Tipo de Vehículo**")
-        truck_type = st.radio(
-            "Selecciona categoría:",
-            ["Camión Grande", "Camión Mediano", "Camión Personalizado"],
-            key="truck_type",
-            label_visibility="collapsed",
-        )
-
-    if truck_type != "Camión Personalizado":
-        st.session_state.truck_creation_in_progress = False
-        st.session_state.truck_created_successfully = False
-
-    with col_disp:
-        if truck_type == "Camión Grande":
-            _show_standard_truck(
-                repository.get_trucks("large"), Paths.TRUCK_IMAGES["large"]
-            )
-        elif truck_type == "Camión Mediano":
-            _show_standard_truck(
-                repository.get_trucks("medium"), Paths.TRUCK_IMAGES["medium"]
-            )
-        else:
-            _show_custom_truck_selection()
-
-
-# ======================================================================
-#   STANDARD TRUCK SELECTION
-# ======================================================================
-
-
-def _show_standard_truck(trucks_dict, folder_path):
-    selected_truck = st.selectbox(
-        "Elige un modelo:",
-        list(trucks_dict.keys()),
-    )
-
-    if selected_truck:
-        data = trucks_dict[selected_truck]
-        img_path = os.path.join(folder_path, data["imagen"])
-
-        _display_truck_details(selected_truck, data, img_path)
-
-        st.session_state.selected_truck_data = {
-            "nombre": selected_truck,
-            "capacidad": data["capacidad"],
-            "consumo": data["consumo"],
-            "velocidad_constante": data["velocidad_constante"],
-            "precio_conductor_hora": data["precio_conductor_hora"],
-            "imagen": data["imagen"],
-        }
-
-
-# ======================================================================
-#   CUSTOM TRUCKS
-# ======================================================================
-
-
-def _show_custom_truck_selection():
-    camiones_personalizados = repository.get_trucks("custom")
-
-    if camiones_personalizados:
-        option = st.radio(
-            "Acción:",
-            ["Usar existente", "Crear nuevo"],
-            horizontal=True,
-            key="custom_option",
-        )
-
-        if option == "Usar existente":
-            _show_existing_custom_truck(camiones_personalizados)
-        else:
-            _show_custom_truck_form()
-    else:
-        st.info("No hay camiones personalizados. ¡Crea el primero!")
-        _show_custom_truck_form()
-
-
-def _show_existing_custom_truck(camiones):
-    custom_truck = st.selectbox(
-        "Mis camiones personalizados:",
-        list(camiones.keys()),
-    )
-
-    if custom_truck:
-        data = camiones[custom_truck]
-        img_path = os.path.join(Paths.TRUCK_IMAGES["custom"], data["imagen"])
-        _display_truck_details(custom_truck, data, img_path)
-        st.session_state.selected_truck_data = data | {"nombre": custom_truck}
-
-
-# ======================================================================
-#   DISPLAY TRUCK DETAILS (Beautiful HTML Card)
-# ======================================================================
-
-
-def _display_truck_details(name, data, img_path):
-    st.markdown(f"#### 📋 Ficha Técnica: {name}")
-
-    c1, c2 = st.columns([1, 1.5])
-
-    with c1:
-        if os.path.exists(img_path):
-            st.image(img_path, width="stretch")
-        else:
-            st.warning("⚠️ Imagen no encontrada")
-
-    with c2:
+    @staticmethod
+    def card(title, icon, content_fn=None):
         st.markdown(
             f"""
-        <div class="truck-details" style="background:white; padding:10px; border-radius:8px;">
-            <div class="detail-row"><strong>📦 Capacidad:</strong> <span>{data["capacidad"]} kg</span></div>
-            <div class="detail-row"><strong>⛽ Consumo:</strong> <span>{data["consumo"]} L/100km</span></div>
-            <div class="detail-row"><strong>🚀 Velocidad:</strong> <span>{data["velocidad_constante"]} km/h</span></div>
-            <div class="detail-row"><strong>👨‍✈️ Coste Conductor:</strong> <span>{data["precio_conductor_hora"]} €/h</span></div>
-        </div>
+        <div class="pro-card animate-in">
+            <div class="card-header">
+                <span class="card-icon">{icon}</span>
+                <span class="card-title">{title}</span>
+            </div>
         """,
             unsafe_allow_html=True,
         )
+        if content_fn:
+            content_fn()
+        st.markdown("</div>", unsafe_allow_html=True)
 
-
-# ======================================================================
-#   CUSTOM TRUCK FORM
-# ======================================================================
-
-
-def _show_custom_truck_form():
-    st.markdown("##### 🛠️ Especificaciones del Nuevo Camión")
-
-    with st.form("custom_truck_form"):
-        col1, col2 = st.columns(2)
-
-        with col1:
-            name = st.text_input("🏷️ Nombre del Modelo")
-            capacity = st.text_input("📦 Capacidad (kg)")
-            image_file = st.file_uploader(
-                "🖼 Imagen (PNG/JPG)", type=["png", "jpg", "jpeg"]
-            )
-
-        with col2:
-            consumption = st.text_input("⛽ Consumo (L/100km)")
-            speed = st.text_input("🚀 Velocidad (km/h)")
-            price_driver = st.text_input("👨‍✈️ Coste Hora (€)")
-
-        submitted = st.form_submit_button(
-            "Guardar Vehículo", type="primary", width="stretch"
+    @staticmethod
+    def section_header(icon, title):
+        """Renders a properly formatted section header."""
+        st.markdown(
+            f"""
+            <div class="section-header">
+                <span class="section-icon">{icon}</span>
+                <span class="section-title">{title}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
-        if not submitted:
-            return
-
-        # Validation Logic
-        truck_data = {
-            "nombre": name,
-            "capacidad": capacity,
-            "consumo": consumption,
-            "velocidad_constante": speed,
-            "precio_conductor_hora": price_driver,
-        }
-
-        validations = [rule(truck_data) for rule in obtain_format_validation_rules()]
-        all_valid = True
-        for v in validations:
-            if not v.startswith("✔"):
-                st.error(v)
-                all_valid = False
-
-        if not all_valid:
-            return
-
-        is_valid, transformed = parse_truck_data(truck_data)
-        if not is_valid:
-            st.error(f"Error de conversión: {transformed.get('error')}")
-            return
-
-        # Save image
-        image_name = repository.save_image(image_file, name)
-
-        new_truck_data = {
-            "capacidad": capacity,
-            "consumo": consumption,
-            "velocidad_constante": speed,
-            "precio_conductor_hora": price_driver,
-            "imagen": image_name,
-        }
-        # Save truck
-        ok = repository.save_custom_truck(name, new_truck_data)
-
-        if ok:
-            st.success("🎉 ¡Camión creado exitosamente!")
-            preview_data = truck_data | {"imagen": image_name}
-
-            # Update Session
-            st.session_state.selected_truck_data = preview_data
-            st.session_state.truck_created_successfully = True
-
-            # Force rerun to update list or show details
-            st.rerun()
-        else:
-            st.error("❌ Error guardando el camión.")
-
-
-# ======================================================================
-#   AI SIMULATION - BRAINCORE OPTIMIZATION
-# ======================================================================
-
-
-def simulate_ia(df, truck_data, algorithm="genetic"):
-    """
-    Ejecuta la optimización usando la nueva arquitectura (Orchestrator + Strategy).
-    """
-    try:
-        # 1. Configurar camión (Mapeo del dict UI -> Modelo Pydantic)
-        config_camion = SimulationConfig(
-            velocidad_constante=float(truck_data.get("velocidad_constante", 90.0)),
-            consumo_combustible=float(truck_data.get("consumo", 30.0)),
-            capacidad_carga=float(truck_data.get("capacidad", 1000.0)),
-            salario_conductor_hora=float(truck_data.get("precio_conductor_hora", 15.0)),
-            precio_combustible_litro=1.50,  # Valor por defecto
-            peso_unitario_default=1.0,
+    @staticmethod
+    def loading_overlay_static(
+        title="SYSTEM PROCESSING", subtitle="Calculating optimal topology..."
+    ):
+        """Static loading overlay using pure HTML/CSS (renders immediately)."""
+        st.markdown(
+            f"""
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=JetBrains+Mono:wght@400&display=swap');
+                
+                .static-loader-overlay {{
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: #030305;
+                    z-index: 999999;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                }}
+                
+                .static-loader-content {{
+                    text-align: center;
+                }}
+                
+                .static-loader-logo {{
+                    position: relative;
+                    width: 120px;
+                    height: 120px;
+                    margin: 0 auto 30px;
+                }}
+                
+                .static-logo-ring {{
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    border: 2px solid transparent;
+                    border-top-color: #6366f1;
+                    border-radius: 50%;
+                    animation: static-spin 1.5s linear infinite;
+                }}
+                
+                .static-logo-ring.ring-2 {{
+                    width: 80%;
+                    height: 80%;
+                    top: 10%;
+                    left: 10%;
+                    border-top-color: #06b6d4;
+                    animation-direction: reverse;
+                    animation-duration: 1s;
+                }}
+                
+                .static-logo-core {{
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-family: 'Rajdhani', sans-serif;
+                    font-size: 28px;
+                    font-weight: 700;
+                    color: #6366f1;
+                    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+                }}
+                
+                .static-loader-title {{
+                    font-family: 'Rajdhani', sans-serif;
+                    font-size: 2.5rem;
+                    color: white;
+                    margin: 0 0 10px 0;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                }}
+                
+                .static-loader-subtitle {{
+                    color: #a1a1aa;
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 0.9rem;
+                    margin: 0;
+                }}
+                
+                .static-scanner-line {{
+                    width: 300px;
+                    height: 3px;
+                    background: #1f1f22;
+                    position: relative;
+                    overflow: hidden;
+                    margin: 25px auto;
+                    border-radius: 3px;
+                }}
+                
+                .static-scanner-line::after {{
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 40%;
+                    background: linear-gradient(90deg, transparent, #6366f1, #06b6d4, transparent);
+                    animation: static-scan 1.5s infinite linear;
+                }}
+                
+                .static-loader-dots {{
+                    display: flex;
+                    justify-content: center;
+                    gap: 8px;
+                    margin-top: 10px;
+                }}
+                
+                .static-loader-dots span {{
+                    width: 8px;
+                    height: 8px;
+                    background: #6366f1;
+                    border-radius: 50%;
+                    animation: static-pulse-dot 1.4s infinite ease-in-out;
+                }}
+                
+                .static-loader-dots span:nth-child(2) {{ animation-delay: 0.2s; }}
+                .static-loader-dots span:nth-child(3) {{ animation-delay: 0.4s; }}
+                
+                @keyframes static-spin {{ to {{ transform: rotate(360deg); }} }}
+                @keyframes static-scan {{ 0% {{ left: -40%; }} 100% {{ left: 100%; }} }}
+                @keyframes static-pulse-dot {{
+                    0%, 80%, 100% {{ transform: scale(0.6); opacity: 0.5; }}
+                    40% {{ transform: scale(1); opacity: 1; }}
+                }}
+            </style>
+            
+            <div class="static-loader-overlay">
+                <div class="static-loader-content">
+                    <div class="static-loader-logo">
+                        <div class="static-logo-ring"></div>
+                        <div class="static-logo-ring ring-2"></div>
+                        <div class="static-logo-core">BC</div>
+                    </div>
+                    <h1 class="static-loader-title">{title}</h1>
+                    <p class="static-loader-subtitle">{subtitle}</p>
+                    <div class="static-scanner-line"></div>
+                    <div class="static-loader-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
-        # 2. Instanciar el Orquestador
-        # (Reemplaza a la antigua clase OptimizadorSistema)
-        optimizador = OptimizationOrchestrator(
-            config=config_camion,
-            origin_base="Mataró",
-        )
-
-        # 3. Ejecutar Optimización
-        # (Llama internamente a GeneticStrategy o ILSStrategy)
-        resultados = optimizador.optimize_deliveries(
-            orders=df,
-            algorithm=algorithm,  # <--- AQUÍ SE USA
-            generations=100,
-            pop_size=40,
-        )
-
-        # 4. Transformar resultados para la UI (Tu lógica original intacta)
-        routes = []
-        assignments_data = []
-        pedidos_imposibles_data = []
-        total_distancia = 0
-        total_coste = 0
-        total_ingresos = 0
-        total_beneficio = 0
-
-        # A) Procesar Pedidos Imposibles
-        pedidos_no_entregables = resultados.get("pedidos_no_entregables", [])
-        if pedidos_no_entregables:
-            for pedido in pedidos_no_entregables:
-                pedidos_imposibles_data.append(
-                    {
-                        "Pedido ID": pedido.pedido_id,
-                        "Destino": pedido.destino,
-                        "Peso (kg)": pedido.cantidad_producto,
-                        "Caducidad (días)": pedido.caducidad,
-                        "Motivo": "❌ Isla sin conexión terrestre",
-                    }
-                )
-
-        # B) Procesar Rutas Válidas
-        for key, resultado in resultados.items():
-            if key == "pedidos_no_entregables" or resultado is None:
-                continue
-
-            try:
-                # Datos para el Mapa
-                route = {
-                    "path": resultado.ruta_coordenadas,
-                    "color": random.choice(MapConfig.ROUTE_COLORS),
-                    "pedidos": resultado.lista_pedidos_ordenada,
-                    "camion_id": resultado.camion_id,
-                    "tiempos_llegada": getattr(resultado, "tiempos_llegada", []),
+    @staticmethod
+    def inject_persistent_loader():
+        """
+        Injects a loading overlay that persists until the map is fully loaded.
+        Uses CSS-only hiding (no DOM manipulation) to avoid conflicts with Streamlit.
+        """
+        st.markdown(
+            """
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=JetBrains+Mono:wght@400&display=swap');
+                
+                #persistentMapLoader {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: #030305;
+                    z-index: 999999;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 1;
+                    visibility: visible;
+                    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
                 }
-                routes.append(route)
+                
+                #persistentMapLoader.loader-hidden {
+                    opacity: 0;
+                    visibility: hidden;
+                    pointer-events: none;
+                }
+                
+                .persist-loader-logo {
+                    position: relative;
+                    width: 120px;
+                    height: 120px;
+                    margin-bottom: 30px;
+                }
+                
+                .persist-logo-ring {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    border: 2px solid transparent;
+                    border-top-color: #6366f1;
+                    border-radius: 50%;
+                    animation: persist-spin 1.5s linear infinite;
+                }
+                
+                .persist-logo-ring.ring-2 {
+                    width: 80%;
+                    height: 80%;
+                    top: 10%;
+                    left: 10%;
+                    border-top-color: #06b6d4;
+                    animation-direction: reverse;
+                    animation-duration: 1s;
+                }
+                
+                .persist-logo-core {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-family: 'Rajdhani', sans-serif;
+                    font-size: 28px;
+                    font-weight: 700;
+                    color: #6366f1;
+                    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+                }
+                
+                .persist-loader-title {
+                    font-family: 'Rajdhani', sans-serif;
+                    font-size: 2.5rem;
+                    color: white;
+                    margin: 0 0 10px 0;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                }
+                
+                .persist-loader-subtitle {
+                    color: #a1a1aa;
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 0.9rem;
+                    margin: 0;
+                }
+                
+                .persist-loader-status {
+                    color: #6366f1;
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 0.75rem;
+                    margin-top: 30px;
+                    opacity: 0.8;
+                    min-height: 20px;
+                }
+                
+                .persist-scanner-line {
+                    width: 300px;
+                    height: 3px;
+                    background: #1f1f22;
+                    position: relative;
+                    overflow: hidden;
+                    margin: 25px auto;
+                    border-radius: 3px;
+                }
+                
+                .persist-scanner-line::after {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 40%;
+                    background: linear-gradient(90deg, transparent, #6366f1, #06b6d4, transparent);
+                    animation: persist-scan 1.5s infinite linear;
+                }
+                
+                .persist-loader-dots {
+                    display: flex;
+                    justify-content: center;
+                    gap: 8px;
+                    margin-top: 10px;
+                }
+                
+                .persist-loader-dots span {
+                    width: 8px;
+                    height: 8px;
+                    background: #6366f1;
+                    border-radius: 50%;
+                    animation: persist-pulse-dot 1.4s infinite ease-in-out;
+                }
+                
+                .persist-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+                .persist-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+                
+                @keyframes persist-spin { to { transform: rotate(360deg); } }
+                @keyframes persist-scan { 0% { left: -40%; } 100% { left: 100%; } }
+                @keyframes persist-pulse-dot {
+                    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+                    40% { transform: scale(1); opacity: 1; }
+                }
+            </style>
+            
+            <div id="persistentMapLoader">
+                <div class="persist-loader-logo">
+                    <div class="persist-logo-ring"></div>
+                    <div class="persist-logo-ring ring-2"></div>
+                    <div class="persist-logo-core">BC</div>
+                </div>
+                <h1 class="persist-loader-title">ENGINE OPTIMIZATION</h1>
+                <p class="persist-loader-subtitle">Rendering Geospatial Topology...</p>
+                <div class="persist-scanner-line"></div>
+                <div class="persist-loader-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="persist-loader-status" id="persistLoaderStatus">Initializing visualization engine...</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-                # Métricas Globales
-                total_distancia += resultado.distancia_total_km
-                total_coste += resultado.coste_total_ruta
-                total_ingresos += resultado.ingresos_totales
-                total_beneficio += resultado.beneficio_neto
-
-                # Datos para Tabla de Asignaciones
-                for pedido in resultado.lista_pedidos_ordenada:
-                    assignments_data.append(
-                        {
-                            "Camión": resultado.camion_id,
-                            "Pedido ID": pedido.pedido_id,
-                            "Destino": pedido.destino,
-                            "Peso (kg)": pedido.cantidad_producto,
-                            "Caducidad (días)": pedido.caducidad,
+    @staticmethod
+    def inject_map_detector_script():
+        """
+        Injects JavaScript that detects when the map is loaded and hides the overlay.
+        Only uses CSS class toggle - no DOM manipulation to avoid Streamlit conflicts.
+        """
+        components.html(
+            """
+            <script>
+                (function() {
+                    const parentDoc = window.parent.document;
+                    
+                    function updateStatus(msg) {
+                        try {
+                            const status = parentDoc.getElementById('persistLoaderStatus');
+                            if (status) status.textContent = msg;
+                        } catch (e) {}
+                    }
+                    
+                    function hideOverlay() {
+                        try {
+                            const overlay = parentDoc.getElementById('persistentMapLoader');
+                            if (overlay && !overlay.classList.contains('loader-hidden')) {
+                                updateStatus('Visualization ready!');
+                                // Only add CSS class - don't manipulate DOM
+                                overlay.classList.add('loader-hidden');
+                            }
+                        } catch (e) {
+                            console.log('Overlay hide error:', e);
                         }
-                    )
-
-            except Exception as e:
-                st.error(f"Error procesando camión {key}: {str(e)}")
-                continue
-
-        # Crear DataFrames
-        assignments_df = (
-            pd.DataFrame(assignments_data) if assignments_data else pd.DataFrame()
+                    }
+                    
+                    function checkMapLoaded() {
+                        try {
+                            const iframes = parentDoc.querySelectorAll('iframe');
+                            
+                            for (let iframe of iframes) {
+                                try {
+                                    const srcdoc = iframe.srcdoc || '';
+                                    const src = iframe.src || '';
+                                    
+                                    // Check for Leaflet/Folium map
+                                    if (srcdoc.includes('leaflet') || srcdoc.includes('folium') || 
+                                        srcdoc.includes('L.map') || src.includes('leaflet')) {
+                                        
+                                        updateStatus('Map container detected...');
+                                        
+                                        // Try to check tiles inside iframe
+                                        try {
+                                            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                                            if (iframeDoc) {
+                                                const tiles = iframeDoc.querySelectorAll('.leaflet-tile-loaded');
+                                                if (tiles.length > 2) {
+                                                    updateStatus('Map tiles loaded!');
+                                                    return true;
+                                                }
+                                            }
+                                        } catch (e) {
+                                            // Cross-origin - assume map is loading
+                                        }
+                                        
+                                        return true;
+                                    }
+                                } catch (e) {}
+                            }
+                            
+                            // Check for any Leaflet elements
+                            const leafletElements = parentDoc.querySelectorAll('.folium-map, [class*="leaflet"]');
+                            if (leafletElements.length > 0) {
+                                updateStatus('Leaflet elements found...');
+                                return true;
+                            }
+                            
+                        } catch (e) {}
+                        
+                        return false;
+                    }
+                    
+                    // Polling mechanism
+                    let attempts = 0;
+                    const maxAttempts = 120; // 12 seconds max
+                    const startTime = Date.now();
+                    
+                    function poll() {
+                        attempts++;
+                        const elapsed = Date.now() - startTime;
+                        
+                        updateStatus('Loading map... (' + Math.round(elapsed/1000) + 's)');
+                        
+                        if (checkMapLoaded()) {
+                            // Map found - wait for tiles to render
+                            updateStatus('Finalizing render...');
+                            setTimeout(hideOverlay, 2000);
+                            return;
+                        }
+                        
+                        if (attempts < maxAttempts) {
+                            setTimeout(poll, 100);
+                        } else {
+                            updateStatus('Ready');
+                            hideOverlay();
+                        }
+                    }
+                    
+                    // Start polling
+                    setTimeout(poll, 500);
+                    
+                    // Fallback timeout
+                    setTimeout(function() {
+                        try {
+                            const overlay = parentDoc.getElementById('persistentMapLoader');
+                            if (overlay && !overlay.classList.contains('loader-hidden')) {
+                                hideOverlay();
+                            }
+                        } catch (e) {}
+                    }, 15000);
+                    
+                })();
+            </script>
+            """,
+            height=0,
         )
-        pedidos_imposibles_df = (
-            pd.DataFrame(pedidos_imposibles_data)
-            if pedidos_imposibles_data
-            else pd.DataFrame()
-        )
 
-        return {
-            "num_trucks": len(
-                [
-                    r
-                    for k, r in resultados.items()
-                    if k != "pedidos_no_entregables" and r
-                ]
-            ),
-            "routes": routes,
-            "assignments": assignments_df,
-            "pedidos_imposibles": pedidos_imposibles_df,
-            "total_distancia": round(total_distancia, 2),
-            "total_coste": round(total_coste, 2),
-            "total_ingresos": round(total_ingresos, 2),
-            "total_beneficio": round(total_beneficio, 2),
-            "resultados_detallados": {
-                k: v for k, v in resultados.items() if k != "pedidos_no_entregables"
-            },
-        }
-
-    except Exception as e:
-        st.error(f"❌ Error en optimización: {str(e)}")
-        return None
-
-
-# ======================================================================
-#   FORM PAGE
-# ======================================================================
-
-
-def render_form_page():
-    render_title()
-
-    # 1. Data Connection
-    connection_type, file_inputs = render_connection_selector()
-
-    col_load, _ = st.columns([1, 3])
-    with col_load:
-        if st.button("📥 Cargar Datos", type="secondary"):
-            load_data(connection_type, file_inputs)
-
-    # 2. Truck Selection
-    render_truck_selector()
-
-    # 3. Generate Action
-    if st.session_state.truck_validated:
-        st.markdown("---")
-
-        # --- NUEVO: Selector de Algoritmo ---
-        c_algo, c_btn, _ = st.columns([1, 2, 1])
-
-        with c_algo:
-            algo_choice = st.selectbox(
-                "🧠 Algoritmo de IA:",
-                options=[
-                    "Genético (Híbrido)",
-                    "Google OR-Tools (Solver Exacto)",
-                ],
-                index=0,
-                help="El Genético es más exploratorio. OR-Tools es mucho mejor, más preciso y rápido.",
+    @staticmethod
+    def truck_hero(image_source, data):
+        c_img, c_specs = st.columns([1.5, 1])
+        with c_img:
+            st.markdown('<div class="truck-hero">', unsafe_allow_html=True)
+            UI.load_image(image_source, width="stretch")
+            st.markdown("</div>", unsafe_allow_html=True)
+        with c_specs:
+            st.markdown(
+                f"""
+            <div class="spec-grid">
+                <div class="spec-item">
+                    <div class="spec-label">Capacity</div>
+                    <div class="spec-value">{data.get("capacidad", 0):,} <span class="spec-unit">kg</span></div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Consumption</div>
+                    <div class="spec-value">{data.get("consumo", 0)} <span class="spec-unit">L/100km</span></div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Speed</div>
+                    <div class="spec-value">{data.get("velocidad_constante", 0)} <span class="spec-unit">km/h</span></div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Driver Cost</div>
+                    <div class="spec-value">{data.get("precio_conductor_hora", 0)} <span class="spec-unit">€/h</span></div>
+                </div>
+            </div>""",
+                unsafe_allow_html=True,
             )
-            # Mapeo de selección
-            algo_key = "genetic" if "Genético" in algo_choice else "ortools"
-        with c_btn:
-            if st.button("🚀 GENERAR RUTA ÓPTIMA", type="primary", width="stretch"):
-                with st.spinner(f"🤖 Ejecutando algoritmo {algo_choice}..."):
-                    # Pasamos el algoritmo seleccionado a la función de simulación
-                    st.session_state.ia_result = simulate_ia(
-                        st.session_state.df,
-                        st.session_state.selected_truck_data,
-                        algorithm=algo_key,  # <--- NUEVO ARGUMENTO
-                    )
-                    st.session_state.page = "routes"
-                    st.rerun()
+
+    @staticmethod
+    def timeline(route_list):
+        if not route_list:
+            return
+        items_html = ""
+        for i, stop in enumerate(route_list):
+            is_start, is_end = (i == 0), (i == len(route_list) - 1)
+            if is_start:
+                tag = "ORIGIN"
+                icon = "🏭"
+                tag_class = "tag-origin"
+            elif is_end:
+                tag = "RETURN"
+                icon = "🏁"
+                tag_class = "tag-return"
+            else:
+                tag = f"STOP {i}"
+                icon = "📦"
+                tag_class = "tag-stop"
+
+            items_html += f"""
+            <div class="timeline-item">
+                <div class="timeline-marker">
+                    <span class="timeline-icon">{icon}</span>
+                    <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-body">
+                    <span class="timeline-tag {tag_class}">{tag}</span>
+                    <div class="timeline-content">{stop}</div>
+                </div>
+            </div>"""
+        st.markdown(
+            f"""<div class="timeline-container">{items_html}</div>""",
+            unsafe_allow_html=True,
+        )
+
+    @staticmethod
+    def kpi_card(icon, label, value, unit="", delta=None, delta_color="normal"):
+        delta_html = ""
+        if delta is not None:
+            color = "#10b981" if delta_color == "normal" else "#ef4444"
+            arrow = "↑" if delta >= 0 else "↓"
+            delta_html = f'<div class="kpi-delta" style="color:{color}">{arrow} {abs(delta)}%</div>'
+
+        st.markdown(
+            f"""
+            <div class="kpi-card">
+                <div class="kpi-icon">{icon}</div>
+                <div class="kpi-label">{label}</div>
+                <div class="kpi-value">{value}<span class="kpi-unit">{unit}</span></div>
+                {delta_html}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    @staticmethod
+    def load_image(img_input, width=None):
+        try:
+            use_container_width = False
+            if width == "stretch":
+                use_container_width = True
+                width = None
+
+            if hasattr(img_input, "type"):
+                st.image(
+                    img_input, use_container_width=use_container_width, width=width
+                )
+            elif os.path.exists(str(img_input)):
+                st.image(
+                    str(img_input), use_container_width=use_container_width, width=width
+                )
+            else:
+                st.markdown(
+                    """<div class="no-image">
+                        <span>📷</span>
+                        <p>NO VISUAL</p>
+                    </div>""",
+                    unsafe_allow_html=True,
+                )
+        except:
+            st.error("Image Error")
 
 
-# ======================================================================
-#   ROUTES PAGE
-# ======================================================================
+# ==============================================================================
+#   STATE MANAGEMENT
+# ==============================================================================
 
 
-def render_routes_page():
+def init_state():
+    """Initializes session state. Preserves form data between reloads."""
+    defaults = {
+        "app_phase": "SPLASH",
+        "load_success": False,
+        "truck_validated": False,
+        "df": None,
+        "selected_truck_data": None,
+        "ia_result": None,
+        # UI selector persistence
+        "sel_cat": "Heavy Duty",
+        "sel_model": None,
+        "sel_custom_db": None,
+    }
+    for k, v in defaults.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
+
+
+# ==============================================================================
+#   VIEWS
+# ==============================================================================
+
+
+def view_splash_screen():
+    UI.loading_overlay_static("BRAINCORE LOGISTICS", "Initializing components...")
+    time.sleep(2.5)
+    st.session_state.app_phase = "FORM"
+    st.rerun()
+
+
+def view_processing_screen():
+    """Processing phase - computes results then transitions to results view."""
+    UI.loading_overlay_static(
+        "ENGINE OPTIMIZATION", "Solving VRP Matrix & Computing Routes..."
+    )
+
+    result = _execute_simulation_logic()
+
+    if result:
+        st.session_state.ia_result = result
+        st.session_state.app_phase = "RESULTS"
+        st.rerun()
+    else:
+        time.sleep(3)
+        st.session_state.app_phase = "FORM"
+        st.rerun()
+
+
+def view_form_page():
     st.markdown(
-        '<div class="main-header"><h1>🗺️ Resultados de la Ruta</h1></div>',
+        """
+        <div class="page-header animate-in">
+            <div class="header-icon">🎯</div>
+            <h1>MISSION CONTROL</h1>
+            <p class="header-subtitle">Fleet & Cargo Configuration Center</p>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
-    ia = st.session_state.get("ia_result")
+    c1, c2 = st.columns([1, 1.8], gap="large")
 
-    if ia is None:
-        st.warning("⚠️ No hay rutas generadas. Vuelve al formulario.")
-        if st.button("🔙 Volver"):
-            st.session_state.page = "form"
-            st.rerun()
-        return
-
-    # Metrics Row
-    c1, c2, c3, c4 = st.columns(4)
+    # --- DATA INGESTION ---
     with c1:
-        st.metric("🚛 Camiones Necesarios", ia.get("num_trucks", 0))
-    with c2:
-        st.metric("📏 Distancia Total", f"{ia.get('total_distancia', 0):.2f} km")
-    with c3:
-        st.metric("💰 Coste Total", f"{ia.get('total_coste', 0):.2f} €")
-    with c4:
-        beneficio = ia.get("total_beneficio", 0)
-        st.metric(
-            "💵 Beneficio Neto",
-            f"{beneficio:.2f} €",
-            delta=f"{beneficio:.2f} €" if beneficio > 0 else None,
-            delta_color="normal" if beneficio > 0 else "off",
-        )
 
-    # Segunda fila con ingresos
-    st.markdown("<br>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([1, 1, 2])
-    with c1:
-        st.metric("💶 Ingresos Totales", f"{ia.get('total_ingresos', 0):.2f} €")
-    with c2:
-        margen = (
-            (beneficio / ia.get("total_ingresos", 1)) * 100
-            if ia.get("total_ingresos", 0) > 0
-            else 0
-        )
-        st.metric("📊 Margen de Beneficio", f"{margen:.1f}%")
-
-    st.markdown("---")
-
-    # ========== PEDIDOS IMPOSIBLES - MOSTRAR SIEMPRE SI EXISTEN ==========
-    pedidos_imposibles = ia.get("pedidos_imposibles")
-
-    if pedidos_imposibles is not None and not pedidos_imposibles.empty:
-        st.error(
-            f"🚫 **ADVERTENCIA CRÍTICA:** {len(pedidos_imposibles)} pedidos NO pueden entregarse por carretera"
-        )
-
-        with st.expander("⛔ Ver Detalles de Pedidos Inaccesibles", expanded=True):
-            st.warning(
-                "**🏝️ Destinos insulares sin conexión terrestre detectados:**\n\n"
-                "Estos pedidos requieren transporte **marítimo** ⛴️ o **aéreo** ✈️"
+        def render_data():
+            conn = st.radio(
+                "SOURCE",
+                ["Database", "Files"],
+                horizontal=True,
+                label_visibility="collapsed",
             )
+            files = {}
+            if conn == "Files":
+                st.markdown(
+                    """
+                    <div class="upload-section-header">
+                        <span>📂</span> REQUIRED DATASETS
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                st.caption("Supported formats: CSV, TXT, XLSX")
 
-            # Mostrar tabla con formato
-            st.dataframe(
-                pedidos_imposibles,
-                width="stretch",
-                hide_index=True,
-                column_config={
-                    "Pedido ID": st.column_config.NumberColumn(
-                        "📦 Pedido ID", format="%d"
-                    ),
-                    "Destino": st.column_config.TextColumn("🏝️ Destino Insular"),
-                    "Peso (kg)": st.column_config.NumberColumn(
-                        "⚖️ Peso (kg)", format="%.1f"
-                    ),
-                    "Caducidad (días)": st.column_config.NumberColumn(
-                        "⏰ Caducidad", format="%d días"
-                    ),
-                    "Motivo": st.column_config.TextColumn("❌ Motivo"),
-                },
-            )
-
-            st.info(
-                f"💡 **Total de peso no entregable:** {pedidos_imposibles['Peso (kg)'].sum():.1f} kg"
-            )
-
-    st.markdown("---")
-
-    # Resumen global de todos los camiones
-    start_card("Resumen de Flota", icon="🚚")
-    if "resultados_detallados" in ia:
-        # Crear tabla resumen
-        resumen_data = []
-        for _, resultado in ia["resultados_detallados"].items():
-            if resultado is None:
-                continue
-
-            peso_total = sum(
-                p.cantidad_producto for p in resultado.lista_pedidos_ordenada
-            )
-
-            resumen_data.append(
-                {
-                    "Camión": f"🚛 {resultado.camion_id}",
-                    "Pedidos": len(resultado.lista_pedidos_ordenada),
-                    "Peso (kg)": f"{peso_total:.1f}",
-                    "Distancia (km)": f"{resultado.distancia_total_km:.1f}",
-                    "Tiempo (h)": f"{resultado.tiempo_total_viaje_horas:.1f}",
-                    "Coste (€)": f"{resultado.coste_total_ruta:.2f}",
-                    "Ingresos (€)": f"{resultado.ingresos_totales:.2f}",
-                    "Beneficio (€)": f"{resultado.beneficio_neto:.2f}",
-                    "Estado": "✅" if resultado.valida else "⚠️",
-                }
-            )
-
-        if resumen_data:
-            st.dataframe(pd.DataFrame(resumen_data), width="stretch", hide_index=True)
-    end_card()
-
-    st.markdown("---")
-
-    # Selector de camión individual
-    if "resultados_detallados" in ia:
-        start_card("Detalle por Camión", icon="🗺️")
-
-        # Obtener lista de camiones válidos
-        camiones_disponibles = [
-            resultado.camion_id
-            for resultado in ia["resultados_detallados"].values()
-            if resultado is not None
-        ]
-
-        if camiones_disponibles:
-            selected_truck = st.selectbox(
-                "Selecciona un camión para ver su ruta detallada:",
-                camiones_disponibles,
-                format_func=lambda x: f"🚛 Camión {x}",
-            )
-
-            # Mostrar detalles del camión seleccionado
-            resultado = None
-            for res in ia["resultados_detallados"].values():
-                if res and res.camion_id == selected_truck:
-                    resultado = res
-                    break
-
-            if resultado:
-                # Métricas del camión
-                col1, col2, col3, col4 = st.columns(4)
-                with col1:
-                    st.metric("📦 Pedidos", len(resultado.lista_pedidos_ordenada))
-                with col2:
-                    st.metric("📏 Distancia", f"{resultado.distancia_total_km:.1f} km")
-                with col3:
-                    st.metric("💶 Ingresos", f"{resultado.ingresos_totales:.2f} €")
-                with col4:
-                    st.metric("💵 Beneficio", f"{resultado.beneficio_neto:.2f} €")
-
-                # Métricas adicionales
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    st.metric("💰 Coste Total", f"{resultado.coste_total_ruta:.2f} €")
-                with col2:
-                    margen = (
-                        (resultado.beneficio_neto / resultado.ingresos_totales * 100)
-                        if resultado.ingresos_totales > 0
-                        else 0
-                    )
-                    st.metric("📊 Margen", f"{margen:.1f}%")
-                with col3:
-                    peso_total = sum(
-                        p.cantidad_producto for p in resultado.lista_pedidos_ordenada
-                    )
-                    st.metric("⚖️ Carga", f"{peso_total:.1f} kg")
-
-                st.markdown("---")
-
-                # Mapa individual de este camión
-                st.subheader("🗺️ Ruta en el Mapa")
-                # Encontrar la ruta correspondiente a este camión en ia["routes"]
-                truck_routes = []
-                for idx, (_, res) in enumerate(ia["resultados_detallados"].items()):
-                    if res and res.camion_id == selected_truck:
-                        if idx < len(ia.get("routes", [])):
-                            truck_routes = [ia["routes"][idx]]
-                        break
-
-                if truck_routes:
-                    # Aquí es donde ocurre la magia del caché y la carga
-                    SpainMapRoutes().render(truck_routes)
-                else:
-                    st.warning("No se pudo cargar el mapa para este camión")
-
-                st.markdown("---")
-
-                # Información detallada
-                col_left, col_right = st.columns(2)
-
-                with col_left:
-                    st.write("**📊 Métricas de Ruta:**")
-                    st.write(f"- Distancia total: {resultado.distancia_total_km} km")
-                    st.write(
-                        f"- Tiempo total: {resultado.tiempo_total_viaje_horas:.2f} h"
-                    )
-                    st.write(
-                        f"- Tiempo conducción: {resultado.tiempo_conduccion_pura_horas:.2f} h"
-                    )
-                    st.write(f"- Consumo: {resultado.consumo_litros:.2f} L")
-
-                with col_right:
-                    st.write("**💰 Desglose de Costes:**")
-                    st.write(f"- Combustible: {resultado.coste_combustible:.2f} €")
-                    st.write(f"- Conductor: {resultado.coste_conductor:.2f} €")
-                    st.write(f"- **Total: {resultado.coste_total_ruta:.2f} €**")
-
-                st.markdown("---")
-
-                # Ruta completa
-                st.write("**🗺️ Ruta Completa:**")
-                st.write(" → ".join(resultado.ciudades_ordenadas))
-
-                # Estado de validación
-                if not resultado.valida:
-                    st.warning(f"⚠️ {resultado.mensaje}")
-                else:
-                    st.success(f"✅ {resultado.mensaje}")
-
-                st.markdown("---")
-
-                # Tabla de pedidos de este camión
-                st.write("**📦 Pedidos Asignados:**")
-                pedidos_data = []
-                for pedido in resultado.lista_pedidos_ordenada:
-                    pedidos_data.append(
-                        {
-                            "Pedido ID": pedido.pedido_id,
-                            "Destino": pedido.destino,
-                            "Peso (kg)": pedido.cantidad_producto,
-                            "Caducidad (días)": pedido.caducidad,
-                        }
-                    )
-                st.dataframe(
-                    pd.DataFrame(pedidos_data),
-                    width="stretch",
-                    hide_index=True,
+                files["pedidos"] = st.file_uploader(
+                    "📦 Orders (Pedidos)",
+                    type=SUPPORTED_FILE_TYPES,
+                    key="upload_pedidos",
+                )
+                files["clientes"] = st.file_uploader(
+                    "👥 Clients (Clientes)",
+                    type=SUPPORTED_FILE_TYPES,
+                    key="upload_clientes",
+                )
+                files["lineas_pedido"] = st.file_uploader(
+                    "📋 Order Lines (Líneas de Pedido)",
+                    type=SUPPORTED_FILE_TYPES,
+                    key="upload_lineas",
+                )
+                files["productos"] = st.file_uploader(
+                    "🏷️ Products (Productos)",
+                    type=SUPPORTED_FILE_TYPES,
+                    key="upload_productos",
+                )
+                files["destinos"] = st.file_uploader(
+                    "📍 Destinations (Destinos)",
+                    type=SUPPORTED_FILE_TYPES,
+                    key="upload_destinos",
+                )
+                files["provincias"] = st.file_uploader(
+                    "🗺️ Provinces (Provincias)",
+                    type=SUPPORTED_FILE_TYPES,
+                    key="upload_provincias",
                 )
 
-        end_card()
+            st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
 
-    st.markdown("---")
+            if st.button(
+                "⚡ SYNC DATA STREAM", type="secondary", use_container_width=True
+            ):
+                _load_data_logic(conn, files)
 
-    # Data Card - Asignaciones globales
-    start_card("Tabla Global de Asignaciones", icon="📊")
-    if not ia["assignments"].empty:
-        st.dataframe(ia["assignments"], width="stretch")
+        UI.card("DATA INGESTION", "💾", render_data)
+
+    # --- FLEET CONFIGURATION ---
+    with c2:
+
+        def render_fleet():
+            if not st.session_state.load_success:
+                st.markdown(
+                    """
+                    <div class="awaiting-data">
+                        <span class="pulse-icon">📡</span>
+                        <p>Awaiting Data Stream...</p>
+                        <small>Sync data to unlock fleet configuration</small>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                return
+
+            cat = st.selectbox(
+                "VEHICLE CLASS",
+                ["Heavy Duty", "Medium Duty", "Custom Prototype"],
+                index=["Heavy Duty", "Medium Duty", "Custom Prototype"].index(
+                    st.session_state.sel_cat
+                ),
+                key="cat_selector",
+            )
+            st.session_state.sel_cat = cat
+
+            if cat == "Custom Prototype":
+                _render_custom_form_logic()
+            else:
+                cat_key = "large" if "Heavy" in cat else "medium"
+                trucks = repository.get_trucks(cat_key)
+
+                idx = 0
+                if st.session_state.sel_model in trucks:
+                    idx = list(trucks.keys()).index(st.session_state.sel_model)
+
+                model = st.selectbox(
+                    "MODEL SELECTION",
+                    list(trucks.keys()),
+                    index=idx,
+                    key="model_selector",
+                )
+                st.session_state.sel_model = model
+
+                if model:
+                    data = trucks[model]
+                    img_path = Paths.TRUCK_IMAGES[cat_key] / data["imagen"]
+
+                    current_truck = data | {"nombre": model, "imagen": str(img_path)}
+
+                    if st.session_state.selected_truck_data != current_truck:
+                        st.session_state.selected_truck_data = current_truck
+                        st.session_state.truck_validated = False
+
+                    UI.truck_hero(img_path, data)
+
+            st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
+
+            if st.session_state.truck_validated:
+                st.markdown(
+                    """
+                    <div class="validation-success">
+                        <span>✅</span> VEHICLE VERIFIED & READY
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                if st.button(
+                    "🔒 VERIFY VEHICLE INTEGRITY",
+                    type="primary",
+                    use_container_width=True,
+                ):
+                    _validate_truck_logic()
+
+        UI.card("FLEET CONFIGURATION", "🚛", render_fleet)
+
+    # --- LAUNCH SECTION ---
+    if st.session_state.truck_validated and st.session_state.load_success:
+        st.markdown("<div class='launch-divider'></div>", unsafe_allow_html=True)
+
+        _, cm, _ = st.columns([1, 2, 1])
+        with cm:
+            st.markdown(
+                """
+                <div class="launch-section">
+                    <div class="launch-ready-badge">
+                        <span class="pulse-dot"></span>
+                        SYSTEMS READY
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            st.selectbox(
+                "ALGORITHM",
+                ["Genetic Evolutionary", "Google OR-Tools"],
+                key="algo_select",
+                label_visibility="collapsed",
+            )
+
+            if st.button(
+                "🚀 INITIATE SEQUENCE", type="primary", use_container_width=True
+            ):
+                st.session_state.app_phase = "PROCESSING"
+                st.rerun()
+
+
+def view_results_page():
+    """
+    Results page with persistent loading overlay.
+    Overlay is injected FIRST and hidden via CSS class (no DOM manipulation).
+    """
+    ia = st.session_state.ia_result
+
+    # =========================================================================
+    # STEP 1: INJECT LOADING OVERLAY FIRST (covers everything immediately)
+    # =========================================================================
+    UI.inject_persistent_loader()
+
+    # =========================================================================
+    # STEP 2: RENDER ALL PAGE CONTENT (happens behind the overlay)
+    # =========================================================================
+
+    st.markdown(
+        """
+        <div class="results-header animate-in">
+            <h1>🏁 MISSION RESULTS</h1>
+            <p class="results-subtitle">Optimization Complete • Routes Generated</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    col_back, _ = st.columns([1, 5])
+    with col_back:
+        if st.button("← BACK TO CONTROL", type="secondary"):
+            st.session_state.app_phase = "FORM"
+            st.rerun()
+
+    # KPI Section
+    st.markdown("<div class='kpi-section'>", unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        UI.kpi_card("🚛", "Active Fleet", ia["num_trucks"], " units")
+    with c2:
+        UI.kpi_card("📏", "Total Distance", f"{ia['total_distancia']:,.0f}", " km")
+    with c3:
+        UI.kpi_card("💰", "Operating Cost", f"{ia['total_coste']:,.0f}", " €")
+    with c4:
+        UI.kpi_card("📈", "Net Profit", f"{ia['total_beneficio']:,.0f}", " €")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Tabs with Map
+    tab_geo, tab_detail = st.tabs(["🌍 GEOSPATIAL MAP", "🔍 ROUTE INSPECTOR"])
+
+    with tab_geo:
+        st.markdown("<div class='map-container'>", unsafe_allow_html=True)
+        SpainMapRoutes().render(ia["routes"])
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with tab_detail:
+        trucks = [
+            v
+            for k, v in ia["resultados_detallados"].items()
+            if k != "pedidos_no_entregables"
+        ]
+        if not trucks:
+            st.warning("No routes generated.")
+        else:
+            sel_id = st.selectbox(
+                "SELECT UNIT",
+                [t.camion_id for t in trucks],
+                format_func=lambda x: f"🚛 UNIT-{x:03d}",
+            )
+
+            truck = next((t for t in trucks if t.camion_id == sel_id), None)
+
+            if truck:
+                st.markdown("<div class='route-detail-grid'>", unsafe_allow_html=True)
+                c_tl, c_map = st.columns([1, 2])
+
+                with c_tl:
+                    UI.section_header("📍", "Itinerary Trace")
+                    UI.timeline(truck.ciudades_ordenadas)
+
+                with c_map:
+                    UI.section_header("🗺️", "Route Topology")
+                    r_single = [r for r in ia["routes"] if r["camion_id"] == sel_id]
+                    SpainMapRoutes().render(r_single)
+
+                    st.markdown(
+                        "<div style='margin-top: 24px;'>", unsafe_allow_html=True
+                    )
+                    UI.section_header("📦", "Cargo Manifest")
+                    data_t = [
+                        {
+                            "Order ID": p.pedido_id,
+                            "Destination": p.destino,
+                            "Weight (kg)": f"{p.cantidad_producto:,}",
+                        }
+                        for p in truck.lista_pedidos_ordenada
+                    ]
+                    st.dataframe(
+                        pd.DataFrame(data_t),
+                        use_container_width=True,
+                        hide_index=True,
+                        column_config={
+                            "Order ID": st.column_config.TextColumn(
+                                "Order ID", width="small"
+                            ),
+                            "Destination": st.column_config.TextColumn(
+                                "Destination", width="medium"
+                            ),
+                            "Weight (kg)": st.column_config.TextColumn(
+                                "Weight", width="small"
+                            ),
+                        },
+                    )
+                    st.markdown("</div>", unsafe_allow_html=True)
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+    # =========================================================================
+    # STEP 3: INJECT MAP DETECTOR (hides overlay when map is ready)
+    # =========================================================================
+    UI.inject_map_detector_script()
+
+
+# ==============================================================================
+#   LOGIC HELPERS
+# ==============================================================================
+
+
+def _render_custom_form_logic():
+    custom_trucks = repository.get_trucks("custom")
+    options = ["+ CREATE NEW PROTOTYPE"] + list(custom_trucks.keys())
+
+    idx = 0
+    if st.session_state.sel_custom_db in options:
+        idx = options.index(st.session_state.sel_custom_db)
+
+    selection = st.selectbox(
+        "PROTOTYPE DATABASE", options, index=idx, key="custom_selector"
+    )
+    st.session_state.sel_custom_db = selection
+
+    if selection == "+ CREATE NEW PROTOTYPE":
+        st.markdown(
+            "<div class='new-prototype-form'>",
+            unsafe_allow_html=True,
+        )
+        c1, c2 = st.columns([1, 1.5])
+        with c1:
+            uploaded_img = st.file_uploader(
+                "Upload Schematic", type=["png", "jpg"], label_visibility="collapsed"
+            )
+            if uploaded_img:
+                st.image(uploaded_img, width=180)
+        with c2:
+            name = st.text_input("Prototype ID", value="X-1")
+            cap = st.number_input("Capacity (kg)", value=1000, min_value=100)
+            fuel = st.number_input(
+                "Fuel Consumption (L/100km)", value=25.0, min_value=1.0
+            )
+            spd = st.number_input("Cruise Speed (km/h)", value=90.0, min_value=20.0)
+            cost = st.number_input("Driver Cost (€/h)", value=20.0, min_value=5.0)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<div style='height: 15px'></div>", unsafe_allow_html=True)
+
+        if st.button("💾 SAVE TO DATABASE", type="secondary", use_container_width=True):
+            img_filename = repository.save_image(uploaded_img, name)
+            truck_data = {
+                "capacidad": cap,
+                "consumo": fuel,
+                "velocidad_constante": spd,
+                "precio_conductor_hora": cost,
+                "imagen": img_filename,
+            }
+            repository.save_custom_truck(name, truck_data)
+
+            full_img_path = Paths.TRUCK_IMAGES["custom"] / img_filename
+
+            st.session_state.selected_truck_data = truck_data | {
+                "nombre": name,
+                "imagen": str(full_img_path),
+            }
+            st.session_state.truck_validated = False
+            st.session_state.sel_custom_db = name
+
+            st.toast("Prototype Saved Successfully", icon="✅")
+            st.rerun()
     else:
-        st.info("No hay asignaciones para mostrar")
-    end_card()
+        data = custom_trucks[selection]
+        img_path = Paths.TRUCK_IMAGES["custom"] / data.get("imagen", "default.png")
 
-    if st.button("🔄 Nueva Simulación"):
-        st.session_state.page = "form"
+        current_truck = data | {"nombre": selection, "imagen": str(img_path)}
+
+        if st.session_state.selected_truck_data != current_truck:
+            st.session_state.selected_truck_data = current_truck
+            st.session_state.truck_validated = False
+
+        UI.truck_hero(img_path, data)
+
+
+def _load_data_logic(conn, files):
+    try:
+        with st.spinner("Synchronizing data streams..."):
+            if conn == "Database":
+                st.session_state.df = run_etl(use_database=False)
+            else:
+                required_files = [
+                    "pedidos",
+                    "clientes",
+                    "lineas_pedido",
+                    "productos",
+                    "destinos",
+                    "provincias",
+                ]
+                missing = [f for f in required_files if not files.get(f)]
+
+                if missing:
+                    missing_names = ", ".join(missing)
+                    st.error(f"❌ Missing required files: {missing_names}")
+                    return
+
+                st.session_state.df = run_etl(uploaded_files=files)
+
+        st.session_state.load_success = True
+        st.session_state.truck_validated = False
         st.rerun()
+        st.toast("Data Stream Synchronized", icon="✅")
+    except Exception as e:
+        st.error(f"❌ ETL Failure: {e}")
+
+
+def _validate_truck_logic():
+    d = st.session_state.selected_truck_data
+    if not d:
+        st.warning("⚠️ Select a vehicle first")
+        return
+
+    valid, obj = parse_truck_data(d)
+    if not valid:
+        st.error(f"❌ {obj['error']}")
+        return
+
+    res = InferenceMotor(rules.obtain_rules()).evaluate(obj)
+    if res.is_valid:
+        st.session_state.truck_validated = True
+        st.toast("Vehicle Validated Successfully", icon="🛡️")
+        st.rerun()
+    else:
+        st.error("❌ Validation Failed - Vehicle does not meet requirements")
+
+
+def _execute_simulation_logic():
+    try:
+        algo = (
+            "ortools"
+            if "OR-Tools" in st.session_state.get("algo_select", "")
+            else "genetic"
+        )
+        t_data = st.session_state.selected_truck_data
+
+        if not t_data:
+            return None
+
+        orders_flat = [order for group in st.session_state.df for order in group]
+        total_load = sum(o.cantidad_producto for o in orders_flat)
+        total_orders = len(orders_flat)
+
+        truck_cap = float(t_data.get("capacidad", 1000))
+        if truck_cap < 100 and total_load > 10000:
+            truck_cap *= 1000
+
+        needed_trucks = math.ceil(total_load / truck_cap) if truck_cap > 0 else 9999
+        if needed_trucks > total_orders:
+            st.error(
+                f"⚠️ CAPACITY ERROR: {truck_cap}kg capacity insufficient for {total_orders} orders."
+            )
+            return None
+
+        cfg = SimulationConfig(
+            velocidad_constante=float(t_data.get("velocidad_constante", 90)),
+            consumo_combustible=float(t_data.get("consumo", 30)),
+            capacidad_carga=truck_cap,
+            salario_conductor_hora=float(t_data.get("precio_conductor_hora", 20)),
+        )
+
+        orch = OptimizationOrchestrator(config=cfg, origin_base="Mataró")
+        raw = orch.optimize_deliveries(st.session_state.df, algorithm=algo)
+
+        routes = []
+        full = {}
+        td, tc, tb = 0, 0, 0
+
+        for k, v in raw.items():
+            if k == "pedidos_no_entregables" or v is None:
+                continue
+
+            color = random.choice(MapConfig.ROUTE_COLORS)
+            routes.append(
+                {
+                    "path": v.ruta_coordenadas,
+                    "color": color,
+                    "pedidos": v.lista_pedidos_ordenada,
+                    "camion_id": v.camion_id,
+                    "tiempos_llegada": v.tiempos_llegada,
+                }
+            )
+            td += v.distancia_total_km
+            tc += v.coste_total_ruta
+            tb += v.beneficio_neto
+            full[k] = v
+
+        assigns = []
+        for r in full.values():
+            for p in r.lista_pedidos_ordenada:
+                assigns.append(
+                    {
+                        "Truck": r.camion_id,
+                        "ID": p.pedido_id,
+                        "Dest": p.destino,
+                        "Kg": p.cantidad_producto,
+                    }
+                )
+
+        return {
+            "num_trucks": len(full),
+            "routes": routes,
+            "assignments": pd.DataFrame(assigns),
+            "total_distancia": round(td, 2),
+            "total_coste": round(tc, 2),
+            "total_beneficio": round(tb, 2),
+            "resultados_detallados": full,
+            "pedidos_imposibles": raw.get("pedidos_no_entregables", pd.DataFrame()),
+        }
+    except Exception as e:
+        print(f"CRITICAL SIMULATION ERROR: {e}")
+        st.error(f"❌ System Error: {e}")
+        return None

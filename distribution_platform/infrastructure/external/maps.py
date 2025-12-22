@@ -84,7 +84,7 @@ class SpainMapRoutes:
             )
 
         # 3. SI NO EXISTE, PROCESAR CON PANTALLA DE CARGA
-        with st.spinner("🔄 Procesando rutas y conectando con satélite..."):
+        with st.spinner("🔄 Processing routes and connecting to satellites..."):
             m = folium.Map(
                 location=self.center, zoom_start=self.zoom, tiles="OpenStreetMap"
             )

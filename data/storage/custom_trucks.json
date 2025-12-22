@@ -40,5 +40,12 @@
     "velocidad_constante": "50",
     "precio_conductor_hora": "15",
     "imagen": "testing2.jpg"
+  },
+  "X-1": {
+    "capacidad": 3000,
+    "consumo": 25.0,
+    "velocidad_constante": 90.0,
+    "precio_conductor_hora": 20.0,
+    "imagen": "X-1.jpg"
   }
 }
