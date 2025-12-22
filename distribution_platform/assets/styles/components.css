@@ -749,3 +749,406 @@ div[data-baseweb="select"] > div:hover {
 .streamlit-expanderHeader:hover {
     border-color: var(--primary);
 }
+
+/* --- TIMELINE FIXES --- */
+.timeline-container {
+    position: relative;
+    padding: 10px 0;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0;
+    min-height: 60px;
+}
+
+.timeline-item:last-child {
+    min-height: auto;
+}
+
+.timeline-item:last-child .timeline-line {
+    display: none;
+}
+
+.timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.timeline-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-surface, #0e0e11);
+    border: 2px solid var(--primary, #6366f1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+}
+
+.timeline-line {
+    flex: 1;
+    width: 2px;
+    background: linear-gradient(180deg, var(--primary, #6366f1), rgba(99, 102, 241, 0.2));
+    margin-top: 4px;
+    min-height: 20px;
+}
+
+.timeline-body {
+    flex: 1;
+    padding-bottom: 16px;
+}
+
+.timeline-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.tag-origin {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.tag-return {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.tag-stop {
+    background: rgba(6, 182, 212, 0.15);
+    color: #06b6d4;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.timeline-content {
+    font-size: 0.95rem;
+    color: var(--text-white, #ffffff);
+    font-weight: 500;
+}
+
+/* --- RESULTS PAGE ENHANCEMENTS --- */
+
+/* Efficiency Section */
+.efficiency-section {
+    background: var(--bg-card, rgba(18, 18, 23, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0 30px 0;
+}
+
+.efficiency-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.efficiency-label {
+    font-size: 0.85rem;
+    color: var(--text-gray, #a1a1aa);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.efficiency-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #10b981;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.efficiency-bar-container {
+    margin-top: 8px;
+}
+
+.efficiency-bar-bg {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.efficiency-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #6366f1);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.efficiency-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--text-muted, #71717a);
+}
+
+/* Route Legend */
+.route-legend-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.route-legend-item strong {
+    color: var(--text-white, #ffffff);
+}
+
+.route-legend-item small {
+    color: var(--text-muted, #71717a);
+}
+
+/* Orders Stats */
+.orders-stats {
+    display: flex;
+    gap: 30px;
+    padding: 12px 16px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+    color: var(--text-gray, #a1a1aa);
+}
+
+.orders-stats strong {
+    color: var(--text-white, #ffffff);
+}
+
+/* Order Detail Card */
+.order-detail-card {
+    background: var(--bg-card, rgba(18, 18, 23, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.order-detail-card h4 {
+    margin: 0 0 16px 0;
+    color: var(--text-white, #ffffff);
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.detail-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted, #71717a);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: var(--text-white, #ffffff);
+    font-weight: 500;
+}
+
+/* Truck Preview Bar */
+.truck-preview-bar {
+    display: flex;
+    gap: 20px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-gray, #a1a1aa);
+    flex-wrap: wrap;
+}
+
+.truck-preview-bar span {
+    white-space: nowrap;
+}
+
+/* Route Stats Card */
+.route-stats-card {
+    background: var(--bg-card, rgba(18, 18, 23, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.route-stats-card h5 {
+    margin: 0 0 16px 0;
+    color: var(--text-white, #ffffff);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.85rem;
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+.stat-row span {
+    color: var(--text-gray, #a1a1aa);
+}
+
+.stat-row strong {
+    color: var(--text-white, #ffffff);
+}
+
+.stat-row.highlight {
+    background: rgba(16, 185, 129, 0.1);
+    margin: 8px -12px -8px -12px;
+    padding: 12px;
+    border-radius: 0 0 8px 8px;
+    border-bottom: none;
+}
+
+.stat-row.highlight strong {
+    color: #10b981;
+    font-size: 1.1rem;
+}
+
+/* Cargo Summary */
+.cargo-summary {
+    display: flex;
+    gap: 24px;
+    padding: 12px 16px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--text-gray, #a1a1aa);
+}
+
+.cargo-summary strong {
+    color: var(--text-white, #ffffff);
+}
+
+/* Navigation Link Box */
+.nav-link-box {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    margin-top: 12px;
+}
+
+.nav-link-box a {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.nav-link-box a:hover {
+    text-decoration: underline;
+}
+
+/* Fleet Analytics Chart Area */
+.stBarChart {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Mini KPI */
+.kpi-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.kpi-mini-icon {
+    font-size: 1rem;
+}
+
+.kpi-mini-label {
+    color: var(--text-muted, #71717a);
+}
+
+.kpi-mini-value {
+    color: var(--text-white, #ffffff);
+    font-weight: 600;
+}
+
+.kpi-highlight {
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    background: rgba(16, 185, 129, 0.05) !important;
+}
+
+.kpi-highlight .kpi-value {
+    color: #10b981;
+}
+
+/* Info Card */
+.info-card {
+    background: var(--bg-card, rgba(18, 18, 23, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.info-header {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-white, #ffffff);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 0.85rem;
+}
+
+.info-label {
+    color: var(--text-gray, #a1a1aa);
+}
+
+.info-value {
+    color: var(--text-white, #ffffff);
+    font-weight: 500;
+}
