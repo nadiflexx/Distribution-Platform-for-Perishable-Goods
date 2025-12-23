@@ -55,7 +55,7 @@ def obtain_format_validation_rules() -> list[Callable[[dict], str]]:
     ]
 
 
-# ==================== REGLAS DE VALIDACIÓN EXISTENTES ====================
+# ==================== EXISTING VALIDATION RULES ====================
 
 
 def velocity_rule(truck: Truck) -> str:
@@ -70,7 +70,7 @@ def velocity_rule(truck: Truck) -> str:
 
 def consumption_rule(truck: Truck) -> str:
     """R2: The truck's fuel consumption must be within acceptable limits."""
-    limite_consumo = 50.0  # Límite estándar
+    limite_consumo = 50.0
     if truck.consumo_combustible <= limite_consumo:
         return f"✔ (R2) The truck's fuel consumption ({truck.consumo_combustible} L/100km) is within acceptable limits (max: {limite_consumo})."
 
@@ -87,8 +87,8 @@ def capacity_rule(truck: Truck) -> str:
 
 def precio_conductor_hora_rule(truck: Truck) -> str:
     """R5: The truck must have a valid driver hourly rate."""
-    precio_min = 10.0  # Mínimo realista
-    precio_max = 50.0  # Máximo realista
+    precio_min = 10.0
+    precio_max = 50.0
 
     if precio_min <= truck.precio_conductor_hora <= precio_max:
         return f"✔ (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is within acceptable range (€{precio_min}-€{precio_max})."
@@ -96,7 +96,7 @@ def precio_conductor_hora_rule(truck: Truck) -> str:
     return f"✘ (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is outside acceptable range (€{precio_min}-€{precio_max})."
 
 
-# ==================== REGLAS DE VALIDACIÓN DE FORMATO ====================
+# ==================== FORMAT VALIDATION RULES ====================
 
 
 def validate_nombre_format(data: dict) -> str:
@@ -111,18 +111,15 @@ def validate_nombre_format(data: dict) -> str:
     """
     nombre = data.get("nombre", "").strip()
 
-    # Verificar no vacío
     if not nombre:
         return "✘ (Nombre) El nombre del camión no puede estar vacío."
 
-    # Verificar longitud
     if len(nombre) < 3:
         return "✘ (Nombre) El nombre debe tener al menos 3 caracteres."
 
     if len(nombre) > 50:
         return "✘ (Nombre) El nombre no puede exceder 50 caracteres."
 
-    # Verificar caracteres válidos
     if not re.match(r"^[a-zA-Z0-9\s\-áéíóúÁÉÍÓÚñÑ]+$", nombre):
         return (
             "✘ (Nombre) El nombre contiene caracteres inválidos. "
@@ -144,20 +141,17 @@ def validate_capacidad_format(data: dict) -> str:
     """
     capacidad = data.get("capacidad", "")
 
-    # Verificar no vacío
     if capacidad == "" or capacidad is None:
         return "✘ (Capacidad) La capacidad no puede estar vacía."
 
-    # Convertir a número si es string
     try:
-        numero = int(float(capacidad))  # Asegurar que sea entero
+        numero = int(float(capacidad))
     except (ValueError, TypeError):
         return (
             "✘ (Capacidad) Formato de capacidad inválido. "
             "Ingresa solo números enteros (ej: 100 para 100 productos)."
         )
 
-    # Verificar rango realista (en unidades de productos)
     if numero < 10:
         return "✘ (Capacidad) La capacidad debe ser al menos 10 productos."
 
@@ -179,11 +173,9 @@ def validate_consumo_format(data: dict) -> str:
     """
     consumo = data.get("consumo", "")
 
-    # Verificar no vacío
     if consumo == "" or consumo is None:
         return "✘ (Consumo) El consumo no puede estar vacío."
 
-    # Convertir a número si es string
     try:
         numero = float(consumo) if isinstance(consumo, str) else consumo
     except (ValueError, TypeError):
@@ -192,7 +184,6 @@ def validate_consumo_format(data: dict) -> str:
             "Ingresa solo números (ej: 30 para 30 L/100km)."
         )
 
-    # Verificar rango realista (en L/100km)
     if numero < 10:
         return "✘ (Consumo) El consumo no puede ser menor a 10 L/100km."
 
@@ -214,11 +205,9 @@ def validate_velocidad_format(data: dict) -> str:
     """
     velocidad = data.get("velocidad_constante", "")
 
-    # Verificar no vacío
     if velocidad == "" or velocidad is None:
         return "✘ (Velocidad) La velocidad constante no puede estar vacía."
 
-    # Convertir a número si es string
     try:
         numero = float(velocidad) if isinstance(velocidad, str) else velocidad
     except (ValueError, TypeError):
@@ -227,7 +216,6 @@ def validate_velocidad_format(data: dict) -> str:
             "Ingresa solo números (ej: 75 para 75 km/h)."
         )
 
-    # Verificar rango realista (en km/h)
     if numero < 30:
         return "✘ (Velocidad) La velocidad debe ser al menos 30 km/h."
 
@@ -249,11 +237,9 @@ def validate_precio_conductor_hora_format(data: dict) -> str:
     """
     precio_conductor = data.get("precio_conductor_hora", "")
 
-    # Verificar no vacío
     if precio_conductor == "" or precio_conductor is None:
         return "✘ (Precio Conductor) El precio del conductor por hora no puede estar vacío."
 
-    # Convertir a número si es string
     try:
         numero = (
             float(precio_conductor)
@@ -266,7 +252,6 @@ def validate_precio_conductor_hora_format(data: dict) -> str:
             "Ingresa solo números (ej: 15.0 para €15.00/h)."
         )
 
-    # Verificar rango realista (en €/h)
     if numero < 10.0:
         return "✘ (Precio Conductor) El precio debe ser al menos €10.00/h."
 
@@ -290,15 +275,13 @@ def parse_truck_data(data: dict) -> tuple[bool | Truck, dict | Truck]:
         Tupla (es_válido, objeto_Truck_o_error)
     """
     try:
-        # Los valores ya son numéricos después de validación
-        capacidad_num = int(float(data.get("capacidad", 0)))  # en productos
-        consumo_num = float(data.get("consumo", 0))  # en L/100km
-        velocidad_num = float(data.get("velocidad_constante", 0))  # en km/h
-        precio_conductor_num = float(data.get("precio_conductor_hora", 12.0))  # en €/h
+        capacidad_num = int(float(data.get("capacidad", 0)))
+        consumo_num = float(data.get("consumo", 0))
+        velocidad_num = float(data.get("velocidad_constante", 0))
+        precio_conductor_num = float(data.get("precio_conductor_hora", 12.0))
         nombre = str(data.get("nombre", ""))
         imagen = data.get("imagen", "truck_default.png")
 
-        # Crear objeto Truck con los datos validados
         truck = Truck(
             nombre=nombre,
             velocidad_constante=velocidad_num,

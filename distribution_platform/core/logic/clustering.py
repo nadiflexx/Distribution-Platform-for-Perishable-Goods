@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.core.models.order import Order
 from distribution_platform.infrastructure.persistence.coordinates import (
     CoordinateCache,
@@ -17,7 +18,6 @@ from distribution_platform.infrastructure.persistence.coordinates import (
 class ClusteringManager:
     """
     Manager for K-Means Clustering of Orders.
-    Replaces 'GestorClustering'.
     """
 
     def __init__(self, coord_cache: CoordinateCache):
@@ -40,7 +40,7 @@ class ClusteringManager:
         # 1. Enrich with Coordinates
         data_enriched = self._enrich_coordinates(orders)
         if not data_enriched:
-            print("❌ No se pudieron obtener coordenadas para ningún pedido")
+            logger.error("❌ No se pudieron obtener coordenadas para ningún pedido")
             return {}
 
         # 2. Prepare Data for ML (Lat, Lon, Urgency)
@@ -76,8 +76,6 @@ class ClusteringManager:
         for p in orders:
             coord_str = self.coord_cache.get(p.destino)
             if coord_str is None:
-                # Log warning in production, print for now
-                # print(f"⚠️ Advertencia: No hay coordenadas para '{p.destino}'")
                 continue
 
             try:

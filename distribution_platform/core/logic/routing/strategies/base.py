@@ -9,14 +9,12 @@ from abc import ABC, abstractmethod
 
 import pandas as pd
 
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.core.models.optimization import (
     RouteOptimizationResult,
     SimulationConfig,
 )
 from distribution_platform.core.models.order import Order
-
-# Asumimos que GraphService estará en core/logic/graph.py (siguiente paso)
-# Si aún no lo has movido, ajustaremos el import luego.
 
 
 class RoutingStrategy(ABC):
@@ -43,7 +41,7 @@ class RoutingStrategy(ABC):
         """Safe matrix lookup."""
         if origin in self.matrix.index and dest in self.matrix.columns:
             return self.matrix.at[origin, dest]
-        return 10000.0  # Penalización alta si no existe
+        return 10000.0
 
     def _simulate_schedule(self, distance_km: float) -> tuple[float, float]:
         """
@@ -55,7 +53,7 @@ class RoutingStrategy(ABC):
 
         speed = self.config.velocidad_constante
         if speed <= 0:
-            speed = 90.0  # Fallback safety
+            speed = 90.0
 
         time_needed = distance_km / speed
 
@@ -67,25 +65,19 @@ class RoutingStrategy(ABC):
 
         rules = self.config.reglas_laborales
 
-        # SAFETY: Limit iterations to avoid hanging (infinite loop protection)
         MAX_ITER = 10000
         iter_count = 0
 
-        # Epsilon for float comparison
         EPS = 0.0001
 
         while time_needed > EPS and iter_count < MAX_ITER:
             iter_count += 1
 
-            # Determinamos cuánto podemos conducir antes del próximo descanso
             time_to_short = rules.max_conduccion_seguida - continuous_drive
             time_to_daily = rules.max_conduccion_dia - daily_drive
 
-            # El paso es lo más pequeño entre: lo que falta, límite corto, límite diario
-            # Usamos max(EPS) para asegurar que siempre avanzamos algo
             step = min(time_needed, time_to_short, time_to_daily)
 
-            # Si el paso es microscópico (error flotante), forzamos un avance mínimo o descanso
             if step < EPS:
                 step = min(time_needed, 0.1)
 
@@ -94,7 +86,6 @@ class RoutingStrategy(ABC):
             continuous_drive += step
             daily_drive += step
 
-            # Aplicar Descansos (con tolerancia EPS)
             if continuous_drive >= rules.max_conduccion_seguida - EPS:
                 elapsed_time += rules.tiempo_descanso_corto
                 continuous_drive = 0
@@ -102,9 +93,11 @@ class RoutingStrategy(ABC):
             if daily_drive >= rules.max_conduccion_dia - EPS:
                 elapsed_time += rules.tiempo_descanso_diario
                 daily_drive = 0
-                continuous_drive = 0  # El descanso largo resetea el acumulado corto
+                continuous_drive = 0
 
         if iter_count >= MAX_ITER:
-            print(f"⚠️ Warning: Schedule simulation timeout for {distance_km}km")
+            logger.warning(
+                f"⚠️ Warning: Schedule simulation timeout for {distance_km}km"
+            )
 
         return elapsed_time, paid_time

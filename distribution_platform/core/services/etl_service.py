@@ -3,11 +3,10 @@ ETL Service.
 Orchestrates the entire data ingestion pipeline: Load -> Clean -> Merge -> Transform.
 """
 
-import logging
-
 import pandas as pd
 
 from distribution_platform.config.enums import DataTypesEnum
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.config.settings import Paths
 from distribution_platform.core.logic.data_cleaner import DataCleaner
 from distribution_platform.core.models.order import Order
@@ -21,8 +20,6 @@ from distribution_platform.infrastructure.persistence.coordinates import (
 )
 from distribution_platform.infrastructure.persistence.file_reader import FileReader
 
-logger = logging.getLogger(__name__)
-
 
 class ETLService:
     """
@@ -34,7 +31,6 @@ class ETLService:
         self.paths = Paths()
         self.coord_cache = CoordinateCache()
 
-        # Internal state containers
         self.df_clientes = None
         self.df_lineas = None
         self.df_pedidos = None
@@ -60,10 +56,8 @@ class ETLService:
         else:
             self._pipeline_files(uploaded_files)
 
-        # Common Step: Save processed state
         self._save_processed_data()
 
-        # Common Step: Transform to Domain Entities
         logger.info("Transforming DataFrame to Domain Objects...")
         return self._transform_to_orders(self.df_final)
 
@@ -77,7 +71,6 @@ class ETLService:
         df = load_full_dataset()
         self.df_provincias = load_provinces_names()
 
-        # Rename for consistency with CSV flow
         df = df.rename(
             columns={
                 "nombre_completo": "destino",
@@ -87,7 +80,6 @@ class ETLService:
             }
         )
 
-        # Logic: Clean 'Destino ' prefix
         df["destino"] = (
             df["destino"]
             .astype(str)
@@ -95,10 +87,8 @@ class ETLService:
             .str.strip()
         )
 
-        # Logic: Drop GPS if exists (we rebuild cache)
         df = df.drop(columns=["coordenadas_gps"], errors="ignore")
 
-        # Logic: Reindex
         target_cols = [
             "pedido_id",
             "fecha_pedido",
@@ -113,31 +103,26 @@ class ETLService:
         ]
         df = df.reindex(target_cols, axis=1)
 
-        # Logic: Computed Fields
         self.df_final = self._compute_caducidad(df)
 
-        # Logic: Build Cache from Provinces
         self._build_geo_cache(self.df_provincias, col_name="nombre")
 
     def _pipeline_files(self, files_dict: dict | None):
         """Execution flow for File source (CSV/Excel)."""
 
-        # 1. Load
         if files_dict:
             logger.info("Loading from User Uploads...")
             self._load_uploads(files_dict)
         else:
-            # Check for cached processed file first
             processed_path = self.paths.DATA_PROCESSED / "pedidos.csv"
             if processed_path.exists():
                 logger.info("Loading from pre-processed CSV...")
                 self.df_final = FileReader.load_data(DataTypesEnum.CSV, processed_path)
-                return  # Short-circuit if cached
+                return
 
             logger.info("Loading raw CSV files from disk...")
             self._load_raw_csvs()
 
-        # 2. Clean
         logger.info("Cleaning and Normalizing data...")
         self._normalize_all()
         self.df_destinos = DataCleaner.normalize_destinations(self.df_destinos)
@@ -148,11 +133,9 @@ class ETLService:
             self.df_productos, ["precio_venta"]
         )
 
-        # 3. Merge
         logger.info("Merging datasets...")
         self._merge_datasets()
 
-        # 4. Cache Coords
         logger.info("Updating Coordinate Cache...")
         self._build_geo_cache(self.df_provincias, col_name="nombre")
 
@@ -185,7 +168,6 @@ class ETLService:
         def _get(key):
             return files.get(key, [])
 
-        # Helper to handle list or single file
         def _proc(f_list):
             f_list = f_list if isinstance(f_list, list) else [f_list]
             return FileReader.safe_concat(
@@ -212,12 +194,10 @@ class ETLService:
         self.df_destinos = DataCleaner.to_snake_case(self.df_destinos)
 
     def _merge_datasets(self):
-        # Rename FKs
         self.df_pedidos = self.df_pedidos.rename(
             columns={"destino_entrega_id": "destino_id"}
         )
 
-        # Merge Chain
         df = self.df_pedidos.merge(self.df_clientes, on="cliente_id", how="left")
         df = df.drop(
             columns=["cliente_id", "nombre", "fecha_registro"], errors="ignore"
@@ -225,19 +205,15 @@ class ETLService:
 
         df = df.merge(self.df_destinos, on="destino_id", how="left")
 
-        # Merge Lines
         df = self.df_lineas.merge(df, on="pedido_id", how="left")
 
-        # Merge Products
         df = df.merge(self.df_productos, on="producto_id", how="left")
 
-        # Cleanup
         df = df.drop(
             columns=["linea_pedido_id", "producto_id", "destino_id", "coordenadas_gps"],
             errors="ignore",
         )
 
-        # Rename final columns
         df = df.rename(
             columns={
                 "nombre_completo": "destino",
@@ -247,7 +223,6 @@ class ETLService:
             }
         )
 
-        # Normalize Destino string
         df["destino"] = (
             df["destino"]
             .astype(str)
@@ -255,7 +230,6 @@ class ETLService:
             .str.strip()
         )
 
-        # Reindex
         target_cols = [
             "pedido_id",
             "fecha_pedido",
@@ -280,7 +254,6 @@ class ETLService:
         )
         df["caducidad"] = pd.to_numeric(df["caducidad"], errors="coerce")
 
-        # Formula: 1 day buffer + fab time + expiration
         df["dias_totales_caducidad"] = (
             1 + df["tiempo_fabricacion_medio"] + df["caducidad"]
         )
@@ -296,14 +269,12 @@ class ETLService:
             return
 
         destinos = df[col_name].dropna().astype(str).str.strip().unique()
-        # Add Origin manually
         full_list = list(destinos) + ["Mataró"]
 
         for dest in full_list:
             if not dest:
                 continue
 
-            # Check cache before API call
             if self.coord_cache.get(dest) is None:
                 coords = fetch_coordinates(dest)
                 self.coord_cache.set(dest, coords)
@@ -327,7 +298,6 @@ class ETLService:
         for _, group in grouped:
             current_order_lines = []
             for _, row in group.iterrows():
-                # Strict mapping to Pydantic Model
                 order = Order(
                     pedido_id=row["pedido_id"],
                     fecha_pedido=row["fecha_pedido"],
@@ -348,7 +318,6 @@ class ETLService:
         return result
 
 
-# Wrapper for backward compatibility (if needed by UI)
 def run_etl(uploaded_files=None, use_database=False):
     service = ETLService()
     return service.run(uploaded_files, use_database)

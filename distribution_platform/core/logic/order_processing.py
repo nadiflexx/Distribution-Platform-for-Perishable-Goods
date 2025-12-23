@@ -17,19 +17,15 @@ def consolidate_orders(orders_grouped: list[list[Order]]) -> list[Order]:
         if not group:
             continue
 
-        # Base data from first item
         base = group[0]
 
-        # Aggregate metrics
         total_qty = sum(o.cantidad_producto for o in group)
         total_price = sum(float(o.precio_venta) for o in group)
-        # Constraints (Most restrictive)
         min_caducidad = min(o.caducidad for o in group)
         max_fab_time = max(o.tiempo_fabricacion_medio for o in group)
         max_total_days = max(o.dias_totales_caducidad for o in group)
         min_final_date = min(o.fecha_caducidad_final for o in group)
 
-        # Create consolidated entity
         consolidated.append(
             Order(
                 pedido_id=base.pedido_id,

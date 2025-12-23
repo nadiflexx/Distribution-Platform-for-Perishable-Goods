@@ -4,11 +4,9 @@ Handles loading/saving truck configurations from JSON storage.
 """
 
 import json
-import logging
 
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.config.settings import Paths
-
-logger = logging.getLogger(__name__)
 
 
 class TruckRepository:

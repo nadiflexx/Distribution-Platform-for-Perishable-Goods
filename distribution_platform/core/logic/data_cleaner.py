@@ -11,7 +11,6 @@ import pandas as pd
 class DataCleaner:
     """Service for dataframe sanitization."""
 
-    # Pre-compile regex for performance
     _NON_ALPHANUM = re.compile(r"[^0-9a-zA-Z]+")
     _CAMEL_TO_SNAKE = re.compile(r"([a-z0-9])([A-Z])")
 

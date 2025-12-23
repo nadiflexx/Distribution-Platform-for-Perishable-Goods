@@ -56,7 +56,7 @@ class AlgorithmVisualizer:
             play_clicked = st.button(
                 "▶️ Play",
                 key=f"play_{container_key}",
-                use_container_width=True,
+                width="stretch",
             )
 
         # Current snapshot info
@@ -197,4 +197,4 @@ class AlgorithmVisualizer:
 
         # Unique key combining container, step, and a random suffix for animation frames
         unique_key = f"graph_{container_key}_{step_index}_{uuid.uuid4().hex[:6]}"
-        st.plotly_chart(fig, use_container_width=True, key=unique_key)
+        st.plotly_chart(fig, width="stretch", key=unique_key)

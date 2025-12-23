@@ -3,15 +3,13 @@ File I/O Adapter.
 Handles reading from CSV, Excel, and Streamlit Buffers.
 """
 
-import logging
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
 from distribution_platform.config.enums import DataTypesEnum
-
-logger = logging.getLogger(__name__)
+from distribution_platform.config.logging_config import log as logger
 
 
 class FileReader:
@@ -42,7 +40,6 @@ class FileReader:
 
         try:
             if filename.endswith(".csv"):
-                # Streamlit buffers need handling for separators
                 try:
                     return pd.read_csv(uploaded_file, sep=";", engine="python")
                 except Exception:

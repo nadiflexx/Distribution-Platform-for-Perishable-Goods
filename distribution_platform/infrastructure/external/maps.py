@@ -5,6 +5,7 @@ import requests
 import streamlit as st
 from streamlit_folium import st_folium
 
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.config.settings import MapConfig
 
 MAP_DEFAULTS = MapConfig.DEFAULTS
@@ -32,7 +33,6 @@ class SpainMapRoutes:
                 f"{start[1]},{start[0]};{end[1]},{end[0]}"
                 f"?overview=full&geometries=geojson"
             )
-            # Timeout añadido para evitar bloqueos si el servidor falla
             response = requests.get(url, timeout=5)
 
             if response.status_code != 200:
@@ -44,10 +44,10 @@ class SpainMapRoutes:
                 return None
 
             coords = data["routes"][0]["geometry"]["coordinates"]
-            return [[lat, lon] for lon, lat in coords]  # swap lon/lat → lat/lon
+            return [[lat, lon] for lon, lat in coords]
 
         except Exception as e:
-            print(f"OSRM Error: {e}")
+            logger.error(f"OSRM Error: {e}")
             return None
 
     def _fetch_route_segment(self, segment_info):
@@ -62,58 +62,45 @@ class SpainMapRoutes:
         Uses caching to prevent re-rendering on zoom/pan.
         """
 
-        # 1. GENERAR CLAVE ÚNICA PARA CACHÉ
-        # Creamos un ID basado en los camiones y puntos para saber si el mapa ha cambiado
         if not routes:
             unique_id = "empty_map"
         else:
-            # Usamos IDs de camión y longitud del path para crear una firma única
             signatures = [
                 f"{r.get('camion_id', '?')}-{len(r.get('path', []))}" for r in routes
             ]
             unique_id = f"map_{hash(''.join(signatures))}"
 
-        # 2. VERIFICAR SI YA EXISTE EN MEMORIA (Evita re-renderizado al hacer zoom)
         if unique_id in st.session_state:
-            # Si ya existe, lo devolvemos directo (0 segundos de carga)
             return st_folium(
                 st.session_state[unique_id],
                 width=None,
                 height=520,
-                returned_objects=[],  # Optimización: no devolver datos innecesarios a Streamlit
+                returned_objects=[],
             )
 
-        # 3. SI NO EXISTE, PROCESAR CON PANTALLA DE CARGA
         with st.spinner("🔄 Processing routes and connecting to satellites..."):
             m = folium.Map(
                 location=self.center, zoom_start=self.zoom, tiles="OpenStreetMap"
             )
 
-            # --- FASE 1: PREPARAR DATOS PARA PARALELISMO ---
             segments_to_fetch = []
 
             for route in routes:
                 path = route["path"]
                 color = route.get("color", "blue")
 
-                # Recopilar todos los tramos de carretera necesarios
                 for i in range(len(path) - 1):
                     start = path[i]
                     end = path[i + 1]
                     segments_to_fetch.append((start, end, color))
 
-            # --- FASE 2: DESCARGAR RUTAS EN PARALELO (ThreadPool) ---
-            # Esto hace todas las peticiones HTTP a la vez en lugar de una por una
             fetched_segments = []
             if segments_to_fetch:
-                # Usamos 10 hilos simultáneos (ajustable según servidor)
                 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
                     fetched_segments = list(
                         executor.map(self._fetch_route_segment, segments_to_fetch)
                     )
 
-            # --- FASE 3: DIBUJAR LÍNEAS EN EL MAPA ---
-            # Dibujar los resultados obtenidos
             for real_path, start, end, color in fetched_segments:
                 if real_path:
                     folium.PolyLine(
@@ -123,7 +110,6 @@ class SpainMapRoutes:
                         opacity=0.8,
                     ).add_to(m)
                 else:
-                    # Fallback línea recta si falla OSRM
                     folium.PolyLine(
                         locations=[start, end],
                         color="gray",
@@ -131,14 +117,12 @@ class SpainMapRoutes:
                         dash_array="5,5",
                     ).add_to(m)
 
-            # --- FASE 4: AÑADIR MARCADORES (Rápido, no requiere HTTP) ---
             for route in routes:
                 path = route["path"]
                 pedidos = route.get("pedidos", [])
                 camion_id = route.get("camion_id", "?")
                 tiempos_llegada = route.get("tiempos_llegada", [])
 
-                # Marcador BASE
                 if len(path) > 0:
                     folium.Marker(
                         location=path[0],
@@ -150,14 +134,12 @@ class SpainMapRoutes:
                         zIndexOffset=1000,
                     ).add_to(m)
 
-                # Marcadores PEDIDOS
                 for i, pedido in enumerate(pedidos):
                     if i + 1 >= len(path):
                         break
 
                     coord_pedido = path[i + 1]
 
-                    # Cálculos de tiempo (lógica original intacta)
                     tiempo_llegada_h = (
                         tiempos_llegada[i] if i < len(tiempos_llegada) else 0
                     )
@@ -212,12 +194,11 @@ class SpainMapRoutes:
                         icon=folium.Icon(color=icon_color, icon=icon_name, prefix="fa"),
                     ).add_to(m)
 
-            # --- FASE 5: GUARDAR EN CACHÉ Y RENDERIZAR ---
             st.session_state[unique_id] = m
 
             return st_folium(
                 m,
                 width=None,
                 height=520,
-                returned_objects=[],  # Optimización final
+                returned_objects=[],
             )

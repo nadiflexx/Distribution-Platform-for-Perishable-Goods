@@ -3,14 +3,12 @@ External Geocoding Service Adapter.
 Wrapper around Geopy/Nominatim with retry logic.
 """
 
-import logging
 import time
 
 from geopy.geocoders import Nominatim
 
-logger = logging.getLogger(__name__)
+from distribution_platform.config.logging_config import log as logger
 
-# Initialize globally or inject via Dependency Injection
 _geolocator = Nominatim(user_agent="braincore_enterprise_v1")
 
 

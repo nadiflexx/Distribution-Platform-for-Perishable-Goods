@@ -11,6 +11,7 @@ import pandas as pd
 import streamlit as st
 
 from distribution_platform.app.state.session_manager import SessionManager
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.config.settings import MapConfig
 from distribution_platform.core.models.optimization import SimulationConfig
 from distribution_platform.core.services.optimization_orchestrator import (
@@ -77,7 +78,7 @@ class OptimizationService:
             return results
 
         except Exception as e:
-            print(f"CRITICAL SIMULATION ERROR: {e}")
+            logger.error(f"CRITICAL SIMULATION ERROR: {e}")
             st.error(f"❌ System Error: {e}")
             return None
 

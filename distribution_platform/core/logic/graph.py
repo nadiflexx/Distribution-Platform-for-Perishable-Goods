@@ -33,10 +33,8 @@ class GraphManager:
 
     def get_coords(self, city: str) -> tuple[float | None, float | None]:
         """Returns (lat, lon) or (None, None)."""
-        # Alias for obtaining coordinates (for compatibility/ease of use)
         return self.coords.get(city, (None, None))
 
-    # Alias para mantener compatibilidad si lo necesitas en GeneticStrategy
     def obtener_coordenadas(self, city: str):
         return self.get_coords(city)
 
@@ -57,7 +55,7 @@ class GraphManager:
         """
         Creates the NxN distance matrix for all cached cities.
         """
-        self._load_coords()  # Refresh in case of updates
+        self._load_coords()
         cities = list(self.coords.keys())
         matrix = pd.DataFrame(index=cities, columns=cities, dtype=float)
 

@@ -29,7 +29,6 @@ def load_full_dataset_between_dates(start_date, end_date):
         start_date (str or datetime): Fecha de inicio (inclusive).
         end_date (str or datetime): Fecha de fin (inclusive).
     """
-    # Usamos un diccionario de parámetros para seguridad y formato
     params = {"start_date": start_date, "end_date": end_date}
 
     return pd.read_sql(GET_FULL_DATA_BY_DATE, engine, params=params)

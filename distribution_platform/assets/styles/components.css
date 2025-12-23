@@ -1537,7 +1537,6 @@ div[data-baseweb="select"] > div:hover {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Full width detail item */
 .detail-item.full-width {
     grid-column: 1 / -1;
 }
@@ -1546,7 +1545,6 @@ div[data-baseweb="select"] > div:hover {
     word-break: break-all;
 }
 
-/* --- CUSTOM BUTTON STYLES (Fixed Link Style) --- */
 a.custom-button {
     display: inline-flex !important;
     align-items: center;

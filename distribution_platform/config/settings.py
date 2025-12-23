@@ -8,15 +8,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Load Environmental Variables (if .env exists)
 load_dotenv()
 
 
 class Paths:
     """Centralized management of project file paths."""
 
-    # Resolve Project Root (Assuming this file is in distribution_platform/config/)
-    # ROOT -> distribution_platform -> config -> settings.py
     ROOT = Path(__file__).resolve().parents[2]
 
     # Backend / Data Paths
@@ -58,7 +55,6 @@ class Paths:
             path.mkdir(parents=True, exist_ok=True)
 
 
-# Ejecutar creación de directorios al importar para evitar errores de 'Path not found'
 Paths.make_dirs()
 
 
@@ -129,7 +125,7 @@ class MapConfig:
     OSRM_SERVER = "https://routing.openstreetmap.de/routed-car"
 
     DEFAULTS = {
-        "center": [40.2, -3.5],  # Center of Spain
+        "center": [40.2, -3.5],
         "zoom_start": 6,
         "tiles": "CartoDB positron",
     }
@@ -137,10 +133,9 @@ class MapConfig:
     ROUTE_STYLE = {
         "weight": 4,
         "opacity": 0.9,
-        "dash_array": None,  # o "5,5" para punteado
+        "dash_array": None,
     }
 
-    # Extended color palette for multiple routes
     ROUTE_COLORS = [
         "#FF6B6B",
         "#4ECDC4",

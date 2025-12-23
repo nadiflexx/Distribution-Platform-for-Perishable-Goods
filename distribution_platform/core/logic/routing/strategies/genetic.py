@@ -17,8 +17,6 @@ class GeneticStrategy(RoutingStrategy):
     """
 
     def optimize(self, orders: list[Order], **kwargs) -> RouteOptimizationResult | None:
-        # 1. PARÁMETROS "DOPADOS" (Más fuerza bruta)
-        # Aumentamos generaciones y población para asegurar convergencia
         generations = kwargs.get("generations", 500)
         pop_size = kwargs.get("pop_size", 200)
 
@@ -28,17 +26,13 @@ class GeneticStrategy(RoutingStrategy):
         if not orders:
             return None
 
-        # Caso trivial
         if len(orders) <= 2:
             return self._build_result(orders, self._calculate_fitness(orders))
 
-        # Ajuste dinámico si son pocos pedidos (no hace falta tanto)
         if len(orders) < 10:
             generations = 100
             pop_size = 50
 
-        # --- FASE 1: POBLACIÓN INICIAL ---
-        # Incluimos una ruta Greedy para empezar con buen pie
         population = [self._greedy_route(orders)]
         for _ in range(pop_size - 1):
             population.append(random.sample(orders, len(orders)))
@@ -46,23 +40,17 @@ class GeneticStrategy(RoutingStrategy):
         best_genome = None
         best_score = float("inf")
 
-        # Variables para reiniciar si nos estancamos (Restarting)
         stagnant_gens = 0
         max_stagnant = 40
 
-        # --- FASE 2: EVOLUCIÓN ---
         for _ in range(generations):
             scored_pop = []
 
-            # Evaluar
             for individual in population:
-                # Usamos una evaluación rápida (solo distancia) para el bucle
-                # para que no sea eterno.
                 score = self._quick_fitness(individual)
 
                 if score < best_score:
                     best_score = score
-                    # Guardamos una copia profunda
                     best_genome = list(individual)
                     stagnant_gens = 0
 
@@ -70,48 +58,33 @@ class GeneticStrategy(RoutingStrategy):
 
             stagnant_gens += 1
 
-            # Si nos atascamos mucho, terminamos
             if stagnant_gens >= max_stagnant:
                 break
 
-            # Selección (Torneo / Elitismo)
             scored_pop.sort(key=lambda x: x[0])
-            # Nos quedamos con el Top 30%
             survivors = [x[1] for x in scored_pop[: int(pop_size * 0.3)]]
 
             new_pop = []
 
-            # ELITISMO PURO: El mejor siempre pasa intacto
             new_pop.append(list(survivors[0]))
 
-            # CRUCE Y MUTACIÓN INTELIGENTE
             while len(new_pop) < pop_size:
-                # Elegir padres del top
                 parent1 = random.choice(survivors)
                 parent2 = random.choice(survivors)
 
-                # Cruce (Order Crossover)
                 child = self._crossover_ox(parent1, parent2)
 
-                # Mutación (Probabilidad 30%)
                 if random.random() < 0.3:
-                    # AQUÍ ESTÁ LA CLAVE: Mutación por Inversión (2-Opt)
-                    # Es mucho mejor que el swap simple para rutas
                     self._mutate_inversion(child)
 
                 new_pop.append(child)
 
             population = new_pop
 
-        # --- FASE 3: PULIDO FINAL ---
-        # Una pasada final de 2-Opt determinista para limpiar cruces
         final_route = self._two_opt_polish(best_genome)
 
-        # Calcular métricas reales (Tiempo, dinero, descansos) solo al final
         full_metrics = self._calculate_fitness(final_route)
         return self._build_result(final_route, full_metrics)
-
-    # --- OPERADORES GENÉTICOS ---
 
     def _crossover_ox(self, p1: list[Order], p2: list[Order]) -> list[Order]:
         size = len(p1)
@@ -136,10 +109,7 @@ class GeneticStrategy(RoutingStrategy):
         if size < 2:
             return
         i, j = sorted(random.sample(range(size), 2))
-        # Invertir el sub-segmento
         route[i : j + 1] = route[i : j + 1][::-1]
-
-    # --- HELPERS ---
 
     def _quick_fitness(self, route):
         """Geometric distance only (Fast)."""

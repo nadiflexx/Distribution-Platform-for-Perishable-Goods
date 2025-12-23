@@ -3,17 +3,13 @@ import io
 import os
 
 from dotenv import load_dotenv
-
-# --- Nuevas importaciones para OAuth ---
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-
-# <--- 2. Cambiamos MediaFileUpload por MediaIoBaseUpload
 from googleapiclient.http import MediaIoBaseUpload
 
-# --- Importar tus módulos ---
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.config.settings import AppConfig
 from distribution_platform.infrastructure.database.sql_client import (
     load_clients,
@@ -26,7 +22,6 @@ from distribution_platform.infrastructure.database.sql_client import (
 
 load_dotenv()
 
-# --- CONFIGURACIÓN ---
 SCOPES = AppConfig.SCOPES
 ROOT_DRIVE_FOLDER_ID = os.getenv("GDRIVE_FOLDER_ID")
 CREDENTIALS_FILE = os.getenv("GDRIVE_CREDENTIALS_PATH")
@@ -34,7 +29,7 @@ TOKEN_FILE = os.getenv("GDRIVE_TOKEN_PATH", "token.json")
 
 
 def authenticate_drive():
-    """Autentica usando credenciales de usuario (OAuth)."""
+    """Authenticates using user credentials (OAuth)."""
     creds = None
     if os.path.exists(TOKEN_FILE):
         creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
@@ -47,7 +42,7 @@ def authenticate_drive():
                 creds = None
 
         if not creds:
-            print("⚠️ Primera ejecución: Se abrirá el navegador para autenticar...")
+            logger.warning("⚠️ First run: Browser will open for authentication...")
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
 
@@ -58,7 +53,7 @@ def authenticate_drive():
 
 
 def create_drive_folder(service, folder_name, parent_id):
-    """Crea una carpeta en Google Drive y devuelve su ID."""
+    """Creates a folder in Google Drive and returns its ID."""
     try:
         file_metadata = {
             "name": folder_name,
@@ -67,45 +62,42 @@ def create_drive_folder(service, folder_name, parent_id):
         }
         file = service.files().create(body=file_metadata, fields="id").execute()
         folder_id = file.get("id")
-        print(f"📁 Carpeta creada en Drive: '{folder_name}' (ID: {folder_id})")
+        logger.info(f"📁 Folder created in Drive: '{folder_name}' (ID: {folder_id})")
         return folder_id
     except Exception as e:
-        print(f"❌ Error creando carpeta en Drive: {e}")
+        logger.error(f"❌ Error creating folder in Drive: {e}")
         raise e
 
 
 def upload_dataframe_to_drive(service, df, file_name, folder_id):
     """
-    Convierte un DataFrame a CSV en memoria y lo sube a Drive.
-    No guarda nada en el disco local.
+    Converts a DataFrame to CSV in memory and uploads it to Drive.
+    Does not save anything to local disk.
     """
     try:
-        # 1. Convertir el DataFrame a un string CSV
         csv_content = df.to_csv(index=False, encoding="utf-8")
 
-        # 2. Convertir ese string a bytes (stream en memoria)
-        # Drive API prefiere trabajar con bytes
         fh = io.BytesIO(csv_content.encode("utf-8"))
 
-        # 3. Preparar la subida desde memoria
         media = MediaIoBaseUpload(fh, mimetype="text/csv", resumable=True)
         file_metadata = {"name": file_name, "parents": [folder_id]}
 
-        # 4. Subir
         file = (
             service.files()
             .create(body=file_metadata, media_body=media, fields="id")
             .execute()
         )
 
-        print(f"  ☁️ Subido desde memoria: file.id == {file.get('id')} / {file_name}")
+        logger.info(
+            f"  ☁️ Uploaded from memory: file.id == {file.get('id')} / {file_name}"
+        )
 
     except Exception as e:
-        print(f"  ❌ Error subiendo {file_name}: {e}")
+        logger.error(f"  ❌ Error uploading {file_name}: {e}")
 
 
 def main():
-    print("🚀 Iniciando proceso de exportación semanal (Solo Memoria)...")
+    logger.info("🚀 Starting weekly export process (Memory Only)...")
 
     timestamp_folder = datetime.now().strftime("%Y-%m-%d_%H-%M")
 
@@ -118,14 +110,12 @@ def main():
         {"func": load_order_lines, "name": "dboLineasPedido.csv"},
     ]
 
-    # 1. Autenticar
     try:
         drive_service = authenticate_drive()
     except Exception as e:
-        print(f"❌ Error crítico de autenticación: {e}")
+        logger.critical(f"❌ Critical authentication error: {e}")
         return
 
-    # 2. Carpeta Drive
     try:
         drive_folder_id = create_drive_folder(
             drive_service, "BACKUP_" + timestamp_folder, ROOT_DRIVE_FOLDER_ID
@@ -133,24 +123,22 @@ def main():
     except Exception:
         return
 
-    # 3. Procesar y Subir
     for task in tasks:
         try:
-            print(f"⬇️ Recuperando datos: {task['name']}...")
-            df = task["func"]()  # Llamada a SQL
+            logger.info(f"⬇️ Retrieving data: {task['name']}...")
+            df = task["func"]()  # SQL Call
 
             if df is not None and not df.empty:
-                # Aquí llamamos a la nueva función pasando el DF directo
                 upload_dataframe_to_drive(
                     drive_service, df, task["name"], drive_folder_id
                 )
             else:
-                print(f"⚠️ Dataset vacío para {task['name']}, saltando.")
+                logger.warning(f"⚠️ Empty dataset for {task['name']}, skipping.")
 
         except Exception as e:
-            print(f"❌ Error en tarea {task['name']}: {e}")
+            logger.error(f"❌ Error in task {task['name']}: {e}")
 
-    print("🏁 Proceso finalizado correctamente.")
+    logger.info("🏁 Process finished successfully.")
 
 
 if __name__ == "__main__":

@@ -7,15 +7,12 @@ Main entry point for the Routing System. Integrates:
 """
 
 from collections import Counter
-import logging
 import math
 
-# Logic Modules
+from distribution_platform.config.logging_config import log as logger
 from distribution_platform.core.logic.clustering import ClusteringManager
 from distribution_platform.core.logic.graph import GraphManager
 from distribution_platform.core.logic.order_processing import consolidate_orders
-
-# Strategies
 from distribution_platform.core.logic.routing.strategies.genetic import GeneticStrategy
 from distribution_platform.core.logic.routing.strategies.ortools import (
     ORToolsStrategy,
@@ -28,8 +25,6 @@ from distribution_platform.core.models.order import Order
 from distribution_platform.infrastructure.persistence.coordinates import (
     CoordinateCache,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class OptimizationOrchestrator:
@@ -62,7 +57,6 @@ class OptimizationOrchestrator:
         self.origin = origin_base
         self.coord_cache = coord_cache if coord_cache else CoordinateCache()
 
-        # Initialize Managers
         self.clustering = ClusteringManager(self.coord_cache)
         self.graph = GraphManager(self.coord_cache)
 
@@ -76,43 +70,43 @@ class OptimizationOrchestrator:
         Executes the full optimization pipeline with console logging.
         """
         if not orders:
-            print("⚠️ No hay pedidos para optimizar")
+            logger.warning("⚠️ No hay pedidos para optimizar")
             return {}
 
         # 1. Pre-process: Consolidate
         if orders and isinstance(orders[0], list):
-            print(
+            logger.info(
                 "🔄 Detectados pedidos agrupados. Consolidando líneas por pedido_id..."
             )
             total_lines = len(sum(orders, []))
-            orders = consolidate_orders(orders)  # type: ignore
-            print(f"   ✅ {total_lines} líneas → {len(orders)} pedidos consolidados\n")
+            orders = consolidate_orders(orders)
+            logger.info(
+                f"   ✅ {total_lines} líneas → {len(orders)} pedidos consolidados\n"
+            )
 
         # 2. Filter: Impossible Destinations
-        print(f"DEBUG: Iniciando filtrado de {len(orders)} pedidos")
+        logger.debug(f"Iniciando filtrado de {len(orders)} pedidos")
         valid_orders = []
         impossible_orders = []
 
-        for p in orders:  # type: ignore
-            # Normalización simple para búsqueda
+        for p in orders:
             dest_norm = p.destino.lower()
             if any(i in dest_norm for i in self.IMPOSSIBLE_DESTS):
                 impossible_orders.append(p)
-                # print(f"DEBUG: Pedido {p.pedido_id} → {p.destino} ES IMPOSIBLE")
             else:
                 valid_orders.append(p)
 
-        print(
-            f"DEBUG: Resultado filtrado: {len(valid_orders)} entregables, {len(impossible_orders)} imposibles\n"
+        logger.debug(
+            f"Resultado filtrado: {len(valid_orders)} entregables, {len(impossible_orders)} imposibles\n"
         )
 
         if impossible_orders:
-            print(
+            logger.warning(
                 f"⚠️ ADVERTENCIA: {len(impossible_orders)} pedidos a destinos INACCESIBLES por carretera."
             )
 
         if not valid_orders:
-            print("❌ No hay pedidos entregables por carretera")
+            logger.error("❌ No hay pedidos entregables por carretera")
             return {"pedidos_no_entregables": impossible_orders}
 
         # 3. Fleet Calculation
@@ -123,25 +117,27 @@ class OptimizationOrchestrator:
         capacidad_camion = self.config.capacidad_carga
         n_trucks = max(1, math.ceil(total_weight / capacidad_camion))
 
-        print("📦 ANÁLISIS DE CARGA:")
-        print(f"   Total pedidos: {len(valid_orders)}")
-        print(f"   Peso total: {total_weight:.2f} kg")
-        print(f"   Capacidad por camión: {capacidad_camion:.2f} kg")
-        print(f"   Camiones mínimos necesarios: {n_trucks}")
-        print(f"   ✅ Usando {n_trucks} camion(es)\n")
+        logger.info("📦 ANÁLISIS DE CARGA:")
+        logger.info(f"   Total pedidos: {len(valid_orders)}")
+        logger.info(f"   Peso total: {total_weight:.2f} kg")
+        logger.info(f"   Capacidad por camión: {capacidad_camion:.2f} kg")
+        logger.info(f"   Camiones mínimos necesarios: {n_trucks}")
+        logger.info(f"   ✅ Usando {n_trucks} camion(es)\n")
 
         # 4. Clustering
-        print(f"🧠 Agrupando {len(valid_orders)} pedidos en {n_trucks} camion(es)...")
+        logger.info(
+            f"🧠 Agrupando {len(valid_orders)} pedidos en {n_trucks} camion(es)..."
+        )
         clusters = self.clustering.cluster_orders(
             valid_orders, n_trucks, self.config.peso_unitario_default, capacidad_camion
         )
 
         if not clusters:
-            print("❌ No se pudieron agrupar los pedidos")
+            logger.error("❌ No se pudieron agrupar los pedidos")
             return {}
 
         # 5. Distance Matrix
-        print("📊 Generando matriz de distancias...\n")
+        logger.info("📊 Generando matriz de distancias...\n")
         dist_matrix = self.graph.generate_distance_matrix()
 
         # 6. Select Strategy
@@ -159,17 +155,16 @@ class OptimizationOrchestrator:
         for cid, group in clusters.items():
             if not group:
                 results[cid] = None
-                print(f"⚠️ Camión {cid + 1}: Sin pedidos asignados")
+                logger.warning(f"⚠️ Camión {cid + 1}: Sin pedidos asignados")
                 continue
 
-            # Calcular peso del cluster para print
             peso_cluster = sum(
                 o.cantidad_producto * self.config.peso_unitario_default for o in group
             )
             ocupacion = (peso_cluster / capacidad_camion) * 100
 
-            print(f"🚚 CAMIÓN {cid + 1}:")
-            print(
+            logger.info(f"🚚 CAMIÓN {cid + 1}:")
+            logger.info(
                 f"   Pedidos: {len(group)} | Peso: {peso_cluster:.2f} kg | Ocupación: {ocupacion:.1f}%"
             )
 
@@ -180,7 +175,7 @@ class OptimizationOrchestrator:
                 result.camion_id = cid + 1
                 results[cid] = result
 
-                # Print resumen ruta
+                # Print resume data
                 ciudades_counts = Counter(result.ciudades_ordenadas)
                 ruta_resumida = " → ".join(
                     [
@@ -188,20 +183,20 @@ class OptimizationOrchestrator:
                         for c, cnt in ciudades_counts.items()
                     ]
                 )
-                print(f"   ✅ Ruta: {ruta_resumida}")
-                print(
+                logger.info(f"   ✅ Ruta: {ruta_resumida}")
+                logger.info(
                     f"   📏 Distancia: {result.distancia_total_km} km | ⏱️ Tiempo: {result.tiempo_total_viaje_horas} h"
                 )
-                print(
+                logger.info(
                     f"   ⛽ Consumo: {result.consumo_litros} L | 💰 Coste: {result.coste_total_ruta} €\n"
                 )
             else:
-                print(f"   ❌ Fallo al optimizar ruta Camión {cid + 1}")
+                logger.error(f"   ❌ Fallo al optimizar ruta Camión {cid + 1}")
 
-        # 8. Mostrar Resumen Final
-        print("=" * 70)
-        print("📊 RESUMEN DE APROVECHAMIENTO DE FLOTA")
-        print("=" * 70)
+        # 8. Show final resume
+        logger.info("=" * 70)
+        logger.info("📊 RESUMEN DE APROVECHAMIENTO DE FLOTA")
+        logger.info("=" * 70)
 
         peso_total_transportado = 0
         capacidad_total_disp = 0
@@ -215,7 +210,7 @@ class OptimizationOrchestrator:
                 peso_total_transportado += peso_camion
                 capacidad_total_disp += capacidad_camion
                 pct = (peso_camion / capacidad_camion) * 100
-                print(
+                logger.info(
                     f"🚛 Camión {cid + 1}: {peso_camion:.1f}/{capacidad_camion:.1f} kg ({pct:.1f}% ocupación)"
                 )
 
@@ -224,14 +219,16 @@ class OptimizationOrchestrator:
             if capacidad_total_disp > 0
             else 0
         )
-        print(f"\n✅ Aprovechamiento global de la flota: {aprovechamiento_global:.1f}%")
-        print(f"📦 Total peso transportado: {peso_total_transportado:.1f} kg")
-        print(f"🚛 Capacidad total disponible: {capacidad_total_disp:.1f} kg")
-        print("=" * 70 + "\n")
+        logger.info(
+            f"\n✅ Aprovechamiento global de la flota: {aprovechamiento_global:.1f}%"
+        )
+        logger.info(f"📦 Total peso transportado: {peso_total_transportado:.1f} kg")
+        logger.info(f"🚛 Capacidad total disponible: {capacidad_total_disp:.1f} kg")
+        logger.info("=" * 70 + "\n")
 
         # 9. Add rejected orders
         if impossible_orders:
-            results["pedidos_no_entregables"] = impossible_orders  # type: ignore
+            results["pedidos_no_entregables"] = impossible_orders
 
         return results
 

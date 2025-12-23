@@ -4,10 +4,9 @@ Handles reading/writing coordinates to a JSON file to minimize API calls.
 """
 
 import json
-import logging
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+from distribution_platform.config.logging_config import log as logger
 
 
 class CoordinateCache:
@@ -17,7 +16,6 @@ class CoordinateCache:
 
     def __init__(self, cache_path: Path | None = None):
         if cache_path is None:
-            # Fallback relative to this file if not injected
             base = Path(__file__).resolve().parents[3]
             self.cache_path = base / "data" / "storage" / "coordinates.json"
         else:
