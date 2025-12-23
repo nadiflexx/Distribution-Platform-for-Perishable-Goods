@@ -93,12 +93,12 @@ Create a `.env` file in the project root based on the example below:
 
 ```env
 # Database (SQL Server) - Optional if using Files mode
-DB_HOST=localhost
+DB_HOST=your_host_ip
 DB_PORT=1433
-DB_NAME=DistributionDB
+DB_NAME=your_database_name
 DB_USER=sa
 DB_PASSWORD=your_password
-DB_DRIVER=ODBC Driver 17 for SQL Server
+DB_DRIVER=SQL Server
 
 # Google Drive (Optional for backups)
 GDRIVE_FOLDER_ID=your_folder_id
