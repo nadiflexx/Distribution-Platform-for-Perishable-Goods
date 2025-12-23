@@ -5,7 +5,6 @@ import pytest
 from distribution_platform.app.views.results_view import ResultsView
 
 
-# Helper class to simulate order objects
 class FakeOrder:
     def __init__(self, pid, dest, qty, email="e@mail.com"):
         self.pedido_id = pid
@@ -17,7 +16,6 @@ class FakeOrder:
         self.prioridad = "Normal"
         self.fecha_pedido = "2023-01-01"
         self.productos = [{"nombre": "P1", "cantidad": 1, "precio": 10}]
-        # Fallbacks for attribute access
         self.lineas = None
         self.items = None
         self.producto_nombre = "P1"
@@ -38,7 +36,7 @@ def mock_deps():
             "distribution_platform.app.views.results_view.AlgorithmVisualizer"
         ) as algo_viz,
     ):
-        # FIX 1: Robust column unpacking logic
+
         def columns_side_effect(spec, **kwargs):
             if isinstance(spec, (list, tuple)):
                 count = len(spec)
@@ -50,10 +48,8 @@ def mock_deps():
 
         st.columns.side_effect = columns_side_effect
 
-        # FIX 2: Tabs generation
         st.tabs.side_effect = lambda tabs: [MagicMock() for _ in tabs]
 
-        # FIX 3: Default return values
         st.text_input.return_value = ""
         st.selectbox.return_value = None
         st.multiselect.return_value = []
@@ -74,7 +70,6 @@ def complex_result():
     truck.valida = True
     truck.ruta_coordenadas = [(0, 0), (1, 1)]
 
-    # Costs breakdown
     truck.tiempo_total_viaje_horas = 10.0
     truck.tiempo_conduccion_pura_horas = 8.0
     truck.consumo_litros = 30.0
@@ -122,22 +117,16 @@ def test_render_orders_tab_product_extraction_list(mock_deps, complex_result):
     sm, _, _, st, _ = mock_deps
     result, order = complex_result
 
-    # Configure order
     order.productos = [{"nombre": "A", "cantidad": 2, "precio": 5}]
 
-    # Mock user interaction
-    st.text_input.return_value = "1"  # Search matches ID "1"
-    st.selectbox.return_value = 1  # Select order ID 1 (integer)
+    st.text_input.return_value = "1"
+    st.selectbox.return_value = 1
 
-    # Mock original DF
     sm.get.side_effect = lambda k: result if k == "ia_result" else [[order]]
 
     view = ResultsView()
     view._render_orders_tab(result)
 
-    # FIX: Ensure dataframe is called twice (list + detail)
-    # The ID in dataframe is integer 1. Selectbox returns 1.
-    # The filter logic works.
     assert st.dataframe.call_count >= 1
 
 
@@ -145,11 +134,9 @@ def test_render_orders_tab_product_extraction_master_map(mock_deps, complex_resu
     sm, _, _, st, _ = mock_deps
     result, order = complex_result
 
-    # Clear internal lists
     order.productos = None
     order.lineas = None
 
-    # Mock original DF
     original_item = FakeOrder(1, "Madrid", 5)
     original_item.producto_nombre = "MasterProduct"
     original_item.cantidad_producto = 5

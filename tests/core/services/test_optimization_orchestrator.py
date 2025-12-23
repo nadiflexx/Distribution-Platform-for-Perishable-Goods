@@ -9,7 +9,6 @@ from distribution_platform.core.services.optimization_orchestrator import (
 )
 
 
-# ... Fixtures iguales ...
 @pytest.fixture
 def mock_order():
     return Order(
@@ -33,14 +32,12 @@ def mock_order():
 )
 @patch("distribution_platform.core.services.optimization_orchestrator.GraphManager")
 class TestOrchestrator:
-    # ... Tests simples iguales ...
     def test_optimize_no_orders(self, mock_graph, mock_cluster, mock_order):
         orch = OptimizationOrchestrator()
         assert orch.optimize_deliveries([]) == {}
 
     def test_impossible_destinations(self, mock_graph, mock_cluster):
         orch = OptimizationOrchestrator()
-        # Creamos order aqui para simplificar
         imp_order = Order(
             pedido_id=2,
             fecha_pedido="2023-01-01",
@@ -69,12 +66,11 @@ class TestOrchestrator:
         ) as MockStrat:
             mock_strategy_instance = MockStrat.return_value
 
-            # CONFIGURAMOS EL MOCK CON TODOS LOS ATRIBUTOS NECESARIOS PARA LOS PRINTS
             mock_result = MagicMock(spec=RouteOptimizationResult)
             mock_result.ciudades_ordenadas = ["A", "B"]
             mock_result.distancia_total_km = 100
-            mock_result.tiempo_total_viaje_horas = 5.5  # <--- FALTABA ESTE
-            mock_result.consumo_litros = 20.0  # <--- Y ESTE
+            mock_result.tiempo_total_viaje_horas = 5.5
+            mock_result.consumo_litros = 20.0
             mock_result.coste_total_ruta = 50.0
             mock_result.lista_pedidos_ordenada = [mock_order]
 
@@ -85,7 +81,6 @@ class TestOrchestrator:
             assert 0 in results
             assert results[0] == mock_result
 
-    # ... Resto de tests iguales ...
     def test_full_flow_ortools(self, mock_graph, mock_cluster, mock_order):
         """Flujo feliz con OR-Tools."""
         orch = OptimizationOrchestrator()
@@ -96,14 +91,13 @@ class TestOrchestrator:
         ) as MockStrat:
             mock_strategy_instance = MockStrat.return_value
 
-            # COMPLETAMOS EL MOCK
             mock_res = MagicMock(spec=RouteOptimizationResult)
             mock_res.tiempo_total_viaje_horas = 0
             mock_res.consumo_litros = 0
             mock_res.coste_total_ruta = 0
             mock_res.distancia_total_km = 0
             mock_res.lista_pedidos_ordenada = [mock_order]
-            mock_res.ciudades_ordenadas = ["Madrid", "Barcelona"]  # <--- FALTABA ESTE
+            mock_res.ciudades_ordenadas = ["Madrid", "Barcelona"]
 
             mock_strategy_instance.optimize.return_value = mock_res
 

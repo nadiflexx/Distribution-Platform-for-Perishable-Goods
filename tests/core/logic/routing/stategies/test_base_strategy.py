@@ -9,7 +9,6 @@ from distribution_platform.core.models.optimization import (
 )
 
 
-# Implementación concreta mínima para testear la clase abstracta
 class ConcreteStrategy(RoutingStrategy):
     def optimize(self, orders, **kwargs):
         return RouteOptimizationResult(
@@ -37,10 +36,10 @@ def base_strategy():
         {"Madrid": [0, 100], "Barcelona": [100, 0]}, index=["Madrid", "Barcelona"]
     )
     config = SimulationConfig(
-        velocidad_constante=100.0,  # 100 km/h para facilitar cálculos
+        velocidad_constante=100.0,
         reglas_laborales=LaborRules(
-            max_conduccion_seguida=2.0,  # 2 horas seguidas
-            tiempo_descanso_corto=0.5,  # 30 min descanso
+            max_conduccion_seguida=2.0,
+            tiempo_descanso_corto=0.5,
             max_conduccion_dia=8.0,
             tiempo_descanso_diario=10.0,
         ),
@@ -52,26 +51,20 @@ class TestBaseStrategy:
     def test_get_distance_safe(self, base_strategy):
         """Busca distancias en la matriz."""
         assert base_strategy._get_distance("Madrid", "Barcelona") == 100.0
-        # Caso no existe (penalización)
         assert base_strategy._get_distance("Madrid", "Mars") == 10000.0
 
     def test_simulate_schedule_simple(self, base_strategy):
         """Viaje corto sin descansos."""
-        # 100 km a 100 km/h = 1 hora
-        # No llega al límite de 2h seguidas
         elapsed, paid = base_strategy._simulate_schedule(100.0)
         assert paid == 1.0
         assert elapsed == 1.0
 
     def test_simulate_schedule_with_break(self, base_strategy):
         """Viaje que fuerza un descanso corto."""
-        # 250 km a 100 km/h = 2.5 horas conduciendo
-        # Regla: Max 2h seguidas -> Descanso 0.5h -> 0.5h conduciendo
-        # Total: 2h + 0.5h(descanso) + 0.5h = 3.0 horas
         elapsed, paid = base_strategy._simulate_schedule(250.0)
 
-        assert paid == 2.5  # Solo se paga conducción
-        assert elapsed == 3.0  # Tiempo real incluye descanso
+        assert paid == 2.5
+        assert elapsed == 3.0
 
     def test_simulate_schedule_zero_distance(self, base_strategy):
         e, p = base_strategy._simulate_schedule(0)
@@ -80,9 +73,6 @@ class TestBaseStrategy:
 
     def test_simulate_schedule_infinite_loop_protection(self, base_strategy):
         """Prueba que el bucle while tiene un corte de seguridad."""
-        # Velocidad absurda para generar infinitos pasos pequeños
         base_strategy.config.velocidad_constante = 0.0001
-        # Distancia enorme
         elapsed, paid = base_strategy._simulate_schedule(10000.0)
-        # No debería colgarse el test
         assert elapsed > 0

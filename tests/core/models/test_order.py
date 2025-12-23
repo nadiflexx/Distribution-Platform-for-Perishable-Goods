@@ -14,7 +14,7 @@ class TestOrderModel:
             "fecha_pedido": "2023-10-01",
             "producto": "Manzanas",
             "cantidad_producto": 100,
-            "precio_venta": "10,50",  # Test comma
+            "precio_venta": "10,50",
             "tiempo_fabricacion_medio": 2,
             "caducidad": 10,
             "destino": "Madrid",
@@ -28,7 +28,6 @@ class TestOrderModel:
         """Prueba creación exitosa y conversión de tipos."""
         order = Order(**valid_order_data)
 
-        # Validadores
         assert order.precio_venta == 10.50
         assert isinstance(order.fecha_pedido, date)
         assert order.fecha_pedido.year == 2023
@@ -36,17 +35,17 @@ class TestOrderModel:
 
     def test_decimal_conversion(self, valid_order_data):
         """Prueba conversiones de float/string con comas y puntos."""
-        # Case 1: Float directo
+        # Case 1: Float
         valid_order_data["precio_venta"] = 20.0
         order = Order(**valid_order_data)
         assert order.precio_venta == 20.0
 
-        # Case 2: String con punto
+        # Case 2: String
         valid_order_data["precio_venta"] = "30.5"
         order = Order(**valid_order_data)
         assert order.precio_venta == 30.5
 
-        # Case 3: String con coma
+        # Case 3: String
         valid_order_data["precio_venta"] = "40,5"
         order = Order(**valid_order_data)
         assert order.precio_venta == 40.5
@@ -59,9 +58,7 @@ class TestOrderModel:
         assert order.fecha_pedido == date(2023, 12, 25)
 
         # Case 2: Invalid String Format
-        valid_order_data["fecha_pedido"] = (
-            "01-10-2023"  # DD-MM-YYYY (Incorrecto para el validador)
-        )
+        valid_order_data["fecha_pedido"] = "01-10-2023"
         with pytest.raises(ValidationError) as exc:
             Order(**valid_order_data)
         assert "Date must be in YYYY-MM-DD format" in str(exc.value)

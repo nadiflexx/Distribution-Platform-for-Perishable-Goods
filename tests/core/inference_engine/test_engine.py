@@ -20,7 +20,6 @@ class TestInferenceMotor:
 
     def test_evaluate_all_rules_pass(self, sample_truck):
         """Verifica que si todas las reglas pasan, el resultado es válido."""
-        # Reglas que devuelven mensaje de éxito
         rule1 = Mock(return_value="✔ Rule 1 Passed")
         rule2 = Mock(return_value="✔ Rule 2 Passed")
 
@@ -31,7 +30,6 @@ class TestInferenceMotor:
         assert len(result.reasoning) == 2
         assert "✔ Rule 1 Passed" in result.reasoning
 
-        # Verificar que se llamó a las reglas con el camión
         rule1.assert_called_with(sample_truck)
 
     def test_evaluate_one_rule_fails(self, sample_truck):

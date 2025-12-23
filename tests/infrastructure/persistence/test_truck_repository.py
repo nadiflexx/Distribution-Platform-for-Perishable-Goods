@@ -1,121 +1,133 @@
-from io import BytesIO
+import json
 from pathlib import Path
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, patch
 
-import pandas as pd
-import pytest
-
-from distribution_platform.config.enums import DataTypesEnum
-from distribution_platform.infrastructure.persistence.file_reader import FileReader
+from distribution_platform.infrastructure.persistence.truck_repository import (
+    TruckRepository,
+)
 
 
-class TestFileReader:
-    # --- Load Data (Path) ---
+@patch("distribution_platform.infrastructure.persistence.truck_repository.Paths")
+class TestTruckRepository:
+    def test_get_trucks_standard(self, mock_paths):
+        """Prueba carga de camiones estándar (large/medium)."""
+        repo = TruckRepository()
 
-    @patch("pathlib.Path.exists", return_value=False)
-    def test_load_data_not_found(self, mock_exists):
-        with pytest.raises(FileNotFoundError):
-            FileReader.load_data(DataTypesEnum.CSV, "ghost.csv")
+        # Simulamos el JSON de camiones estándar
+        fake_data = json.dumps(
+            {"camiones_grandes": {"Volvo": {}}, "camiones_medianos": {"Mercedes": {}}}
+        )
 
-    @patch("pathlib.Path.exists", return_value=True)
-    @patch(
-        "distribution_platform.infrastructure.persistence.file_reader.FileReader._read_csv_smart"
-    )
-    def test_load_data_csv(self, mock_smart, mock_exists):
-        FileReader.load_data(DataTypesEnum.CSV, "data.csv")
-        mock_smart.assert_called_once()
+        # Parcheamos la lectura interna de _load_json
+        with patch.object(
+            repo, "_load_json", return_value=json.loads(fake_data)
+        ) as mock_load:
+            # Case 1: Large
+            res = repo.get_trucks("large")
+            assert "Volvo" in res
 
-    @patch("pathlib.Path.exists", return_value=True)
-    @patch("pandas.read_excel")
-    def test_load_data_excel(self, mock_read_excel, mock_exists):
-        FileReader.load_data(DataTypesEnum.EXCEL, "data.xlsx")
-        mock_read_excel.assert_called_once()
+            # Case 2: Medium
+            res = repo.get_trucks("medium")
+            assert "Mercedes" in res
 
-    @patch("pathlib.Path.exists", return_value=True)
-    def test_load_data_unsupported(self, mock_exists):
-        with pytest.raises(ValueError):
-            FileReader.load_data(DataTypesEnum.JSON, "data.json")
+            # Verify filename
+            mock_load.assert_called_with("large_medium_trucks.json")
 
-    # --- Load Uploaded File (Streamlit Buffer) ---
+    def test_get_trucks_custom(self, mock_paths):
+        repo = TruckRepository()
 
-    def test_load_uploaded_csv_semicolon(self):
-        """Prueba CSV con punto y coma."""
-        data = "col1;col2\n1;2"
+        with patch.object(
+            repo, "_load_json", return_value={"MiCamion": {}}
+        ) as mock_load:
+            res = repo.get_trucks("custom")
+            assert "MiCamion" in res
+            mock_load.assert_called_with("custom_trucks.json")
+
+    def test_save_custom_truck(self, mock_paths):
+        """Prueba flujo de guardar camión custom: leer existente -> actualizar -> guardar."""
+        repo = TruckRepository()
+
+        with (
+            patch.object(repo, "_load_json", return_value={"Old": {}}),
+            patch.object(repo, "_save_json", return_value=True) as mock_save,
+        ):
+            success = repo.save_custom_truck("Nuevo", {"capacidad": 1000})
+
+            assert success is True
+            mock_save.assert_called()
+            saved_data = mock_save.call_args[0][1]
+            assert "Old" in saved_data
+            assert "Nuevo" in saved_data
+
+    def test_save_image_success(self, mock_paths):
+        """Prueba guardado de imagen con sanitización de nombre."""
+        repo = TruckRepository()
+        mock_paths.TRUCK_IMAGES = {"custom": Path("/fake/images")}
+
+        # Mock Uploaded File
         mock_file = MagicMock()
-        mock_file.name = "test.csv"
-        # pandas read_csv acepta objetos file-like
-        mock_file.read.side_effect = BytesIO(data.encode()).read
-        mock_file.__iter__.side_effect = BytesIO(data.encode()).__iter__
+        mock_file.name = "Foto.PNG"  # Mayúsculas
+        mock_file.getbuffer.return_value = b"bytes"
 
-        # Mockeamos pd.read_csv para controlar el comportamiento
-        with patch("pandas.read_csv") as mock_pd_read:
-            FileReader.load_uploaded_file(mock_file)
-            # Debe haberse llamado con sep=";"
-            mock_pd_read.assert_called_with(mock_file, sep=";", engine="python")
+        # Mock Write
+        with (
+            patch("pathlib.Path.write_bytes"),
+            patch("pathlib.Path.mkdir"),
+        ):
+            filename = repo.save_image(mock_file, "Camión #1")
 
-    def test_load_uploaded_csv_comma_fallback(self):
-        """Prueba fallback a coma si falla punto y coma."""
+            assert filename.endswith(".png")
+            assert "#" not in filename
+
+    def test_save_image_no_file(self, mock_paths):
+        repo = TruckRepository()
+        assert repo.save_image(None, "name") == "truck_default.png"
+
+    def test_save_image_error(self, mock_paths):
+        """Si falla la escritura, devuelve default."""
+        repo = TruckRepository()
         mock_file = MagicMock()
-        mock_file.name = "test.csv"
+        mock_file.name = "test.jpg"
 
-        # Simulamos que la primera lectura falla
-        with patch("pandas.read_csv", side_effect=[Exception("Error ;"), "Success"]):
-            result = FileReader.load_uploaded_file(mock_file)
+        with (
+            patch("pathlib.Path.write_bytes", side_effect=Exception("Disk Full")),
+            patch("pathlib.Path.mkdir"),
+        ):
+            res = repo.save_image(mock_file, "test")
+            assert res == "test.jpg"
 
-            # Verificamos que se hizo seek(0)
-            mock_file.seek.assert_called_with(0)
-            assert result == "Success"
+    # --- Internal Methods (_load_json / _save_json) ---
 
-    def test_load_uploaded_excel(self):
-        mock_file = MagicMock()
-        mock_file.name = "test.xlsx"
+    def test_load_json_internal(self, mock_paths):
+        repo = TruckRepository()
+        mock_file_path = MagicMock()
+        mock_paths.STORAGE.__truediv__.return_value = mock_file_path
 
-        with patch("pandas.read_excel") as mock_read:
-            FileReader.load_uploaded_file(mock_file)
-            mock_read.assert_called_once_with(mock_file)
+        # Case: Exists
+        mock_file_path.exists.return_value = True
+        mock_file_path.read_text.return_value = '{"key": "value"}'
 
-    def test_load_uploaded_invalid_ext(self):
-        mock_file = MagicMock()
-        mock_file.name = "test.exe"
+        data = repo._load_json("test.json")
+        assert data == {"key": "value"}
 
-        with pytest.raises(ValueError):
-            FileReader.load_uploaded_file(mock_file)
+        # Case: Not Exists
+        mock_file_path.exists.return_value = False
+        assert repo._load_json("test.json") == {}
 
-    # --- Utils ---
+        # Case: Bad JSON
+        mock_file_path.exists.return_value = True
+        mock_file_path.read_text.return_value = "INVALID"
+        assert repo._load_json("test.json") == {}
 
-    def test_safe_concat(self):
-        df1 = pd.DataFrame({"a": [1]})
-        df2 = pd.DataFrame({"a": [2]})
+    def test_save_json_internal(self, mock_paths):
+        repo = TruckRepository()
+        mock_file_path = MagicMock()
+        mock_paths.STORAGE.__truediv__.return_value = mock_file_path
 
-        # Case: Empty list
-        res_empty = FileReader.safe_concat([])
-        assert res_empty.empty
+        # Case: Success
+        assert repo._save_json("test.json", {}) is True
+        mock_file_path.write_text.assert_called()
 
-        # Case: Valid list
-        res = FileReader.safe_concat([df1, df2])
-        assert len(res) == 2
-        assert res.iloc[1]["a"] == 2
-
-    @patch("pathlib.Path.mkdir")
-    @patch("pandas.DataFrame.to_csv")
-    def test_save_csv(self, mock_to_csv, mock_mkdir):
-        df = pd.DataFrame({"a": [1]})
-        path = Path("out/test.csv")
-
-        FileReader.save_csv(df, path)
-
-        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
-        mock_to_csv.assert_called_once_with(path, index=False)
-
-    @patch("builtins.open", new_callable=mock_open, read_data="col1;col2")
-    @patch("pandas.read_csv")
-    def test_read_csv_smart_semicolon(self, mock_read, mock_file):
-        FileReader._read_csv_smart(Path("test.csv"))
-        mock_read.assert_called_with(Path("test.csv"), sep=";", engine="python")
-
-    @patch("builtins.open", side_effect=Exception("Read Error"))
-    @patch("pandas.read_csv")
-    def test_read_csv_smart_exception(self, mock_read, mock_file):
-        """Si falla al abrir para detectar, debe intentar leer con coma por defecto."""
-        FileReader._read_csv_smart(Path("test.csv"))
-        mock_read.assert_called_with(Path("test.csv"), sep=",", engine="python")
+        # Case: Error
+        mock_file_path.write_text.side_effect = Exception("Write Error")
+        assert repo._save_json("test.json", {}) is False

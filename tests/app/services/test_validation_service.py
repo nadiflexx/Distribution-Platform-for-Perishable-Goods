@@ -46,10 +46,8 @@ def test_validate_truck_parse_error(mock_deps):
 def test_validate_truck_inference_invalid(mock_deps):
     sm, im_class, ptd, _, _, err, _ = mock_deps
     sm.get.return_value = {"some": "data"}
-    # Mock successful parse
     ptd.return_value = (True, MagicMock())
 
-    # Mock inference failure
     mock_engine = MagicMock()
     mock_engine.evaluate.return_value.is_valid = False
     im_class.return_value = mock_engine

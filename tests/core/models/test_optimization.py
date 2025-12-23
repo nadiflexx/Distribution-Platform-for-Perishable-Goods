@@ -79,10 +79,9 @@ class TestOptimizationModels:
 
         assert result.camion_id == 1
         assert len(result.lista_pedidos_ordenada) == 1
-        # Verifica default de tiempos_llegada (list factory)
         assert result.tiempos_llegada == []
 
     def test_route_result_validation_error(self):
         """Falta de campos requeridos."""
         with pytest.raises(ValidationError):
-            RouteOptimizationResult(camion_id=1)  # Faltan muchos campos
+            RouteOptimizationResult(camion_id=1)

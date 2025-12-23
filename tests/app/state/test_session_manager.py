@@ -6,7 +6,6 @@ from distribution_platform.app.config.constants import AppPhase, VehicleCategory
 from distribution_platform.app.state.session_manager import SessionManager
 
 
-# Fixture local para este archivo
 @pytest.fixture
 def mock_streamlit():
     with patch("distribution_platform.app.state.session_manager.st") as mock_st:
@@ -15,7 +14,6 @@ def mock_streamlit():
 
 
 def test_initialize_sets_defaults(mock_streamlit):
-    # Asegurar estado vacío
     mock_streamlit.session_state = {}
 
     SessionManager.initialize()
@@ -26,13 +24,12 @@ def test_initialize_sets_defaults(mock_streamlit):
 
 
 def test_initialize_preserves_existing(mock_streamlit):
-    # Pre-setear un valor
     mock_streamlit.session_state = {"app_phase": "CUSTOM_PHASE"}
 
     SessionManager.initialize()
 
     assert mock_streamlit.session_state["app_phase"] == "CUSTOM_PHASE"
-    assert "load_success" in mock_streamlit.session_state  # Los otros sí se crean
+    assert "load_success" in mock_streamlit.session_state
 
 
 def test_get_and_set(mock_streamlit):
@@ -44,7 +41,6 @@ def test_get_and_set(mock_streamlit):
     val = SessionManager.get("test_key")
     assert val == "test_value"
 
-    # Test default
     assert SessionManager.get("non_existent", "default") == "default"
 
 

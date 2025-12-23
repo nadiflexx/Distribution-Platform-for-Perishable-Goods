@@ -44,7 +44,7 @@ def test_load_from_database_failure(mock_session_manager):
 
 
 def test_load_from_files_validation_error():
-    files = {}  # Empty
+    files = {}
 
     with (
         patch(

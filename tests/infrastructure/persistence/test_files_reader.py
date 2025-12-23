@@ -43,14 +43,11 @@ class TestFileReader:
         data = "col1;col2\n1;2"
         mock_file = MagicMock()
         mock_file.name = "test.csv"
-        # pandas read_csv acepta objetos file-like
         mock_file.read.side_effect = BytesIO(data.encode()).read
         mock_file.__iter__.side_effect = BytesIO(data.encode()).__iter__
 
-        # Mockeamos pd.read_csv para controlar el comportamiento
         with patch("pandas.read_csv") as mock_pd_read:
             FileReader.load_uploaded_file(mock_file)
-            # Debe haberse llamado con sep=";"
             mock_pd_read.assert_called_with(mock_file, sep=";", engine="python")
 
     def test_load_uploaded_csv_comma_fallback(self):
@@ -58,11 +55,8 @@ class TestFileReader:
         mock_file = MagicMock()
         mock_file.name = "test.csv"
 
-        # Simulamos que la primera lectura falla
         with patch("pandas.read_csv", side_effect=[Exception("Error ;"), "Success"]):
             result = FileReader.load_uploaded_file(mock_file)
-
-            # Verificamos que se hizo seek(0)
             mock_file.seek.assert_called_with(0)
             assert result == "Success"
 

@@ -19,7 +19,7 @@ def mock_deps():
         patch("distribution_platform.app.views.form_view.TruckHero") as hero,
         patch("distribution_platform.app.views.form_view.LaunchSection") as launch,
     ):
-        # FIX: Dynamic columns
+
         def columns_side_effect(spec, **kwargs):
             n = spec if isinstance(spec, int) else len(spec)
             return [MagicMock() for _ in range(n)]
@@ -79,7 +79,7 @@ def test_render_data_section_database(mock_deps):
 
 def test_render_fleet_awaiting(mock_deps):
     _, sm, _, _, _, _, _, _, _ = mock_deps
-    sm.get.return_value = False  # load_success = False
+    sm.get.return_value = False
 
     with patch("distribution_platform.app.views.form_view.ValidationBadge") as badge:
         view = FormView()
@@ -90,7 +90,6 @@ def test_render_fleet_awaiting(mock_deps):
 def test_render_fleet_standard(mock_deps):
     st, sm, repo, _, vs, _, _, hero, _ = mock_deps
 
-    # Mock session state
     sm.get.side_effect = (
         lambda k: True
         if k == "load_success"
@@ -101,13 +100,11 @@ def test_render_fleet_standard(mock_deps):
         )
     )
 
-    # Mock user input
     st.selectbox.side_effect = [VehicleCategory.HEAVY, "Truck A"]
     repo.return_value.get_trucks.return_value = {
         "Truck A": {"imagen": "img.png", "capacidad": 1000}
     }
 
-    # Mock validation click
     st.button.return_value = True
     vs.validate_truck.return_value = True
 
@@ -128,18 +125,16 @@ def test_render_fleet_custom_create(mock_deps):
         else (VehicleCategory.CUSTOM if k == "sel_cat" else None)
     )
     st.selectbox.side_effect = [VehicleCategory.CUSTOM, "+ CREATE NEW PROTOTYPE"]
-    repo.return_value.get_trucks.return_value = {}  # Empty customs
+    repo.return_value.get_trucks.return_value = {}
 
-    # Mock form inputs
     st.text_input.return_value = "NewTruck"
     st.file_uploader.return_value = "file"
-    st.button.return_value = True  # Save button
+    st.button.return_value = True
     repo.return_value.save_image.return_value = "img.png"
 
     view = FormView()
     view._render_fleet_section()
 
-    # Verify save logic
     repo.return_value.save_custom_truck.assert_called_once()
     st.toast.assert_called_once()
 
@@ -171,7 +166,7 @@ def test_render_fleet_custom_existing(mock_deps):
 
 def test_render_launch(mock_deps):
     st, sm, _, _, _, _, _, _, launch = mock_deps
-    st.button.return_value = True  # Launch clicked
+    st.button.return_value = True
 
     view = FormView()
     view._render_launch_section()

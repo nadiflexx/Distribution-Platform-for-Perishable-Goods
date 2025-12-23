@@ -21,14 +21,11 @@ def test_card_render(mock_st):
 
     Card.render("Title", "icon", callback)
 
-    # Header rendered
     mock_st.markdown.assert_called()
     assert "pro-card" in mock_st.markdown.call_args_list[0][0][0]
 
-    # Content function called
     callback.assert_called_once()
 
-    # Closing div
     assert "</div>" in mock_st.markdown.call_args_list[1][0][0]
 
 
@@ -56,7 +53,6 @@ def test_truck_hero(mock_st):
         "precio_conductor_hora": 20,
     }
 
-    # FIX: Mock columns to return iterable
     mock_col1 = MagicMock()
     mock_col2 = MagicMock()
     mock_st.columns.return_value = [mock_col1, mock_col2]
@@ -66,22 +62,13 @@ def test_truck_hero(mock_st):
 
         mock_img.render.assert_called_once_with("img.png", width="stretch")
 
-        # Specs rendered inside column context?
-        # Actually markdown is called on st directly in your implementation, or inside 'with col:'
-        # If inside 'with col:', the markdown call happens on the column context manager
-        # But streamlit 'with' usually redirects st.* calls.
-        # Let's check if st.markdown was called with specs
-
-        # We need to check call args to find specs
         found_specs = False
         for call in mock_st.markdown.call_args_list:
             if "1,000" in call[0][0]:
                 found_specs = True
                 break
 
-        # If not found on st, maybe check column mocks if context manager was used properly
         if not found_specs:
-            # Check context enter
             mock_col2.__enter__.assert_called()
 
 

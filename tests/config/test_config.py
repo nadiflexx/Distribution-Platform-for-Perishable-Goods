@@ -16,7 +16,6 @@ class TestSettings:
     def test_make_dirs(self, mock_mkdir):
         """Verifica que make_dirs intenta crear los directorios críticos."""
         Paths.make_dirs()
-        # Verificamos que se llamó a mkdir varias veces
         assert mock_mkdir.called
         assert mock_mkdir.call_count >= 5
 

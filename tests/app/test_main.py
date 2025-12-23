@@ -22,14 +22,12 @@ def mock_app_deps():
 def test_init_loads_config_and_css(mock_app_deps):
     sm, st, paths, _, _, _, _ = mock_app_deps
 
-    # Scenario: CSS file exists
     paths.CSS_FILE.exists.return_value = True
     paths.CSS_FILE.read_text.return_value = "css content"
 
     Application()
 
     st.set_page_config.assert_called_once()
-    # Called twice: once for shield, once for CSS
     assert st.markdown.call_count == 2
     sm.initialize.assert_called_once()
 
@@ -40,7 +38,6 @@ def test_init_no_css_file(mock_app_deps):
 
     Application()
 
-    # Called once only for shield
     assert st.markdown.call_count == 1
 
 

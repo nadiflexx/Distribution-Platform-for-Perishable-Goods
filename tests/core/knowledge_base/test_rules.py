@@ -37,64 +37,50 @@ class TestHelperFunctions:
 class TestFormatValidators:
     """Cubre las validaciones individuales (Líneas 112-276)."""
 
-    # --- NOMBRE ---
     def test_validate_nombre(self):
-        # Happy path
         assert "✔" in validate_nombre_format({"nombre": "Volvo FH"})
 
-        # Edge cases (Missing lines coverage)
-        assert "✘" in validate_nombre_format({})  # None/Empty
-        assert "✘" in validate_nombre_format({"nombre": ""})  # Empty string
-        assert "✘" in validate_nombre_format({"nombre": "A"})  # < 3 chars
-        assert "✘" in validate_nombre_format({"nombre": "A" * 55})  # > 50 chars
-        assert "✘" in validate_nombre_format({"nombre": "Camión@Bad"})  # Regex fail
+        assert "✘" in validate_nombre_format({})
+        assert "✘" in validate_nombre_format({"nombre": ""})
+        assert "✘" in validate_nombre_format({"nombre": "A"})
+        assert "✘" in validate_nombre_format({"nombre": "A" * 55})
+        assert "✘" in validate_nombre_format({"nombre": "Camión@Bad"})
 
-    # --- CAPACIDAD ---
     def test_validate_capacidad(self):
-        # Happy path (int & str)
         assert "✔" in validate_capacidad_format({"capacidad": 100})
         assert "✔" in validate_capacidad_format({"capacidad": "100"})
 
-        # Edge cases
-        assert "✘" in validate_capacidad_format({})  # Missing
-        assert "✘" in validate_capacidad_format({"capacidad": "texto"})  # ValueError
-        assert "✘" in validate_capacidad_format({"capacidad": 5})  # < 10
-        assert "✘" in validate_capacidad_format({"capacidad": 250})  # > 200
+        assert "✘" in validate_capacidad_format({})
+        assert "✘" in validate_capacidad_format({"capacidad": "texto"})
+        assert "✘" in validate_capacidad_format({"capacidad": 5})
+        assert "✘" in validate_capacidad_format({"capacidad": 250})
 
-    # --- CONSUMO ---
     def test_validate_consumo(self):
-        # Happy path
         assert "✔" in validate_consumo_format({"consumo": 30.5})
         assert "✔" in validate_consumo_format({"consumo": "30.5"})
 
-        # Edge cases
-        assert "✘" in validate_consumo_format({})  # Missing
-        assert "✘" in validate_consumo_format({"consumo": "litros"})  # ValueError
-        assert "✘" in validate_consumo_format({"consumo": 5})  # < 10
-        assert "✘" in validate_consumo_format({"consumo": 60})  # > 50
+        assert "✘" in validate_consumo_format({})
+        assert "✘" in validate_consumo_format({"consumo": "litros"})
+        assert "✘" in validate_consumo_format({"consumo": 5})
+        assert "✘" in validate_consumo_format({"consumo": 60})
 
-    # --- VELOCIDAD ---
     def test_validate_velocidad(self):
-        # Happy path
         assert "✔" in validate_velocidad_format({"velocidad_constante": 90})
 
-        # Edge cases
-        assert "✘" in validate_velocidad_format({})  # Missing
+        assert "✘" in validate_velocidad_format({})
         assert "✘" in validate_velocidad_format(
             {"velocidad_constante": "rápido"}
         )  # ValueError
-        assert "✘" in validate_velocidad_format({"velocidad_constante": 20})  # < 30
-        assert "✘" in validate_velocidad_format({"velocidad_constante": 130})  # > 120
+        assert "✘" in validate_velocidad_format({"velocidad_constante": 20})
+        assert "✘" in validate_velocidad_format({"velocidad_constante": 130})
 
-    # --- PRECIO CONDUCTOR ---
     def test_validate_precio(self):
-        # Happy path
         assert "✔" in validate_precio_conductor_hora_format(
             {"precio_conductor_hora": 25}
         )
 
-        # Edge cases
-        assert "✘" in validate_precio_conductor_hora_format({})  # Missing
+        # Ede cases
+        assert "✘" in validate_precio_conductor_hora_format({})
         assert "✘" in validate_precio_conductor_hora_format(
             {"precio_conductor_hora": "caro"}
         )  # ValueError
@@ -134,7 +120,6 @@ class TestParseTruckData:
         """
         data = {
             "nombre": "Bad Truck",
-            # Esto causará ValueError en: int(float(data.get("capacidad")))
             "capacidad": "no_es_numero",
         }
 
@@ -143,5 +128,4 @@ class TestParseTruckData:
         assert valid is False
         assert isinstance(result, dict)
         assert "error" in result
-        # Verificamos que el mensaje de error sea el esperado
         assert "could not convert" in result["error"].lower()

@@ -21,7 +21,7 @@ class TestDataCleaner:
     def test_clean_numeric_commas(self):
         df = pd.DataFrame(
             {
-                "precio": ["10,5", "20.0", 30],  # Mix types
+                "precio": ["10,5", "20.0", 30],
                 "otro": ["a", "b", "c"],
             }
         )

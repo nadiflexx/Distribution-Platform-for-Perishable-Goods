@@ -20,7 +20,7 @@ def mock_orders():
             producto="P",
             tiempo_fabricacion_medio=1,
             distancia_km=10,
-            email_cliente="valid@email.com",  # <--- CORREGIDO
+            email_cliente="valid@email.com",
             dias_totales_caducidad=10,
             fecha_caducidad_final="2023-01-10",
         )
@@ -61,15 +61,13 @@ class TestORToolsStrategy:
     def test_optimize_exception(self, mock_orders):
         """Prueba que captura excepciones críticas (bloque try-except)."""
         strat = ORToolsStrategy(MagicMock(), SimulationConfig(), "Origin")
-        # Forzamos error al no mockear pywrapcp (no instalado o fallo al llamar)
-        # O si lo tenemos instalado, podemos mockear para que falle
         with patch(
             "distribution_platform.core.logic.routing.strategies.ortools.pywrapcp"
         ) as mock_lib:
             mock_lib.RoutingIndexManager.side_effect = Exception("Critical Crash")
 
             result = strat.optimize(mock_orders)
-            assert result is None  # Debe devolver None, no crashear
+            assert result is None
 
     def test_build_result_ortools(self, mock_orders):
         strat = ORToolsStrategy(MagicMock(), SimulationConfig(), "Origin")

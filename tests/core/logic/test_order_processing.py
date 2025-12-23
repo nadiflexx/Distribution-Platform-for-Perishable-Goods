@@ -27,26 +27,23 @@ def order_factory():
 
 class TestOrderProcessing:
     def test_consolidate_logic(self, order_factory):
-        # Grupo 1: ID 1, dos líneas (10 ud, 20 ud)
         group1 = [
             order_factory(1, 10, 10),
-            order_factory(1, 20, 5),  # Caducidad menor (5) manda
+            order_factory(1, 20, 5),
         ]
 
-        # Grupo 2: ID 2, una línea
         group2 = [order_factory(2, 5, 20)]
 
         res = consolidate_orders([group1, group2])
 
         assert len(res) == 2
 
-        # Verificar consolidación grupo 1
         o1 = res[0]
         assert o1.pedido_id == 1
-        assert o1.cantidad_producto == 30  # Suma
-        assert o1.caducidad == 5  # Mínimo
+        assert o1.cantidad_producto == 30
+        assert o1.caducidad == 5
         assert "Consolidado" in o1.producto
 
     def test_consolidate_empty(self):
         assert consolidate_orders([]) == []
-        assert consolidate_orders([[]]) == []  # Lista con grupo vacío
+        assert consolidate_orders([[]]) == []

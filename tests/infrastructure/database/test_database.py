@@ -23,17 +23,13 @@ class TestDatabaseConnection:
         Verifica que se construye la URL de conexión correctamente,
         especialmente el reemplazo de espacios en el driver.
         """
-        # Ejecutar
         get_sql_engine()
 
-        # Verificar
         mock_create_engine.assert_called_once()
 
-        # Obtenemos el argumento con el que se llamó a create_engine
         args, _ = mock_create_engine.call_args
         connection_string = args[0]
 
-        # Verificamos que los espacios se cambiaron por +
         expected_driver = "ODBC+Driver+17+for+SQL+Server"
         assert expected_driver in connection_string
         assert "mssql+pyodbc://" in connection_string

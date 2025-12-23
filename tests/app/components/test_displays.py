@@ -46,10 +46,9 @@ def test_timeline_render(mock_st):
     mock_st.markdown.assert_called_once()
     html = mock_st.markdown.call_args[0][0]
 
-    # Check tags logic
-    assert "ORIGIN" in html  # Start
-    assert "STOP 1" in html  # Middle
-    assert "RETURN" in html  # End
+    assert "ORIGIN" in html
+    assert "STOP 1" in html
+    assert "RETURN" in html
     assert "timeline-container" in html
 
 

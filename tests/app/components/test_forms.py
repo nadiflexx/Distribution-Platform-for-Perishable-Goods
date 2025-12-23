@@ -12,15 +12,13 @@ def mock_st():
 
 
 def test_render_form(mock_st):
-    # Mock file uploader to return 'file_obj'
     mock_st.file_uploader.return_value = "file_obj"
 
     files = FileUploadSection.render()
 
-    assert len(files) == 6  # 6 required files defined in class
+    assert len(files) == 6
     assert files["pedidos"] == "file_obj"
 
-    # Check calls
     mock_st.markdown.assert_called()
     mock_st.caption.assert_called()
     assert mock_st.file_uploader.call_count == 6
@@ -41,7 +39,7 @@ def test_validate_success():
 
 
 def test_validate_failure():
-    files = {"pedidos": "f"}  # Missing others
+    files = {"pedidos": "f"}
     valid, missing = FileUploadSection.validate(files)
 
     assert valid is False

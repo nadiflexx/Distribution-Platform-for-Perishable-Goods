@@ -27,10 +27,8 @@ class TestSqlClient:
         assert not load_order_lines().empty
         assert not load_provinces().empty
         assert not load_provinces_names().empty
-        # Faltaba este en tu código pegado, agrégalo para 100% cobertura
         assert not load_full_dataset().empty
 
-    # CORRECCIÓN: Añadido 'self' como primer argumento
     def test_load_functions(self, mock_read_sql, mock_engine):
         """Prueba que las funciones de carga llaman a pandas con la query correcta."""
         mock_read_sql.return_value = pd.DataFrame({"id": [1]})
@@ -38,6 +36,5 @@ class TestSqlClient:
         df = load_clients()
         assert not df.empty
 
-        # Verificar llamada
         query_arg = mock_read_sql.call_args[0][0]
         assert "dbo.Clientes" in query_arg

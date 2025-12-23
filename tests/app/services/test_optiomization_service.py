@@ -42,17 +42,16 @@ def mock_deps():
 
 def test_run_missing_data(mock_deps):
     sm, _, _ = mock_deps
-    sm.get.return_value = None  # Missing either truck or orders
+    sm.get.return_value = None
     assert OptimizationService.run() is None
 
 
 def test_run_capacity_error(mock_deps):
     sm, _, err = mock_deps
 
-    # Truck: small capacity
     sm.get.side_effect = lambda k, default=None: {
-        "selected_truck_data": {"capacidad": 10},  # 10 kg
-        "df": [[FakeOrder(1, "A", 100)]],  # 100 kg load
+        "selected_truck_data": {"capacidad": 10},
+        "df": [[FakeOrder(1, "A", 100)]],
     }.get(k, default)
 
     assert OptimizationService.run() is None
@@ -63,7 +62,6 @@ def test_run_capacity_error(mock_deps):
 def test_run_success_genetic(mock_deps):
     sm, orch, _ = mock_deps
 
-    # Setup Data
     truck_data = {
         "capacidad": 1000,
         "velocidad_constante": 90,
@@ -83,42 +81,36 @@ def test_run_success_genetic(mock_deps):
 
     sm.get.side_effect = get_side_effect
 
-    # Setup Orchestrator Result
     fake_res = FakeTruckResult(1, 100.0, 50.0, 200.0, orders[0])
     raw_results = {"truck_1": fake_res, "pedidos_no_entregables": pd.DataFrame()}
     orch.return_value.optimize_deliveries.return_value = raw_results
 
-    # Execution
     result = OptimizationService.run()
 
-    # Assertions
     assert result is not None
     assert result["num_trucks"] == 1
     assert result["total_distancia"] == 100.0
     assert "algorithm_trace" in result
 
-    # Check trace structure for Genetic
     trace = result["algorithm_trace"]["truck_1"]
     assert trace.algorithm_name == "Genetic Algorithm"
     assert len(trace.snapshots) > 0
-    assert trace.total_iterations == 11  # As per logic in _simulate_genetic_trace
+    assert trace.total_iterations == 11
 
 
 def test_run_success_ortools(mock_deps):
     sm, orch, _ = mock_deps
 
-    # Setup Data (Tons heuristic check: cap < 100)
-    truck_data = {"capacidad": 24}  # 24 Tons -> should convert to 24000
+    truck_data = {"capacidad": 24}
     orders = []
-    # Create enough orders to trigger > 10000 load
     for i in range(101):
-        orders.append(FakeOrder(i, "Dest", 100))  # 101 * 100 = 10100 kg
+        orders.append(FakeOrder(i, "Dest", 100))
 
     def get_side_effect(k, default=None):
         if k == "selected_truck_data":
             return truck_data
         if k == "df":
-            return [orders]  # List of lists
+            return [orders]
         if k == "algo_select":
             return "OR-Tools"
         return default
@@ -128,7 +120,7 @@ def test_run_success_ortools(mock_deps):
     fake_res = FakeTruckResult(1, 100.0, 50.0, 200.0, orders[:2])
     raw_results = {
         "truck_1": fake_res,
-        "pedidos_no_entregables": None,  # Should be handled gracefully
+        "pedidos_no_entregables": None,
     }
     orch.return_value.optimize_deliveries.return_value = raw_results
 
@@ -137,7 +129,7 @@ def test_run_success_ortools(mock_deps):
     assert result is not None
     trace = result["algorithm_trace"]["truck_1"]
     assert trace.algorithm_name == "Google OR-Tools (Constraint Programming)"
-    assert trace.total_iterations == 7  # As per logic in _simulate_ortools_trace
+    assert trace.total_iterations == 7
 
 
 def test_exception_handling(mock_deps):
@@ -150,11 +142,7 @@ def test_exception_handling(mock_deps):
 
 
 def test_trace_edge_cases():
-    # Test generation with no orders
     res = FakeTruckResult(1, 0, 0, 0, [])
-    # _simulate_trace will return empty trace if nodes only contain origin
-    # But nodes construction depends on orders
-    # We call internal method to test robustness
 
     from distribution_platform.app.services.optimization_service import (
         OptimizationService,

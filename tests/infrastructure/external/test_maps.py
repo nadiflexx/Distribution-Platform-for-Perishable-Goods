@@ -6,7 +6,6 @@ from distribution_platform.infrastructure.external.maps import SpainMapRoutes
 class TestSpainMapRoutes:
     @patch("requests.get")
     def test_get_osrm_route_success(self, mock_get):
-        # Mockear respuesta JSON de OSRM
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -73,13 +72,12 @@ class TestSpainMapRoutes:
     def test_render_elements(self, mock_st, mock_marker, mock_poly, mock_map):
         mapper = SpainMapRoutes()
 
-        # Configurar Mock Order para que caducidad sea un int real
         p1 = MagicMock()
-        p1.dias_totales_caducidad = 10  # int real
+        p1.dias_totales_caducidad = 10
         p1.caducidad = 10
         p1.pedido_id = 1
         p1.destino = "A"
-        p1.cantidad_producto = 10.0  # float para f-string
+        p1.cantidad_producto = 10.0
 
         routes = [
             {
@@ -105,7 +103,6 @@ class TestSpainMapRoutes:
     def test_map_popups_logic(self, mock_st, mock_poly, mock_popup, mock_marker):
         mapper = SpainMapRoutes()
 
-        # Configurar Mocks con valores numéricos reales para evitar TypeError
         p1 = MagicMock(pedido_id=1, destino="A", cantidad_producto=10.0)
         p1.caducidad = 10
         p1.dias_totales_caducidad = 10
@@ -134,8 +131,6 @@ class TestSpainMapRoutes:
             assert mock_popup.call_count == 4
             popups_html = [call.args[0] for call in mock_popup.call_args_list]
 
-            # Buscamos en todos los popups generados
-            # Nota: El orden exacto puede variar si hay un popup para la base
             html_text = " ".join(str(p) for p in popups_html)
 
             assert "A TIEMPO" in html_text

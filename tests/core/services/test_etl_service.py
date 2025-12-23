@@ -22,7 +22,6 @@ def sample_df():
             "destino": ["Madrid", "Madrid", "Barcelona"],
             "distancia_km": [500, 500, 600],
             "email_cliente": ["a@a.com", "a@a.com", "b@b.com"],
-            # COLUMNAS CRÍTICAS QUE FALTABAN O NO SE CALCULABAN EN EL MOCK
             "dias_totales_caducidad": [12, 12, 8],
             "fecha_caducidad_final": ["2023-01-13", "2023-01-13", "2023-01-10"],
         }
@@ -36,10 +35,8 @@ class TestETLService:
     def test_pipeline_files_cached(
         self, mock_file_reader, mock_cache, mock_paths, sample_df
     ):
-        # Setup: El archivo YA existe
         mock_paths.return_value.DATA_PROCESSED.__truediv__.return_value.exists.return_value = True
 
-        # FileReader devuelve el DF final YA CALCULADO
         mock_file_reader.load_data.return_value = sample_df
 
         service = ETLService()
@@ -54,37 +51,30 @@ class TestETLService:
     def test_pipeline_files_raw(
         self, mock_cleaner, mock_file_reader, mock_cache, mock_paths, sample_df
     ):
-        # Setup: El archivo procesado NO existe
         mock_paths.return_value.DATA_PROCESSED.__truediv__.return_value.exists.return_value = False
 
-        # Mocks para Dataframes internos (vacíos para que no fallen cargas)
         mock_file_reader.load_data.return_value = pd.DataFrame()
         mock_file_reader.safe_concat.return_value = pd.DataFrame()
         mock_file_reader.load_uploaded_file.return_value = pd.DataFrame()
 
-        # Mockeamos _merge_datasets para inyectar el df_final simulado
         with patch.object(ETLService, "_merge_datasets") as mock_merge:
 
             def side_effect_merge():
-                # INYECTAMOS EL DF CON TODAS LAS COLUMNAS CALCULADAS
                 service.df_final = sample_df
 
             mock_merge.side_effect = side_effect_merge
 
             service = ETLService()
-            # Simulamos uploads para entrar en _load_uploads
             result = service.run(uploaded_files={"pedidos": []}, use_database=False)
 
             mock_merge.assert_called()
             assert len(result) == 2
 
-    # ... Resto de tests iguales ...
     @patch("distribution_platform.core.services.etl_service.load_full_dataset")
     @patch("distribution_platform.core.services.etl_service.load_provinces_names")
     def test_pipeline_database(
         self, mock_provinces, mock_load_full, mock_cache, mock_paths, sample_df
     ):
-        # Ajustamos sample_df para simular SQL
         sql_df = sample_df.rename(
             columns={
                 "producto": "nombre",
@@ -92,9 +82,7 @@ class TestETLService:
                 "email_cliente": "email",
                 "destino": "nombre_completo",
             }
-        ).drop(
-            columns=["dias_totales_caducidad", "fecha_caducidad_final"]
-        )  # SQL no trae esto calculado
+        ).drop(columns=["dias_totales_caducidad", "fecha_caducidad_final"])
 
         sql_df["coordenadas_gps"] = "0,0"
 
@@ -139,7 +127,6 @@ class TestETLService:
         """Prueba la lógica interna de mergeo de tablas."""
         service = ETLService()
 
-        # Setup DataFrames simulando tablas SQL/CSV
         service.df_pedidos = pd.DataFrame(
             {
                 "pedido_id": [1],
@@ -174,27 +161,23 @@ class TestETLService:
             }
         )
 
-        # Ejecutar merge
         service._merge_datasets()
 
-        # Verificar resultado en df_final
         df = service.df_final
         assert not df.empty
         assert "email_cliente" in df.columns
         assert df.iloc[0]["producto"] == "Manzana"
-        assert df.iloc[0]["destino"] == "Madrid"  # Verifica el clean "Destino "
-        assert "fecha_caducidad_final" in df.columns  # Verifica compute_caducidad
+        assert df.iloc[0]["destino"] == "Madrid"
+        assert "fecha_caducidad_final" in df.columns
 
     def test_load_uploads_real_logic(self, mock_cache, mock_paths):
         """Prueba la lógica de _load_uploads con diccionarios."""
         service = ETLService()
 
-        # Mock FileReader para devolver un DF simple
         with patch(
             "distribution_platform.core.services.etl_service.FileReader"
         ) as mock_reader:
             mock_reader.load_uploaded_file.return_value = pd.DataFrame({"id": [1]})
-            # safe_concat solo concatena lo que recibe
             mock_reader.safe_concat.side_effect = (
                 lambda x: pd.concat(x) if x else pd.DataFrame()
             )
@@ -203,10 +186,9 @@ class TestETLService:
 
             service._load_uploads(files_dict)
 
-            # Verificar que se cargaron los atributos
             assert not service.df_clientes.empty
             assert not service.df_pedidos.empty
-            assert service.df_productos.empty  # No estaba en el dict
+            assert service.df_productos.empty
 
     def test_transform_to_orders_empty(self, mock_cache, mock_paths):
         """Cubre el caso de df vacío."""

@@ -6,8 +6,6 @@ from distribution_platform.core.models.truck import Truck
 
 
 class TestSimpleModels:
-    # --- Truck ---
-
     def test_truck_creation(self):
         truck = Truck(
             nombre="Volvo",
@@ -24,17 +22,17 @@ class TestSimpleModels:
         """Pydantic intenta convertir tipos (str -> float)."""
         truck = Truck(
             nombre="Volvo",
-            velocidad_constante="90",  # String
+            velocidad_constante="90",
             consumo_combustible=30,
             capacidad_carga=1000,
             precio_conductor_hora=20,
             imagen="img",
         )
-        assert truck.velocidad_constante == 90.0  # Convertido a float
+        assert truck.velocidad_constante == 90.0
 
     def test_truck_missing_field(self):
         with pytest.raises(ValidationError):
-            Truck(nombre="Volvo")  # Faltan campos
+            Truck(nombre="Volvo")
 
     # --- ResultValidation ---
 

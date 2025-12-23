@@ -24,7 +24,6 @@ def mock_deps():
 def test_render_success(mock_deps):
     loader, opt, sm, _ = mock_deps
 
-    # Optimization succeeds
     result = {"data": "ok"}
     opt.run.return_value = result
 
@@ -40,7 +39,6 @@ def test_render_success(mock_deps):
 def test_render_failure(mock_deps):
     loader, opt, sm, sleep = mock_deps
 
-    # Optimization fails
     opt.run.return_value = None
 
     view = ProcessingView()

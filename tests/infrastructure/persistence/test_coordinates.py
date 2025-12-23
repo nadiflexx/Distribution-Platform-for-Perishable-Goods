@@ -30,7 +30,6 @@ class TestCoordinateCache:
         """Prueba que maneja JSON corrupto sin romper."""
         mock_exists.return_value = True
 
-        # Al fallar json.load, debe capturar excepción y dejar cache vacía
         with patch("json.load", side_effect=json.JSONDecodeError("msg", "doc", 0)):
             cache = CoordinateCache(Path("dummy.json"))
             assert cache.cache == {}
@@ -50,11 +49,9 @@ class TestCoordinateCache:
 
         cache.save()
 
-        # Verificar que se escribió el JSON correcto
         mock_file.assert_called_with(Path("dummy.json"), "w", encoding="utf-8")
         handle = mock_file()
 
-        # Juntamos todas las escrituras para verificar el contenido
         written_content = "".join(call.args[0] for call in handle.write.call_args_list)
         assert "Toledo" in written_content
         assert "39,-4" in written_content
@@ -63,16 +60,13 @@ class TestCoordinateCache:
     def test_save_failure(self, mock_file):
         """Prueba manejo de errores al guardar (ej: permisos)."""
         cache = CoordinateCache(Path("dummy.json"))
-        # No debe lanzar excepción, solo loguear error
         cache.save()
 
     def test_default_path_logic(self):
         """Prueba la lógica de fallback cuando no se pasa path."""
-        # Mockeamos Path.resolve para que no dependa de dónde se ejecute el test
         with patch("pathlib.Path.resolve") as mock_resolve:
             mock_resolve.return_value.parents = [None, None, None, Path("/root")]
 
-            # También debemos mockear mkdir para que no falle al intentar crear /root/...
             with patch("pathlib.Path.mkdir"):
                 cache = CoordinateCache()
                 assert cache.cache_path == Path("/root/data/storage/coordinates.json")
