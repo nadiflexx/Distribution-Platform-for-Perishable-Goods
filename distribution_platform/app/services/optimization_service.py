@@ -25,8 +25,8 @@ class AlgorithmSnapshot:
 
     iteration: int
     description: str
-    nodes: list[dict[str, Any]]  # {id, name, lat, lon, type}
-    edges: list[dict[str, Any]]  # {from_id, to_id, color, weight}
+    nodes: list[dict[str, Any]]
+    edges: list[dict[str, Any]]
     current_best_cost: float = 0.0
     trucks_assigned: int = 0
 
@@ -256,7 +256,7 @@ class OptimizationService:
 
         # Phase 6-10: Convergence towards optimal
         for gen in range(5, 11):
-            progress = (gen - 5) / 5  # 0 to 1
+            progress = (gen - 5) / 5
 
             # Gradually approach final order
             final_order = list(range(1, len(nodes)))

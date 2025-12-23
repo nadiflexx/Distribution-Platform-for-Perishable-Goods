@@ -25,17 +25,13 @@ class ValidationService:
             st.warning("⚠️ Select a vehicle first")
             return False
 
-        # Parse truck data
-        # Mypy sees parsed as Union[Dict[str, Any], Truck]
         is_valid, parsed = parse_truck_data(truck_data)
 
         if not is_valid:
-            # We know it's a dict here because is_valid is False
             error_msg = cast(dict[str, Any], parsed).get("error", "Unknown error")
             st.error(f"❌ {error_msg}")
             return False
 
-        # We know it's a Truck object here because is_valid is True
         truck_obj = cast(Truck, parsed)
 
         # Run inference

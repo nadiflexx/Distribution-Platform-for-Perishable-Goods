@@ -9,7 +9,6 @@ import streamlit.components.v1 as components
 class LoaderOverlay:
     """Loading overlay components for different scenarios."""
 
-    # CSS compartido para evitar flash durante transiciones
     _TRANSITION_SHIELD_CSS = """
         <style>
             /* Global transition shield - prevents white flash */

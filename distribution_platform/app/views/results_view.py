@@ -99,7 +99,6 @@ class ResultsView:
             ("📈", "Net Profit", f"{result['total_beneficio']:,.0f}", " €"),
         ]
 
-        # FIX: Added strict=False to zip to satisfy Ruff B905
         for col, (icon, label, value, unit) in zip(cols, kpis, strict=False):
             with col:
                 KPICard.render(icon, label, value, unit)
@@ -194,12 +193,10 @@ class ResultsView:
         ]
 
         # === PRODUCT RECONSTRUCTION ENGINE ===
-        # Recorremos los datos ORIGINALES (raw) para recuperar el desglose completo
         original_data_source = SessionManager.get("df")
         product_master_map: dict[int, list[dict[str, Any]]] = {}
 
         if original_data_source:
-            # Flatten data structure (usually list of lists per category)
             all_raw_orders = [o for sublist in original_data_source for o in sublist]
 
             for o in all_raw_orders:
@@ -207,8 +204,6 @@ class ResultsView:
                 if oid not in product_master_map:
                     product_master_map[oid] = []
 
-                # Extraer info básica de este item
-                # El CSV tiene 1 fila por producto, así que 'o' es un producto
                 item_name = getattr(
                     o,
                     "producto_nombre",
@@ -249,7 +244,6 @@ class ResultsView:
                 product_names = []
 
                 if pedido.pedido_id in product_master_map:
-                    # Recuperamos los datos originales sin consolidar
                     raw_products = product_master_map[pedido.pedido_id]
                     for p in raw_products:
                         products.append(
@@ -261,7 +255,6 @@ class ResultsView:
                         )
                         product_names.append(p["nombre"])
                 else:
-                    # Fallback: intentar leer del objeto consolidado
                     raw_lines = getattr(pedido, "lineas", []) or getattr(
                         pedido, "productos", []
                     )
@@ -279,7 +272,6 @@ class ResultsView:
                             )
                             product_names.append(p_name)
                     else:
-                        # Fallback final
                         p_name = getattr(pedido, "producto_nombre", "General Cargo")
                         products = [{"nombre": p_name, "cantidad": 1, "precio": price}]
                         product_names = [p_name]
@@ -432,7 +424,6 @@ class ResultsView:
                 )
 
             with col_right:
-                # Financial Summary (FIX: Shows list of names)
                 product_list_html = "<ul style='margin: 0; padding-left: 20px; color: white; font-size: 0.85rem; max-height: 150px; overflow-y: auto;'>"
                 for name in order_data["product_names"]:
                     product_list_html += f"<li>{name}</li>"

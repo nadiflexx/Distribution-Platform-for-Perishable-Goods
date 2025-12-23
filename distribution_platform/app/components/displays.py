@@ -41,7 +41,7 @@ class Timeline:
         if not route_list:
             return
 
-        # Build HTML without extra whitespace/newlines that break rendering
+        # Build HTML
         items = []
         for i, stop in enumerate(route_list):
             is_start = i == 0
@@ -54,7 +54,6 @@ class Timeline:
             else:
                 tag, icon, tag_class = f"STOP {i}", "📦", "tag-stop"
 
-            # Build each item as a single concatenated string (no f-string newlines)
             item_html = (
                 '<div class="timeline-item">'
                 '<div class="timeline-marker">'
