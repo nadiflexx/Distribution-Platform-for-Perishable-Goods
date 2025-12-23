@@ -1,10 +1,10 @@
 # 🚛 AI Delivery Planner & Route Optimizer
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.31-FF4B4B?style=for-the-badge&logo=streamlit)
+![Python](https://img.shields.io/badge/Python-3.13%2B-blue?style=for-the-badge&logo=python)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.51-FF4B4B?style=for-the-badge&logo=streamlit)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 ![Code Style](https://img.shields.io/badge/Code%20Style-Black-000000?style=for-the-badge)
-![Coverage](https://img.shields.io/badge/Coverage-95%25-brightgreen?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen?style=for-the-badge)
 
 **Intelligent Distribution Platform for Perishable Goods.**
 An advanced system leveraging genetic algorithms and clustering to optimize delivery routes in real-time, ensuring product freshness while minimizing operational costs.
@@ -26,35 +26,36 @@ An advanced system leveraging genetic algorithms and clustering to optimize deli
 ## 🌟 Key Features
 
 - **🧠 Inference Engine:** Automatic vehicle validation based on business rules (capacity, consumption, velocity constraints).
-- **🤖 Genetic Algorithms:** Route optimization (VRP) to minimize distance and time, strictly adhering to product expiration windows.
+- **🧬 Algorithm Visualizer:** Watch step-by-step how the AI (Genetic or OR-Tools) constructs the optimal route in real-time.
 - **🗺️ Interactive Maps:** Real-time route visualization on OpenStreetMap using OSRM for precise road mapping.
-- **📦 Intelligent Clustering:** K-Means clustering of orders based on geographical location and delivery urgency.
+- **📦 Order Manifest:** Detailed breakdown of consolidated orders, including product-level details and financial summaries.
+- **📊 Advanced Analytics:** Interactive dashboards for fleet efficiency, cost vs. revenue analysis, and load distribution.
 - **⚖️ Fleet Management:** Dynamic load assignment to maximize truck capacity utilization (>90%).
-- **☁️ Cloud Integration:** Automatic backup of processed data to Google Drive (optional).
 
 ---
 
 ## 🏗️ System Architecture
 
-The project follows a modular architecture inspired by **Clean Architecture**:
+The project follows a modular **Clean Architecture** to ensure scalability and maintainability:
 
 ```
 distribution_platform/
-├── app/                     # User Interface (Streamlit)
-│   ├── user_interface/      # UI Components and pages
-├── batch/                   # Background processes (Backup, Scheduled ETL)
-├── config/                  # Centralized configuration (Settings, Enums)
-├── core/                    # Business Logic (The Brain)
-│   ├── inference_engine/    # Rule engine
-│   ├── knowledge_base/      # Business rules
-│   ├── logic/               # Algorithms (Clustering, Routing, Graph)
-│   ├── models/              # Domain entities (Pydantic)
-│   └── services/            # Orchestrator services (ETL, Optimization)
-├── infrastructure/          # Infrastructure Layer
-│   ├── database/            # SQL Connection and Queries
-│   ├── external/            # External APIs (Maps, Geocoding)
-│   └── persistence/         # Repositorios (Files, JSON)
-└── tests/                   # Test Suite (Pytest)
+├── app/ # Presentation Layer (Streamlit)
+│   ├── components/ # Reusable UI Widgets (Cards, Charts, Timelines)
+│   ├── config/ # UI Constants & Enums
+│   ├── services/ # Bridge services (Data, Validation, Optimization)
+│   ├── state/ # Centralized Session Management
+│   ├── views/ # Page Rendering Logic (Form, Results, Processing)
+│   └── main.py # Application Entry Point
+├── core/ # Domain Layer (The Brain)
+│   ├── inference_engine/ # Validation Rule Engine
+│   ├── knowledge_base/ # Business Rules Repository
+│   ├── models/ # Domain Data Models (Pydantic)
+│   └── services/ # Orchestrators (ETL, Solver Logic)
+├── infrastructure/ # Infrastructure Layer
+│   ├── external/ # External APIs (Maps, Geocoding)
+│   └── persistence/ # Data Repositories (CSV, JSON, SQL)
+└── tests/ # Test Suite (Pytest)
 ```
 
 ---
@@ -121,32 +122,29 @@ The application will be available at:
 
 ## 📱 Usage Guide
 
-### Data Loading:
+### Mission Control (Form):
 
-- Select "Database" to connect to SQL Server.
-- Select "Files" to upload your CSV files (orders.csv, clients.csv, etc.).
+- Data Ingestion: Select "Files" to upload your datasets (orders, clients, etc.) or connect to the Database.
+- Fleet Configuration: Choose a standard truck model or create a Custom Prototype.
+- Validation: The system validates if the selected vehicle fits the mission requirements.
 
-### Fleet Configuration:
+### Processing:
 
-- Choose a standard truck model or create a custom one.
-- The AI engine will validate if the vehicle meets regulations.
+- Select the algorithm: Genetic Evolutionary or Google OR-Tools.
+- Click Initiate Sequence to start the optimization engine.
 
-### Optimization:
+### Mission Results:
 
-- Click on "Generate Optimal Route".
-- The system will cluster orders and calculate the most efficient routes.
-
-### Results:
-
-- View the interactive map with plotted routes.
-- Analyze metrics: Total cost, profit, carbon footprint, and delivery times.
-- Check expiration alerts on map markers.
+- 🌍 Geospatial Map: Interactive map with routes, legends, and markers.
+- 🧬 Algorithm Visualizer: Replay the optimization process step-by-step.
+- 📦 Order Manifest: Searchable table of orders with detailed product breakdown.
+- 🔍 Route Inspector: Deep dive into specific truck routes with timelines and navigation links.
 
 ---
 
 ## 🧪 Testing & Code Quality
 
-The project includes a robust test suite (>80% coverage) using pytest and unittest.mock.
+The project includes a robust test suite (>90% coverage) using pytest and unittest.mock.
 
 ```bash
 pytest tests/
@@ -157,11 +155,14 @@ pytest tests/
 ## 🛠️ Tech Stack
 
 - **Language:** Python 3.13+
-- **Web Framework:** Streamlit
+- **Web Framework:** Streamlit, Plotly (Charts)
+- **Algorithms:** DEAP (Genetic), Google OR-Tools
 - **Data Science:** Pandas, Scikit-learn (K-Means), NumPy
-- **Maps & Geo:** Folium, Streamlit-Folium, Geopy, OSRM
+- **Maps & Geo:** Folium, Geopy, OSRM
+- **Backups:** Google Drive (Optional)
+- **Data:** CSV, XLSX, TXT, JSON, SQL
 - **Data Modeling:** Pydantic
-- **Testing:** Pytest, Coverage
+- **Quality & Testing:** Pytest, Ruff, Mypy
 - **Database:** SQLAlchemy, PyODBC (SQL Server)
 
 ---
