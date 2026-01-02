@@ -30,7 +30,7 @@ class InferenceMotor:
 
         The representation of the reasoning is a list of strings. The
         criterion for validity is that no rule returns a message that
-        starts with "✘".
+        starts with "[ERROR]".
         """
 
         reasoning: list[str] = []
@@ -39,6 +39,6 @@ class InferenceMotor:
             message = rule(truck)
             reasoning.append(message)
 
-        is_valid = all(not message.startswith("✘") for message in reasoning)
+        is_valid = all(not message.startswith("[ERROR]") for message in reasoning)
 
         return ResultValidation(is_valid=is_valid, reasoning=reasoning)

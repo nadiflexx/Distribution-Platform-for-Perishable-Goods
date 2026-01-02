@@ -33,7 +33,7 @@ class TestGeocoding:
 
         assert result == "40.0,-3.0"
         assert mock_geolocator.geocode.call_count == 2
-        mock_sleep.assert_called_once()  # Se durmió una vez entre intentos
+        mock_sleep.assert_called_once()
 
     def test_fetch_coordinates_fallback(self, mock_sleep, mock_geolocator):
         """

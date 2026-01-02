@@ -45,26 +45,43 @@ def test_validate_truck_parse_error(mock_deps):
 
 def test_validate_truck_inference_invalid(mock_deps):
     sm, im_class, ptd, _, _, err, _ = mock_deps
+
     sm.get.return_value = {"some": "data"}
     ptd.return_value = (True, MagicMock())
 
     mock_engine = MagicMock()
-    mock_engine.evaluate.return_value.is_valid = False
+    mock_result = MagicMock()
+    mock_result.is_valid = False
+    mock_result.reasoning = ["[ERROR] Test fail"]
+
+    mock_engine.evaluate.return_value = mock_result
     im_class.return_value = mock_engine
 
     assert ValidationService.validate_truck() is False
-    err.assert_called_once()
+
+    err.assert_not_called()
+
+    calls = sm.set.call_args_list
+    assert any(c[0][0] == "validation_result" and c[0][1] == mock_result for c in calls)
+
+    assert any(c[0][0] == "truck_validated" and c[0][1] is False for c in calls)
 
 
 def test_validate_truck_success(mock_deps):
     sm, im_class, ptd, _, _, _, toast = mock_deps
+
+    # Setup
     sm.get.return_value = {"some": "data"}
     ptd.return_value = (True, MagicMock())
 
     mock_engine = MagicMock()
-    mock_engine.evaluate.return_value.is_valid = True
+    mock_result = MagicMock()
+    mock_result.is_valid = True
+
+    mock_engine.evaluate.return_value = mock_result
     im_class.return_value = mock_engine
 
     assert ValidationService.validate_truck() is True
-    sm.set.assert_called_with("truck_validated", True)
-    toast.assert_called_once()
+
+    calls = sm.set.call_args_list
+    assert any(c[0][0] == "truck_validated" and c[0][1] is True for c in calls)

@@ -19,33 +19,33 @@ class TestInferenceMotor:
         )
 
     def test_evaluate_all_rules_pass(self, sample_truck):
-        """Verifica que si todas las reglas pasan, el resultado es válido."""
-        rule1 = Mock(return_value="✔ Rule 1 Passed")
-        rule2 = Mock(return_value="✔ Rule 2 Passed")
+        """Verifies that if all rules pass, the result is valid."""
+        rule1 = Mock(return_value="[SUCCESS] Rule 1 Passed")
+        rule2 = Mock(return_value="[SUCCESS] Rule 2 Passed")
 
         motor = InferenceMotor([rule1, rule2])
         result = motor.evaluate(sample_truck)
 
         assert result.is_valid is True
         assert len(result.reasoning) == 2
-        assert "✔ Rule 1 Passed" in result.reasoning
+        assert "[SUCCESS] Rule 1 Passed" in result.reasoning
 
         rule1.assert_called_with(sample_truck)
 
     def test_evaluate_one_rule_fails(self, sample_truck):
-        """Verifica que si una regla falla, el resultado es inválido."""
-        rule1 = Mock(return_value="✔ Rule 1 Passed")
-        rule2 = Mock(return_value="✘ Rule 2 Failed")
+        """Verifies that if one rule fails, the result is invalid."""
+        rule1 = Mock(return_value="[SUCCESS] Rule 1 Passed")
+        rule2 = Mock(return_value="[ERROR] Rule 2 Failed")
 
         motor = InferenceMotor([rule1, rule2])
         result = motor.evaluate(sample_truck)
 
         assert result.is_valid is False
         assert len(result.reasoning) == 2
-        assert "✘ Rule 2 Failed" in result.reasoning
+        assert "[ERROR] Rule 2 Failed" in result.reasoning
 
     def test_empty_rules(self, sample_truck):
-        """Verifica comportamiento sin reglas (debería ser válido por defecto)."""
+        """Verifies behavior without rules (should be valid by default)."""
         motor = InferenceMotor([])
         result = motor.evaluate(sample_truck)
 

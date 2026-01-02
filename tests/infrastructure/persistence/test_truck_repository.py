@@ -13,12 +13,10 @@ class TestTruckRepository:
         """Prueba carga de camiones estándar (large/medium)."""
         repo = TruckRepository()
 
-        # Simulamos el JSON de camiones estándar
         fake_data = json.dumps(
             {"camiones_grandes": {"Volvo": {}}, "camiones_medianos": {"Mercedes": {}}}
         )
 
-        # Parcheamos la lectura interna de _load_json
         with patch.object(
             repo, "_load_json", return_value=json.loads(fake_data)
         ) as mock_load:

@@ -6,6 +6,8 @@ from distribution_platform.app.views.results_view import ResultsView
 
 
 class FakeOrder:
+    """Mock Order object for testing."""
+
     def __init__(self, pid, dest, qty, email="e@mail.com"):
         self.pedido_id = pid
         self.destino = dest
@@ -35,8 +37,10 @@ def mock_deps():
         patch(
             "distribution_platform.app.views.results_view.AlgorithmVisualizer"
         ) as algo_viz,
+        patch("distribution_platform.app.views.results_view.ExportHub") as export_hub,
+        # ELIMINADO: patch("distribution_platform.app.views.results_view.OptimizationService")
     ):
-
+        # Mocking st.columns
         def columns_side_effect(spec, **kwargs):
             if isinstance(spec, (list, tuple)):
                 count = len(spec)
@@ -47,14 +51,14 @@ def mock_deps():
             return [MagicMock() for _ in range(count)]
 
         st.columns.side_effect = columns_side_effect
-
         st.tabs.side_effect = lambda tabs: [MagicMock() for _ in tabs]
 
+        # Default st return values
         st.text_input.return_value = ""
         st.selectbox.return_value = None
         st.multiselect.return_value = []
 
-        yield sm, loader, map_routes, st, algo_viz
+        yield sm, loader, map_routes, st, algo_viz, export_hub
 
 
 @pytest.fixture
@@ -70,6 +74,7 @@ def complex_result():
     truck.valida = True
     truck.ruta_coordenadas = [(0, 0), (1, 1)]
 
+    # Financial fields
     truck.tiempo_total_viaje_horas = 10.0
     truck.tiempo_conduccion_pura_horas = 8.0
     truck.consumo_litros = 30.0
@@ -87,22 +92,25 @@ def complex_result():
         "assignments": MagicMock(),
         "pedidos_imposibles": MagicMock(empty=False),
         "algorithm_trace": {"truck_1": "trace"},
+        "plots": {"clustering": "base64img", "routes": "base64img"},
     }, order
 
 
-def test_export_button(mock_deps):
-    sm, _, _, st, _ = mock_deps
-    result = {"assignments": MagicMock(to_csv=lambda **k: "csv_data")}
-    sm.get.return_value = result
+# --- TESTS ---
+
+
+def test_header_calls_export_hub(mock_deps, complex_result):
+    sm, _, _, st, _, export_hub = mock_deps
+    result, _ = complex_result
 
     view = ResultsView()
-    view._export_results_button()
+    view._render_header(result)
 
-    st.download_button.assert_called_once()
+    export_hub.render.assert_called_once_with(result)
 
 
 def test_render_algorithm_tab(mock_deps, complex_result):
-    _, _, _, st, algo_viz = mock_deps
+    sm, _, _, st, algo_viz, _ = mock_deps
     result, _ = complex_result
 
     st.selectbox.return_value = "truck_1"
@@ -111,10 +119,11 @@ def test_render_algorithm_tab(mock_deps, complex_result):
     view._render_algorithm_tab(result)
 
     algo_viz.render_graph_animation.assert_called_once()
+    assert st.image.call_count >= 2
 
 
 def test_render_orders_tab_product_extraction_list(mock_deps, complex_result):
-    sm, _, _, st, _ = mock_deps
+    sm, _, _, st, _, _ = mock_deps
     result, order = complex_result
 
     order.productos = [{"nombre": "A", "cantidad": 2, "precio": 5}]
@@ -131,7 +140,7 @@ def test_render_orders_tab_product_extraction_list(mock_deps, complex_result):
 
 
 def test_render_orders_tab_product_extraction_master_map(mock_deps, complex_result):
-    sm, _, _, st, _ = mock_deps
+    sm, _, _, st, _, _ = mock_deps
     result, order = complex_result
 
     order.productos = None
@@ -152,36 +161,8 @@ def test_render_orders_tab_product_extraction_master_map(mock_deps, complex_resu
     assert st.columns.call_count > 0
 
 
-def test_render_orders_tab_fallback_single(mock_deps, complex_result):
-    sm, _, _, st, _ = mock_deps
-    result, order = complex_result
-
-    order.productos = None
-    order.producto_nombre = "SingleItem"
-
-    sm.get.side_effect = lambda k: result if k == "ia_result" else []
-
-    st.selectbox.return_value = 1
-    view = ResultsView()
-    view._render_orders_tab(result)
-
-
-def test_render_orders_tab_fallback_generic(mock_deps, complex_result):
-    sm, _, _, st, _ = mock_deps
-    result, order = complex_result
-
-    order.productos = None
-    order.producto_nombre = None
-
-    sm.get.side_effect = lambda k: result if k == "ia_result" else []
-
-    st.selectbox.return_value = 1
-    view = ResultsView()
-    view._render_orders_tab(result)
-
-
 def test_render_route_inspector_tab(mock_deps, complex_result):
-    _, _, map_routes, st, _ = mock_deps
+    _, _, map_routes, st, _, _ = mock_deps
     result, _ = complex_result
 
     st.selectbox.return_value = 1
@@ -194,7 +175,7 @@ def test_render_route_inspector_tab(mock_deps, complex_result):
 
 
 def test_render_main_integration(mock_deps, complex_result):
-    sm, loader, _, st, _ = mock_deps
+    sm, loader, _, st, _, _ = mock_deps
     result, order = complex_result
 
     sm.get.side_effect = lambda k: result if k == "ia_result" else [[order]]

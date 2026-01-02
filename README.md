@@ -7,7 +7,7 @@
 ![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen?style=for-the-badge)
 
 **Intelligent Distribution Platform for Perishable Goods.**
-An advanced system leveraging genetic algorithms and clustering to optimize delivery routes in real-time, ensuring product freshness while minimizing operational costs.
+An advanced system leveraging genetic algorithms, K-Means/Hierarchical clustering, and Constraint Programming to optimize delivery routes in real-time, ensuring product freshness while minimizing operational costs.
 
 ---
 
@@ -25,11 +25,15 @@ An advanced system leveraging genetic algorithms and clustering to optimize deli
 
 ## 🌟 Key Features
 
-- **🧠 Inference Engine:** Automatic vehicle validation based on business rules (capacity, consumption, velocity constraints).
-- **🧬 Algorithm Visualizer:** Watch step-by-step how the AI (Genetic or OR-Tools) constructs the optimal route in real-time.
-- **🗺️ Interactive Maps:** Real-time route visualization on OpenStreetMap using OSRM for precise road mapping.
+- **🧠 Strategic Zoning (Clustering):** Automatically groups orders into logical delivery zones using **K-Means** (centroid-based) or **Hierarchical Agglomerative** (connectivity-based) algorithms.
+- **🧬 Dual-Layer Optimization:**
+  1.  **Macro-Optimization:** Smart grouping of orders into trucks, visualizing the **Delivery Zones (Convex Hulls)** to identify territories.
+  2.  **Micro-Optimization:** Genetic Algorithms or Google OR-Tools to solve the VRP (Vehicle Routing Problem) per truck.
+- **👁️ Professional Visualization:**
+  - **Zone Maps:** Dark-mode static maps showing delivery territories with smart labeling.
+  - **Flow Maps:** Directed graph visualizations showing exact truck trajectories and stop sequences.
 - **📦 Order Manifest:** Detailed breakdown of consolidated orders, including product-level details and financial summaries.
-- **📊 Advanced Analytics:** Interactive dashboards for fleet efficiency, cost vs. revenue analysis, and load distribution.
+- **🗺️ Interactive Maps:** Real-time route visualization on OpenStreetMap using OSRM for precise road mapping.
 - **⚖️ Fleet Management:** Dynamic load assignment to maximize truck capacity utilization (>90%).
 
 ---
@@ -47,15 +51,23 @@ distribution_platform/
 │   ├── state/ # Centralized Session Management
 │   ├── views/ # Page Rendering Logic (Form, Results, Processing)
 │   └── main.py # Application Entry Point
+├── batch/backup # Batch for automated backups (Optional)
+│   └── backup.py # Backup logic (Google Drive)
 ├── core/ # Domain Layer (The Brain)
+│   ├── logic/
+│   │ └── routing/ # Core Optimization Logic
+│   │   ├── clustering/ # K-Means, Agglomerative, Plotting Strategies
+│   │   └── strategies/ # Genetic, OR-Tools VRP Solvers
 │   ├── inference_engine/ # Validation Rule Engine
 │   ├── knowledge_base/ # Business Rules Repository
 │   ├── models/ # Domain Data Models (Pydantic)
 │   └── services/ # Orchestrators (ETL, Solver Logic)
-├── infrastructure/ # Infrastructure Layer
-│   ├── external/ # External APIs (Maps, Geocoding)
-│   └── persistence/ # Data Repositories (CSV, JSON, SQL)
-└── tests/ # Test Suite (Pytest)
+└── infrastructure/ # Infrastructure Layer
+   ├── database/ # Connection engine for a SQL Server database
+   ├── external/ # External APIs (Maps, Geocoding)
+   └── persistence/ # Data Repositories (CSV, JSON, SQL)
+
+tests/ # Test Suite (Pytest)
 ```
 
 ---
@@ -124,19 +136,23 @@ The application will be available at:
 
 ### Mission Control (Form):
 
-- Data Ingestion: Select "Files" to upload your datasets (orders, clients, etc.) or connect to the Database.
+- Data Ingestion: Select "Files" to upload your datasets or connect to the Database.
 - Fleet Configuration: Choose a standard truck model or create a Custom Prototype.
 - Validation: The system validates if the selected vehicle fits the mission requirements.
+- Strategy Selection:
+  --- Routing Algorithm: Choose between Genetic Evolutionary or Google OR-Tools.
+  --- Clustering Logic: Choose K-Means (Standard) or Hierarchical (Better for irregular shapes).
 
 ### Processing:
 
-- Select the algorithm: Genetic Evolutionary or Google OR-Tools.
-- Click Initiate Sequence to start the optimization engine.
+- The system validates fleet capacity against order volume.
+- Executes the Clustering phase to assign zones.
+- Executes the Routing phase to sequence stops.
 
 ### Mission Results:
 
 - 🌍 Geospatial Map: Interactive map with routes, legends, and markers.
-- 🧬 Algorithm Visualizer: Replay the optimization process step-by-step.
+- 🧬 Algorithm & Clustering: View the "Dark Mode" strategic maps showing how the AI divided the territory (Convex Hulls) and the planned flow (Arrows).
 - 📦 Order Manifest: Searchable table of orders with detailed product breakdown.
 - 🔍 Route Inspector: Deep dive into specific truck routes with timelines and navigation links.
 
@@ -157,11 +173,12 @@ pytest tests/
 - **Language:** Python 3.13+
 - **Web Framework:** Streamlit, Plotly (Charts)
 - **Algorithms:** DEAP (Genetic), Google OR-Tools
-- **Data Science:** Pandas, Scikit-learn (K-Means), NumPy
+- **Data Science:** Pandas, Scikit-learn (Clustering), NumPy
 - **Maps & Geo:** Folium, Geopy, OSRM
 - **Backups:** Google Drive (Optional)
 - **Data:** CSV, XLSX, TXT, JSON, SQL
-- **Data Modeling:** Pydantic
+- **Data Modeling:** Pydantic, Pandas, NumPy
+- **Data Visualization**: Matplotlib (Static Generation), Plotly (Dynamic Charts), Folium (Maps)
 - **Quality & Testing:** Pytest, Ruff, Mypy
 - **Database:** SQLAlchemy, PyODBC (SQL Server)
 

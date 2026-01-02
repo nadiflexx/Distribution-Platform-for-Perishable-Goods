@@ -1,18 +1,24 @@
 """
 Optimization Orchestrator.
 Main entry point for the Routing System. Integrates:
-- Clustering (K-Means)
+- Clustering (K-Means / Agglomerative)
 - Graph (Distances)
-- Routing Strategies (Genetic / ILS)
+- Routing Strategies (Genetic / OR-Tools)
 """
 
 from collections import Counter
 import math
 
+import matplotlib
+
 from distribution_platform.config.logging_config import log as logger
-from distribution_platform.core.logic.clustering import ClusteringManager
 from distribution_platform.core.logic.graph import GraphManager
 from distribution_platform.core.logic.order_processing import consolidate_orders
+from distribution_platform.core.logic.routing.clustering import (
+    ClusteringManager,
+    ClusteringStrategy,
+    KMeansStrategy,
+)
 from distribution_platform.core.logic.routing.strategies.genetic import GeneticStrategy
 from distribution_platform.core.logic.routing.strategies.ortools import (
     ORToolsStrategy,
@@ -25,6 +31,14 @@ from distribution_platform.core.models.order import Order
 from distribution_platform.infrastructure.persistence.coordinates import (
     CoordinateCache,
 )
+
+matplotlib.use("Agg")
+import base64
+import io
+
+import matplotlib.patheffects as pe
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class OptimizationOrchestrator:
@@ -52,13 +66,41 @@ class OptimizationOrchestrator:
         config: SimulationConfig | None = None,
         origin_base: str = "Mataró",
         coord_cache: CoordinateCache | None = None,
+        clustering_strategy: ClusteringStrategy | None = None,
     ):
         self.config = config if config else SimulationConfig()
         self.origin = origin_base
         self.coord_cache = coord_cache if coord_cache else CoordinateCache()
 
-        self.clustering = ClusteringManager(self.coord_cache)
+        # Initialize clustering with strategy (default: K-Means)
+        if clustering_strategy is None:
+            clustering_strategy = KMeansStrategy(self.coord_cache)
+
+        self.clustering = ClusteringManager(
+            self.coord_cache, strategy=clustering_strategy
+        )
         self.graph = GraphManager(self.coord_cache)
+
+    def set_clustering_strategy(self, strategy: ClusteringStrategy) -> None:
+        """Change clustering strategy at runtime."""
+        self.clustering.set_strategy(strategy)
+
+    def get_clustering_strategy_name(self) -> str:
+        """Returns current clustering strategy name."""
+        return self.clustering.get_strategy_name()
+
+    def get_clustering_plot(
+        self,
+        figsize: tuple[int, int] = (12, 8),
+        title: str | None = None,
+    ) -> str:
+        """
+        Generate clustering visualization plot.
+
+        Returns:
+            Base64 encoded PNG image string.
+        """
+        return self.clustering.generate_plot(figsize=figsize, title=title)
 
     def optimize_deliveries(
         self,
@@ -97,12 +139,14 @@ class OptimizationOrchestrator:
                 valid_orders.append(p)
 
         logger.debug(
-            f"Resultado filtrado: {len(valid_orders)} entregables, {len(impossible_orders)} imposibles\n"
+            f"Resultado filtrado: {len(valid_orders)} entregables, "
+            f"{len(impossible_orders)} imposibles\n"
         )
 
         if impossible_orders:
             logger.warning(
-                f"⚠️ ADVERTENCIA: {len(impossible_orders)} pedidos a destinos INACCESIBLES por carretera."
+                f"⚠️ ADVERTENCIA: {len(impossible_orders)} pedidos a destinos "
+                "INACCESIBLES por carretera."
             )
 
         if not valid_orders:
@@ -124,9 +168,10 @@ class OptimizationOrchestrator:
         logger.info(f"   Camiones mínimos necesarios: {n_trucks}")
         logger.info(f"   ✅ Usando {n_trucks} camion(es)\n")
 
-        # 4. Clustering
+        # 4. Clustering (using selected strategy)
         logger.info(
-            f"🧠 Agrupando {len(valid_orders)} pedidos en {n_trucks} camion(es)..."
+            f"🧠 Agrupando {len(valid_orders)} pedidos en {n_trucks} camion(es) "
+            f"usando [{self.clustering.get_strategy_name()}]..."
         )
         clusters = self.clustering.cluster_orders(
             valid_orders, n_trucks, self.config.peso_unitario_default, capacidad_camion
@@ -136,11 +181,13 @@ class OptimizationOrchestrator:
             logger.error("❌ No se pudieron agrupar los pedidos")
             return {}
 
+        logger.info(f"   ✅ Clustering completado: {len(clusters)} grupos creados\n")
+
         # 5. Distance Matrix
         logger.info("📊 Generando matriz de distancias...\n")
         dist_matrix = self.graph.generate_distance_matrix()
 
-        # 6. Select Strategy
+        # 6. Select Routing Strategy
         if algorithm == "ortools":
             strategy = ORToolsStrategy(
                 dist_matrix, self.config, self.origin, self.graph
@@ -165,7 +212,8 @@ class OptimizationOrchestrator:
 
             logger.info(f"🚚 CAMIÓN {cid + 1}:")
             logger.info(
-                f"   Pedidos: {len(group)} | Peso: {peso_cluster:.2f} kg | Ocupación: {ocupacion:.1f}%"
+                f"   Pedidos: {len(group)} | Peso: {peso_cluster:.2f} kg | "
+                f"Ocupación: {ocupacion:.1f}%"
             )
 
             # Run Algorithm
@@ -185,10 +233,12 @@ class OptimizationOrchestrator:
                 )
                 logger.info(f"   ✅ Ruta: {ruta_resumida}")
                 logger.info(
-                    f"   📏 Distancia: {result.distancia_total_km} km | ⏱️ Tiempo: {result.tiempo_total_viaje_horas} h"
+                    f"   📏 Distancia: {result.distancia_total_km} km | "
+                    f"⏱️ Tiempo: {result.tiempo_total_viaje_horas} h"
                 )
                 logger.info(
-                    f"   ⛽ Consumo: {result.consumo_litros} L | 💰 Coste: {result.coste_total_ruta} €\n"
+                    f"   ⛽ Consumo: {result.consumo_litros} L | "
+                    f"💰 Coste: {result.coste_total_ruta} €\n"
                 )
             else:
                 logger.error(f"   ❌ Fallo al optimizar ruta Camión {cid + 1}")
@@ -211,7 +261,8 @@ class OptimizationOrchestrator:
                 capacidad_total_disp += capacidad_camion
                 pct = (peso_camion / capacidad_camion) * 100
                 logger.info(
-                    f"🚛 Camión {cid + 1}: {peso_camion:.1f}/{capacidad_camion:.1f} kg ({pct:.1f}% ocupación)"
+                    f"🚛 Camión {cid + 1}: {peso_camion:.1f}/{capacidad_camion:.1f} kg "
+                    f"({pct:.1f}% ocupación)"
                 )
 
         aprovechamiento_global = (
@@ -249,3 +300,199 @@ class OptimizationOrchestrator:
             "km_totales": round(total_km, 2),
             "pedidos_entregados": total_orders,
         }
+
+    def generate_routes_plot(
+        self,
+        results: dict,
+        figsize: tuple[int, int] = (12, 8),
+    ) -> str:
+        """
+        Generates a clean route map (Tactical Style).
+        - No large numbers.
+        - Directional arrows.
+        - Smart city labels (anti-overlap).
+        """
+        if not results:
+            return ""
+
+        # Dark Style Config
+        plt.style.use("dark_background")
+        fig, ax = plt.subplots(figsize=figsize)
+        fig.patch.set_facecolor("#0e1117")
+        ax.set_facecolor("#0e1117")
+
+        # Colors
+        cmap = plt.colormaps.get_cmap("tab10")
+        valid_results = [
+            r
+            for k, r in results.items()
+            if k != "pedidos_no_entregables" and r is not None
+        ]
+        colors = cmap(np.linspace(0, 1, max(len(valid_results), 1)))
+
+        label_positions = []
+        min_label_dist = 0.04
+
+        # 1. Deposit Draw (Star Central)
+        if valid_results:
+            origin_coords = valid_results[0].ruta_coordenadas[0]
+            ax.scatter(
+                origin_coords[1],
+                origin_coords[0],
+                c="white",
+                s=400,
+                marker="*",
+                edgecolors="#FFD700",
+                linewidth=2,
+                zorder=10,
+                label="Centro de Distribución",
+            )
+
+        # 2. DRAW ROUTES
+        for idx, result in enumerate(valid_results):
+            if not result or not result.ruta_coordenadas:
+                continue
+
+            color = colors[idx]
+            coords = result.ruta_coordenadas
+
+            # Extract lat/lon
+            lats = np.array([c[0] for c in coords])
+            lons = np.array([c[1] for c in coords])
+
+            # Extract city names (excluding origin/destination for labels)
+            route_cities = result.ciudades_ordenadas
+
+            # --- A. TRAYECTORY LINES ---
+            ax.plot(
+                lons,
+                lats,
+                color=color,
+                alpha=0.7,
+                linewidth=1.8,
+                linestyle="-",
+                zorder=2,
+            )
+
+            # --- B. DIRECTION ARROWS  ---
+            for i in range(len(lons) - 1):
+                mid_lon = (lons[i] + lons[i + 1]) / 2
+                mid_lat = (lats[i] + lats[i + 1]) / 2
+                dx = lons[i + 1] - lons[i]
+                dy = lats[i + 1] - lats[i]
+
+                if abs(dx) > 0.02 or abs(dy) > 0.02:
+                    ax.arrow(
+                        lons[i],
+                        lats[i],
+                        dx * 0.55,
+                        dy * 0.55,
+                        color=color,
+                        head_width=0.04,
+                        head_length=0.04,
+                        shape="full",
+                        length_includes_head=True,
+                        alpha=0.8,
+                        zorder=3,
+                    )
+
+            # --- C. NODES (STOPS) ---
+            # Draw small points on stops (excluding the origin/destination final which is the depot)
+            stop_lons = lons[1:-1]
+            stop_lats = lats[1:-1]
+            stop_cities = route_cities[1:-1]
+
+            ax.scatter(
+                stop_lons,
+                stop_lats,
+                c=[color],
+                s=60,
+                alpha=1.0,
+                edgecolors="white",
+                linewidth=1.0,
+                zorder=4,
+            )
+
+            # --- D. SMART LABELS (CITIES) ---
+            for slon, slat, scity in zip(
+                stop_lons, stop_lats, stop_cities, strict=False
+            ):
+                # Check for collision
+                collision = False
+                for existing_lon, existing_lat in label_positions:
+                    dist = np.sqrt(
+                        (slon - existing_lon) ** 2 + (slat - existing_lat) ** 2
+                    )
+                    if dist < min_label_dist:
+                        collision = True
+                        break
+
+                if not collision:
+                    display_name = scity[:10] + "." if len(scity) > 10 else scity
+
+                    text = ax.text(
+                        slon,
+                        slat + 0.015,
+                        display_name,
+                        color="white",
+                        fontsize=7,
+                        fontweight="bold",
+                        ha="center",
+                        va="bottom",
+                        zorder=5,
+                    )
+                    text.set_path_effects(
+                        [pe.withStroke(linewidth=2, foreground="black")]
+                    )
+
+                    label_positions.append((slon, slat))
+
+        # Final Touches
+        ax.set_title(
+            "DISTRIBUTED AND FLOWS NETWORKS - ROUTE MAP",
+            fontsize=14,
+            fontweight="bold",
+            color="white",
+            pad=20,
+        )
+        ax.set_aspect("equal")
+        ax.axis("off")
+
+        # Legend
+        import matplotlib.lines as mlines
+
+        legend_handles = [
+            mlines.Line2D(
+                [],
+                [],
+                color=colors[i],
+                marker="o",
+                markersize=6,
+                label=f"Truck {res.camion_id}",
+                linestyle="-",
+            )
+            for i, res in enumerate(valid_results)
+        ]
+
+        ax.legend(
+            handles=legend_handles,
+            loc="lower left",
+            fontsize=7,
+            frameon=True,
+            facecolor="#1c1f26",
+            edgecolor="#444",
+            labelcolor="white",
+            ncol=2,
+        )
+
+        plt.tight_layout()
+
+        buffer = io.BytesIO()
+        fig.savefig(
+            buffer, format="png", dpi=150, bbox_inches="tight", facecolor="#0e1117"
+        )
+        buffer.seek(0)
+        img = base64.b64encode(buffer.read()).decode("utf-8")
+        plt.close(fig)
+
+        return img

@@ -2,7 +2,7 @@
 
 Every rule is a function that receives a `Truck` object or raw data and returns a
 message with the validation result. Messages start with
-"✔" for conditions met or "✘" for failures; this is consumed by
+"[SUCCESS]" for conditions met or "[ERROR]" for failures; this is consumed by
 the `InferenceEngine` to generate the final decision.
 """
 
@@ -41,10 +41,10 @@ def obtain_rules() -> list[Callable[[Truck], str]]:
 
 
 def obtain_format_validation_rules() -> list[Callable[[dict], str]]:
-    """Retorna las reglas de validación de formato para camiones personalizados.
+    """Returns the format validation rules for custom trucks.
 
-    Estas reglas validan que los datos sean válidos antes de convertirlos
-    a objeto Truck.
+    These rules validate that the data is valid before converting it
+    to a Truck object.
     """
     return [
         validate_nombre_format,
@@ -60,29 +60,34 @@ def obtain_format_validation_rules() -> list[Callable[[dict], str]]:
 
 def velocity_rule(truck: Truck) -> str:
     """R1: The truck's velocity must be constant and valid during the route."""
-    if truck.velocidad_constante > 0:
-        return (
-            f"✔ (R1) The truck's velocity ({truck.velocidad_constante} km/h) is valid."
-        )
+    min_vel = 30.0
+    max_vel = 120.0
 
-    return "✘ (R1) The truck's velocity is not valid."
+    if min_vel <= truck.velocidad_constante <= max_vel:
+        return f"[SUCCESS] (R1) The truck's velocity ({truck.velocidad_constante} km/h) is valid."
+
+    return f"[ERROR] (R1) The truck's velocity ({truck.velocidad_constante} km/h) is outside valid range ({min_vel}-{max_vel} km/h)."
 
 
 def consumption_rule(truck: Truck) -> str:
     """R2: The truck's fuel consumption must be within acceptable limits."""
-    limite_consumo = 50.0
-    if truck.consumo_combustible <= limite_consumo:
-        return f"✔ (R2) The truck's fuel consumption ({truck.consumo_combustible} L/100km) is within acceptable limits (max: {limite_consumo})."
+    min_consumo = 5.0  # Nadie gasta 1L a los 100km
+    max_consumo = 50.0
 
-    return f"✘ (R2) The truck's fuel consumption ({truck.consumo_combustible} L/100km) exceeds acceptable limits (max: {limite_consumo})."
+    if min_consumo <= truck.consumo_combustible <= max_consumo:
+        return f"[SUCCESS] (R2) The truck's fuel consumption ({truck.consumo_combustible} L/100km) is valid."
+
+    return f"[ERROR] (R2) The truck's fuel consumption ({truck.consumo_combustible} L/100km) is outside valid range ({min_consumo}-{max_consumo} L/100km)."
 
 
 def capacity_rule(truck: Truck) -> str:
     """R3: The truck must have sufficient capacity (in product units)."""
-    if truck.capacidad_carga > 0:
-        return f"✔ (R3) The truck has sufficient capacity ({truck.capacidad_carga} products)."
+    min_cap = 100  # Un camión de menos de 100kg no es útil
 
-    return "✘ (R3) The truck does not have sufficient capacity."
+    if truck.capacidad_carga >= min_cap:
+        return f"[SUCCESS] (R3) The truck has sufficient capacity ({truck.capacidad_carga} products)."
+
+    return f"[ERROR] (R3) The truck capacity ({truck.capacidad_carga} kg) is too low (min: {min_cap} kg)."
 
 
 def precio_conductor_hora_rule(truck: Truck) -> str:
@@ -91,154 +96,153 @@ def precio_conductor_hora_rule(truck: Truck) -> str:
     precio_max = 50.0
 
     if precio_min <= truck.precio_conductor_hora <= precio_max:
-        return f"✔ (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is within acceptable range (€{precio_min}-€{precio_max})."
+        return f"[SUCCESS] (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is within acceptable range."
 
-    return f"✘ (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is outside acceptable range (€{precio_min}-€{precio_max})."
+    return f"[ERROR] (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is outside acceptable range (€{precio_min}-€{precio_max})."
 
 
 # ==================== FORMAT VALIDATION RULES ====================
 
 
 def validate_nombre_format(data: dict) -> str:
-    """Valida el formato del nombre del camión.
+    """Validates the format of the truck's name.
 
     Args:
-        data: Diccionario con los datos del camión personalizado
+        data: Dictionary with the custom truck's data
 
     Returns
     -------
-        Mensaje de validación (✔ o ✘)
+        Validation message ([SUCCESS] or [ERROR])
     """
     nombre = data.get("nombre", "").strip()
 
     if not nombre:
-        return "✘ (Nombre) El nombre del camión no puede estar vacío."
+        return "[ERROR] (Nombre) The truck's name cannot be empty."
 
     if len(nombre) < 3:
-        return "✘ (Nombre) El nombre debe tener al menos 3 caracteres."
+        return "[ERROR] (Nombre) The name must have at least 3 characters."
 
     if len(nombre) > 50:
-        return "✘ (Nombre) El nombre no puede exceder 50 caracteres."
+        return "[ERROR] (Nombre) The name cannot exceed 50 characters."
 
     if not re.match(r"^[a-zA-Z0-9\s\-áéíóúÁÉÍÓÚñÑ]+$", nombre):
         return (
-            "✘ (Nombre) El nombre contiene caracteres inválidos. "
-            "Solo se permiten letras, números, espacios y guiones."
+            "[ERROR] (Nombre) The name contains invalid characters. "
+            "Only letters, numbers, spaces and hyphens are allowed."
         )
 
-    return f"✔ (Nombre) Formato de nombre válido: '{nombre}'."
+    return f"[SUCCESS] (Nombre) Valid name format: '{nombre}'."
 
 
 def validate_capacidad_format(data: dict) -> str:
-    """Valida el formato y rango de la capacidad del camión (en unidades de productos).
-
+    """Validates the format and range of the truck's capacity (in product units).
     Args:
-        data: Diccionario con los datos del camión personalizado
+        data: Dictionary with the custom truck's data
 
     Returns
     -------
-        Mensaje de validación (✔ o ✘)
+        Validation message ([SUCCESS] or [ERROR])
     """
     capacidad = data.get("capacidad", "")
 
     if capacidad == "" or capacidad is None:
-        return "✘ (Capacidad) La capacidad no puede estar vacía."
+        return "[ERROR] (Capacidad) The capacity cannot be empty."
 
     try:
         numero = int(float(capacidad))
     except (ValueError, TypeError):
         return (
-            "✘ (Capacidad) Formato de capacidad inválido. "
-            "Ingresa solo números enteros (ej: 100 para 100 productos)."
+            "[ERROR] (Capacidad) Invalid capacity format. "
+            "Enter only integers (e.g., 100 for 100 products)."
         )
 
     if numero < 10:
-        return "✘ (Capacidad) La capacidad debe ser al menos 10 productos."
+        return "[ERROR] (Capacidad) The capacity must be at least 10 products."
 
     if numero > 200:
-        return "✘ (Capacidad) La capacidad no puede exceder 200 productos."
+        return "[ERROR] (Capacidad) The capacity cannot exceed 200 products."
 
-    return f"✔ (Capacidad) Formato de capacidad válido: {numero} productos."
+    return f"[SUCCESS] (Capacidad) Valid capacity format: {numero} products."
 
 
 def validate_consumo_format(data: dict) -> str:
-    """Valida el formato y rango del consumo del camión.
+    """Validates the format and range of the truck's fuel consumption.
 
     Args:
-        data: Diccionario con los datos del camión personalizado
+        data: Dictionary with the custom truck's data
 
     Returns
     -------
-        Mensaje de validación (✔ o ✘)
+        Validation message ([SUCCESS] or [ERROR])
     """
     consumo = data.get("consumo", "")
 
     if consumo == "" or consumo is None:
-        return "✘ (Consumo) El consumo no puede estar vacío."
+        return "[ERROR] (Consumo) The fuel consumption cannot be empty."
 
     try:
         numero = float(consumo) if isinstance(consumo, str) else consumo
     except (ValueError, TypeError):
         return (
-            "✘ (Consumo) Formato de consumo inválido. "
-            "Ingresa solo números (ej: 30 para 30 L/100km)."
+            "[ERROR] (Consumo) Invalid fuel consumption format. "
+            "Enter only numbers (e.g., 30 for 30 L/100km)."
         )
 
     if numero < 10:
-        return "✘ (Consumo) El consumo no puede ser menor a 10 L/100km."
+        return "[ERROR] (Consumo) The fuel consumption cannot be less than 10 L/100km."
 
     if numero > 50:
-        return "✘ (Consumo) El consumo no puede exceder 50 L/100km."
+        return "[ERROR] (Consumo) The fuel consumption cannot exceed 50 L/100km."
 
-    return f"✔ (Consumo) Formato de consumo válido: {numero} L/100km."
+    return f"[SUCCESS] (Consumo) Valid fuel consumption format: {numero} L/100km."
 
 
 def validate_velocidad_format(data: dict) -> str:
-    """Valida el formato y rango de la velocidad constante del camión.
+    """Validates the format and range of the truck's constant speed.
 
     Args:
-        data: Diccionario con los datos del camión personalizado
+        data: Dictionary with the custom truck's data
 
     Returns
     -------
-        Mensaje de validación (✔ o ✘)
+        Validation message ([SUCCESS] or [ERROR])
     """
     velocidad = data.get("velocidad_constante", "")
 
     if velocidad == "" or velocidad is None:
-        return "✘ (Velocidad) La velocidad constante no puede estar vacía."
+        return "[ERROR] (Velocidad) The constant speed cannot be empty."
 
     try:
         numero = float(velocidad) if isinstance(velocidad, str) else velocidad
     except (ValueError, TypeError):
         return (
-            "✘ (Velocidad) Formato de velocidad inválido. "
-            "Ingresa solo números (ej: 75 para 75 km/h)."
+            "[ERROR] (Velocidad) Invalid speed format. "
+            "Enter only numbers (e.g., 75 for 75 km/h)."
         )
 
     if numero < 30:
-        return "✘ (Velocidad) La velocidad debe ser al menos 30 km/h."
+        return "[ERROR] (Velocidad) The speed must be at least 30 km/h."
 
     if numero > 120:
-        return "✘ (Velocidad) La velocidad no puede exceder 120 km/h."
+        return "[ERROR] (Velocidad) The speed cannot exceed 120 km/h."
 
-    return f"✔ (Velocidad) Formato de velocidad válido: {numero} km/h."
+    return f"[SUCCESS] (Velocidad) Valid speed format: {numero} km/h."
 
 
 def validate_precio_conductor_hora_format(data: dict) -> str:
-    """Valida el formato y rango del precio del conductor por hora.
+    """Validates the format and range of the driver's hourly rate.
 
     Args:
-        data: Diccionario con los datos del camión personalizado
+        data: Dictionary with the custom truck's data
 
     Returns
     -------
-        Mensaje de validación (✔ o ✘)
+        Validation message ([SUCCESS] or [ERROR])
     """
     precio_conductor = data.get("precio_conductor_hora", "")
 
     if precio_conductor == "" or precio_conductor is None:
-        return "✘ (Precio Conductor) El precio del conductor por hora no puede estar vacío."
+        return "[ERROR] (Precio Conductor) The driver's hourly rate cannot be empty."
 
     try:
         numero = (
@@ -248,31 +252,31 @@ def validate_precio_conductor_hora_format(data: dict) -> str:
         )
     except (ValueError, TypeError):
         return (
-            "✘ (Precio Conductor) Formato de precio inválido. "
-            "Ingresa solo números (ej: 15.0 para €15.00/h)."
+            "[ERROR] (Precio Conductor) Invalid price format. "
+            "Enter only numbers (e.g., 15.0 for €15.00/h)."
         )
 
     if numero < 10.0:
-        return "✘ (Precio Conductor) El precio debe ser al menos €10.00/h."
+        return "[ERROR] (Precio Conductor) The price must be at least €10.00/h."
 
     if numero > 50.0:
-        return "✘ (Precio Conductor) El precio no puede exceder €50.00/h."
+        return "[ERROR] (Precio Conductor) The price cannot exceed €50.00/h."
 
-    return f"✔ (Precio Conductor) Formato de precio válido: €{numero}/h."
+    return f"[SUCCESS] (Precio Conductor) Valid price format: €{numero}/h."
 
 
 def parse_truck_data(data: dict) -> tuple[bool | Truck, dict | Truck]:
-    """Transforma datos numéricos a objeto Truck.
+    """Transforms numerical data into a Truck object.
 
-    Los datos ya vienen validados, solo necesita convertir a los tipos
-    correctos y crear una instancia de Truck.
+    The data is already validated, it only needs to be converted to the correct types
+    and create an instance of Truck.
 
     Args:
-        data: Diccionario con datos del camión (valores numéricos validados)
+        data: Dictionary with truck data (validated numerical values)
 
     Returns
     -------
-        Tupla (es_válido, objeto_Truck_o_error)
+        Tuple (is_valid, Truck_object_or_error)
     """
     try:
         capacidad_num = int(float(data.get("capacidad", 0)))

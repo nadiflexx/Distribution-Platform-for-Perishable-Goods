@@ -38,10 +38,10 @@ class ValidationService:
         engine = InferenceMotor(rules.obtain_rules())
         result = engine.evaluate(truck_obj)
 
+        SessionManager.set("validation_result", result)
         if result.is_valid:
             SessionManager.set("truck_validated", True)
-            st.toast("Vehicle Validated Successfully", icon="🛡️")
             return True
         else:
-            st.error("❌ Validation Failed - Vehicle does not meet requirements")
+            SessionManager.set("truck_validated", False)
             return False

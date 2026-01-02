@@ -86,9 +86,11 @@ class FormView:
 
         st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
 
-        # Validation button/badge
+        # --- VALIDATION LOGIC ---
+
         if SessionManager.get("truck_validated"):
             ValidationBadge.success()
+
         else:
             if (
                 st.button(
@@ -97,6 +99,25 @@ class FormView:
                 and ValidationService.validate_truck()
             ):
                 st.rerun()
+
+            validation_res = SessionManager.get("validation_result")
+            if validation_res and not validation_res.is_valid:
+                self._render_validation_errors(validation_res)
+
+    def _render_validation_errors(self, result):
+        """Renders validation errors in a styled expander."""
+        errors = [msg for msg in result.reasoning if msg.startswith("[ERROR]")]
+
+        st.error(f"❌ Validation Failed: {len(errors)} critical issues detected.")
+
+        with st.expander("🔍 VIEW DIAGNOSTIC REPORT", expanded=True):
+            for err in errors:
+                clean_msg = err.replace("[ERROR]", "").strip()
+                st.markdown(f"**• {clean_msg}**")
+
+            st.caption(
+                "Please adjust the vehicle parameters or select a different model."
+            )
 
     def _render_standard_fleet(self, category: str):
         cat_key = VehicleCategory.to_key(category)
@@ -202,12 +223,25 @@ class FormView:
 
         _, col_center, _ = st.columns([1, 2, 1])
         with col_center:
-            st.selectbox(
-                "ALGORITHM",
-                ["Genetic Evolutionary", "Google OR-Tools"],
-                key="algo_select",
-                label_visibility="collapsed",
-            )
+            col_algo, col_cluster = st.columns(2)
+
+            with col_algo:
+                st.selectbox(
+                    "ROUTING ALGORITHM",
+                    ["Genetic Evolutionary", "Google OR-Tools"],
+                    key="algo_select",
+                    help="Determines how the optimal path order is calculated.",
+                )
+
+            with col_cluster:
+                st.selectbox(
+                    "CLUSTERING LOGIC",
+                    ["K-Means (Standard)", "Hierarchical (Agglomerative)"],
+                    key="clustering_select",
+                    help="Determines how orders are grouped into trucks before routing.",
+                )
+
+            st.markdown("<div style='height: 10px'></div>", unsafe_allow_html=True)
 
             if st.button("🚀 INITIATE SEQUENCE", type="primary", width="stretch"):
                 SessionManager.set_phase(AppPhase.PROCESSING)

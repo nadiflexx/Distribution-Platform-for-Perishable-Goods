@@ -13,9 +13,16 @@ import streamlit as st
 from distribution_platform.app.state.session_manager import SessionManager
 from distribution_platform.config.logging_config import log as logger
 from distribution_platform.config.settings import MapConfig
+from distribution_platform.core.logic.routing.clustering import (
+    AgglomerativeStrategy,
+    KMeansStrategy,
+)
 from distribution_platform.core.models.optimization import SimulationConfig
 from distribution_platform.core.services.optimization_orchestrator import (
     OptimizationOrchestrator,
+)
+from distribution_platform.infrastructure.persistence.coordinates import (
+    CoordinateCache,
 )
 
 
@@ -44,11 +51,15 @@ class AlgorithmTrace:
 class OptimizationService:
     """Handles route optimization logic with visualization support."""
 
+    # Orchestrator cache to access to the plot functions later
+    _last_orchestrator: OptimizationOrchestrator | None = None
+
     @staticmethod
     def run() -> dict | None:
         """Execute the optimization and return results with algorithm trace."""
         try:
-            algo = OptimizationService._get_algorithm()
+            routing_algo = OptimizationService._get_routing_algorithm()
+            clustering_algo = OptimizationService._get_clustering_algorithm()
             truck_data = SessionManager.get("selected_truck_data")
             orders_data = SessionManager.get("df")
 
@@ -62,19 +73,47 @@ class OptimizationService:
             # Build config
             config = OptimizationService._build_config(truck_data)
 
+            # Build clustering strategy
+            coord_cache = CoordinateCache()
+            clustering_strategy = OptimizationService._build_clustering_strategy(
+                clustering_algo, coord_cache
+            )
+
             # Run optimization with tracing
-            orchestrator = OptimizationOrchestrator(config=config, origin_base="Mataró")
-            raw_results = orchestrator.optimize_deliveries(orders_data, algorithm=algo)
+            orchestrator = OptimizationOrchestrator(
+                config=config,
+                origin_base="Mataró",
+                coord_cache=coord_cache,
+                clustering_strategy=clustering_strategy,
+            )
+
+            # Cache orchestrator for plot generation
+            OptimizationService._last_orchestrator = orchestrator
+
+            raw_results = orchestrator.optimize_deliveries(
+                orders_data, algorithm=routing_algo
+            )
+
+            clustering_plot_b64 = orchestrator.get_clustering_plot(
+                title="Strategic Truck Assignment (Clustering)"
+            )
+
+            routes_plot_b64 = orchestrator.generate_routes_plot(raw_results)
 
             # Generate algorithm trace for visualization
             algorithm_trace = OptimizationService._generate_algorithm_trace(
-                orders_data, raw_results, algo
+                orders_data, raw_results, routing_algo
             )
 
             # Format results
             results = OptimizationService._format_results(raw_results)
             results["algorithm_trace"] = algorithm_trace
-
+            results["clustering_strategy"] = orchestrator.get_clustering_strategy_name()
+            results["routing_algorithm"] = routing_algo
+            results["plots"] = {
+                "clustering": clustering_plot_b64,
+                "routes": routes_plot_b64,
+            }
             return results
 
         except Exception as e:
@@ -83,9 +122,58 @@ class OptimizationService:
             return None
 
     @staticmethod
-    def _get_algorithm() -> str:
+    def get_clustering_plot(
+        figsize: tuple[int, int] = (12, 8),
+        title: str | None = None,
+    ) -> str | None:
+        """
+        Generate clustering visualization plot from last optimization.
+
+        Returns:
+            Base64 encoded PNG image string, or None if no optimization ran.
+        """
+        if OptimizationService._last_orchestrator is None:
+            logger.warning("⚠️ No hay optimización previa. Ejecuta run() primero.")
+            return None
+
+        return OptimizationService._last_orchestrator.get_clustering_plot(
+            figsize=figsize, title=title
+        )
+
+    @staticmethod
+    def _get_routing_algorithm() -> str:
+        """Get selected routing algorithm from session."""
         algo_select = SessionManager.get("algo_select", "")
         return "ortools" if "OR-Tools" in algo_select else "genetic"
+
+    @staticmethod
+    def _get_clustering_algorithm() -> str:
+        """Get selected clustering algorithm from session."""
+        clustering_select = SessionManager.get("clustering_select", "K-Means")
+        return clustering_select.lower().replace(" ", "_").replace("-", "")
+
+    @staticmethod
+    def _build_clustering_strategy(algo: str, coord_cache: CoordinateCache):
+        """Factory for clustering strategies."""
+        strategies = {
+            "kmeans": KMeansStrategy(coord_cache),
+            "jerarquico": AgglomerativeStrategy(coord_cache),
+            "agglomerative": AgglomerativeStrategy(coord_cache),
+            "hierarchical": AgglomerativeStrategy(coord_cache),
+        }
+
+        algo_normalized = (
+            algo.lower().replace(" ", "").replace("-", "").replace("_", "")
+        )
+
+        for key, strategy in strategies.items():
+            if key.replace("_", "") in algo_normalized or algo_normalized in key:
+                logger.info(f"🧠 Clustering strategy selected: {strategy.name}")
+                return strategy
+
+        # Default to K-Means
+        logger.info("🧠 Clustering strategy defaulting to: K-Means")
+        return KMeansStrategy(coord_cache)
 
     @staticmethod
     def _validate_capacity(truck_data: dict, orders_data: list) -> bool:
@@ -101,7 +189,8 @@ class OptimizationService:
 
         if needed_trucks > total_orders:
             st.error(
-                f"⚠️ CAPACITY ERROR: {truck_cap}kg capacity insufficient for {total_orders} orders."
+                f"⚠️ CAPACITY ERROR: {truck_cap}kg capacity insufficient "
+                f"for {total_orders} orders."
             )
             return False
         return True
@@ -129,9 +218,6 @@ class OptimizationService:
         """
         traces = {}
 
-        # Flatten orders for reference
-        [order for group in orders_data for order in group]
-
         # Origin coordinates (Mataró)
         origin = {
             "id": "origin",
@@ -144,12 +230,6 @@ class OptimizationService:
         for key, truck_result in results.items():
             if key == "pedidos_no_entregables" or truck_result is None:
                 continue
-
-            trace = AlgorithmTrace(
-                algorithm_name="Genetic Algorithm"
-                if algo == "genetic"
-                else "Google OR-Tools"
-            )
 
             route_orders = truck_result.lista_pedidos_ordenada
             route_coords = truck_result.ruta_coordenadas
@@ -262,7 +342,6 @@ class OptimizationService:
             final_order = list(range(1, len(nodes)))
 
             # Mix random with final based on progress
-            edges = []
             current_order = final_order.copy()
 
             # Add some randomness that decreases with progress
@@ -275,6 +354,7 @@ class OptimizationService:
                         current_order[i],
                     )
 
+            edges = []
             edges.append(
                 {
                     "from_id": 0,
@@ -306,7 +386,8 @@ class OptimizationService:
             trace.snapshots.append(
                 AlgorithmSnapshot(
                     iteration=gen,
-                    description=f"Generation {gen}: Population converging ({int(progress * 100)}%)",
+                    description=f"Generation {gen}: Population converging "
+                    f"({int(progress * 100)}%)",
                     nodes=nodes.copy(),
                     edges=edges,
                     current_best_cost=fake_cost,
@@ -541,3 +622,21 @@ class OptimizationService:
             "resultados_detallados": full,
             "pedidos_imposibles": raw.get("pedidos_no_entregables", pd.DataFrame()),
         }
+
+    @staticmethod
+    def get_routes_plot(
+        results: dict,
+        figsize: tuple[int, int] = (12, 8),
+    ) -> str | None:
+        """
+        Generates the detailed routing plot.
+        """
+        if OptimizationService._last_orchestrator is None:
+            return None
+
+        if "resultados_detallados" in results:
+            raw_results = results["resultados_detallados"]
+            return OptimizationService._last_orchestrator.generate_routes_plot(
+                raw_results, figsize
+            )
+        return None

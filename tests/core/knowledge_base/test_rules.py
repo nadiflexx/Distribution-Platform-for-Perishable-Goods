@@ -13,7 +13,7 @@ from distribution_platform.core.models.truck import Truck
 
 
 class TestHelperFunctions:
-    """Cubre las líneas 20-49: Getters de reglas."""
+    """Covers lines 20-49: Rule getters."""
 
     def test_print_rules(self):
         rules = print_rules()
@@ -35,65 +35,64 @@ class TestHelperFunctions:
 
 
 class TestFormatValidators:
-    """Cubre las validaciones individuales (Líneas 112-276)."""
+    """Covers the individual validations (Lines 112-276)."""
 
     def test_validate_nombre(self):
-        assert "✔" in validate_nombre_format({"nombre": "Volvo FH"})
+        assert "[SUCCESS]" in validate_nombre_format({"nombre": "Volvo FH"})
 
-        assert "✘" in validate_nombre_format({})
-        assert "✘" in validate_nombre_format({"nombre": ""})
-        assert "✘" in validate_nombre_format({"nombre": "A"})
-        assert "✘" in validate_nombre_format({"nombre": "A" * 55})
-        assert "✘" in validate_nombre_format({"nombre": "Camión@Bad"})
+        assert "[ERROR]" in validate_nombre_format({})
+        assert "[ERROR]" in validate_nombre_format({"nombre": ""})
+        assert "[ERROR]" in validate_nombre_format({"nombre": "A"})
+        assert "[ERROR]" in validate_nombre_format({"nombre": "A" * 55})
+        assert "[ERROR]" in validate_nombre_format({"nombre": "Camión@Bad"})
 
     def test_validate_capacidad(self):
-        assert "✔" in validate_capacidad_format({"capacidad": 100})
-        assert "✔" in validate_capacidad_format({"capacidad": "100"})
+        assert "[SUCCESS]" in validate_capacidad_format({"capacidad": 100})
+        assert "[SUCCESS]" in validate_capacidad_format({"capacidad": "100"})
 
-        assert "✘" in validate_capacidad_format({})
-        assert "✘" in validate_capacidad_format({"capacidad": "texto"})
-        assert "✘" in validate_capacidad_format({"capacidad": 5})
-        assert "✘" in validate_capacidad_format({"capacidad": 250})
+        assert "[ERROR]" in validate_capacidad_format({})
+        assert "[ERROR]" in validate_capacidad_format({"capacidad": "texto"})
+        assert "[ERROR]" in validate_capacidad_format({"capacidad": 5})
+        assert "[ERROR]" in validate_capacidad_format({"capacidad": 250})
 
     def test_validate_consumo(self):
-        assert "✔" in validate_consumo_format({"consumo": 30.5})
-        assert "✔" in validate_consumo_format({"consumo": "30.5"})
-
-        assert "✘" in validate_consumo_format({})
-        assert "✘" in validate_consumo_format({"consumo": "litros"})
-        assert "✘" in validate_consumo_format({"consumo": 5})
-        assert "✘" in validate_consumo_format({"consumo": 60})
+        assert "[SUCCESS]" in validate_consumo_format({"consumo": 30.5})
+        assert "[SUCCESS]" in validate_consumo_format({"consumo": "30.5"})
+        assert "[ERROR]" in validate_consumo_format({})
+        assert "[ERROR]" in validate_consumo_format({"consumo": "litros"})
+        assert "[ERROR]" in validate_consumo_format({"consumo": 5})
+        assert "[ERROR]" in validate_consumo_format({"consumo": 60})
 
     def test_validate_velocidad(self):
-        assert "✔" in validate_velocidad_format({"velocidad_constante": 90})
+        assert "[SUCCESS]" in validate_velocidad_format({"velocidad_constante": 90})
 
-        assert "✘" in validate_velocidad_format({})
-        assert "✘" in validate_velocidad_format(
+        assert "[ERROR]" in validate_velocidad_format({})
+        assert "[ERROR]" in validate_velocidad_format(
             {"velocidad_constante": "rápido"}
         )  # ValueError
-        assert "✘" in validate_velocidad_format({"velocidad_constante": 20})
-        assert "✘" in validate_velocidad_format({"velocidad_constante": 130})
+        assert "[ERROR]" in validate_velocidad_format({"velocidad_constante": 20})
+        assert "[ERROR]" in validate_velocidad_format({"velocidad_constante": 130})
 
     def test_validate_precio(self):
-        assert "✔" in validate_precio_conductor_hora_format(
+        assert "[SUCCESS]" in validate_precio_conductor_hora_format(
             {"precio_conductor_hora": 25}
         )
 
         # Ede cases
-        assert "✘" in validate_precio_conductor_hora_format({})
-        assert "✘" in validate_precio_conductor_hora_format(
+        assert "[ERROR]" in validate_precio_conductor_hora_format({})
+        assert "[ERROR]" in validate_precio_conductor_hora_format(
             {"precio_conductor_hora": "caro"}
         )  # ValueError
-        assert "✘" in validate_precio_conductor_hora_format(
+        assert "[ERROR]" in validate_precio_conductor_hora_format(
             {"precio_conductor_hora": 5}
         )  # < 10
-        assert "✘" in validate_precio_conductor_hora_format(
+        assert "[ERROR]" in validate_precio_conductor_hora_format(
             {"precio_conductor_hora": 60}
         )  # > 50
 
 
 class TestParseTruckData:
-    """Cubre parse_truck_data (Líneas 292-313)."""
+    """Covers parse_truck_data (LLines 292-313)."""
 
     def test_parse_success(self):
         """Prueba la conversión exitosa a objeto Truck."""
@@ -114,9 +113,9 @@ class TestParseTruckData:
 
     def test_parse_exception(self):
         """
-        Cubre el bloque 'except Exception as e' (Líneas 310-313).
-        Enviamos un dato que pasa como string pero falla al convertir a float/int
-        dentro de la función.
+        Covers the 'except Exception as e' block (Lines 310-313).
+        We send a data that passes as string but fails to convert to float/int
+        inside the function.
         """
         data = {
             "nombre": "Bad Truck",

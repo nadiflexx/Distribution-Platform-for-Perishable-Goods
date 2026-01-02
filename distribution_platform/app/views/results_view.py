@@ -1,5 +1,5 @@
 """
-Results/Dashboard View - Final Version (Fixed Products & Ruff)
+Results/Dashboard View - Final Version (Refactored & Complete)
 """
 
 from datetime import datetime, timedelta
@@ -12,6 +12,7 @@ import streamlit as st
 from distribution_platform.app.components.cards import KPICard
 from distribution_platform.app.components.charts import AlgorithmVisualizer
 from distribution_platform.app.components.displays import SectionHeader, Timeline
+from distribution_platform.app.components.export import ExportHub
 from distribution_platform.app.components.loaders import LoaderOverlay
 from distribution_platform.app.config.constants import AppPhase
 from distribution_platform.app.state.session_manager import SessionManager
@@ -27,14 +28,14 @@ class ResultsView:
         # Inject loader first
         LoaderOverlay.persistent_map_loader()
 
-        self._render_header()
+        self._render_header(result)
         self._render_main_kpis(result)
         self._render_tabs(result)
 
         # Inject map detector
         LoaderOverlay.inject_map_detector()
 
-    def _render_header(self):
+    def _render_header(self, result: dict):
         st.markdown(
             """
             <div class="results-header animate-in">
@@ -45,18 +46,15 @@ class ResultsView:
             unsafe_allow_html=True,
         )
 
-        col_back, _, col_actions = st.columns([1, 3, 2])
+        col_back, _, col_actions = st.columns([1, 2, 2])
         with col_back:
             if st.button("← BACK TO CONTROL", type="secondary"):
                 SessionManager.set_phase(AppPhase.FORM)
 
         with col_actions:
-            col_exp1, col_exp2 = st.columns(2)
-            with col_exp1:
-                self._export_results_button()
+            _, col_exp2 = st.columns(2)
             with col_exp2:
-                if st.button("🔄 RE-OPTIMIZE", type="secondary", width="stretch"):
-                    SessionManager.set_phase(AppPhase.PROCESSING)
+                ExportHub.render(result)
 
     def _export_results_button(self):
         result = SessionManager.get("ia_result")
@@ -143,7 +141,7 @@ class ResultsView:
                 "🌍 GEOSPATIAL MAP",
                 "🔍 ROUTE INSPECTOR",
                 "📦 ORDER MANIFEST",
-                "🧬 ALGORITHM VISUALIZER",
+                "🧬 ALGORITHM & CLUSTERING",
             ]
         )
 
@@ -165,24 +163,70 @@ class ResultsView:
         st.markdown("</div>", unsafe_allow_html=True)
 
     def _render_algorithm_tab(self, result: dict):
-        SectionHeader.render("🧬", "Algorithm Execution Visualizer")
-
-        traces = result.get("algorithm_trace", {})
-        if not traces:
-            st.info("Algorithm trace not available.")
-            return
-
-        truck_options = list(traces.keys())
-        selected_truck = st.selectbox(
-            "Select Route",
-            options=truck_options,
-            format_func=lambda x: f"🚛 {x.upper().replace('_', ' ')}",
+        st.info(
+            "This section visualizes the two phases of Artificial Intelligence: Clustering and Routing."
         )
 
-        if selected_truck and selected_truck in traces:
-            AlgorithmVisualizer.render_graph_animation(
-                traces[selected_truck], container_key=selected_truck
-            )
+        # Recuperar imágenes cacheadas
+        plots = result.get("plots", {})
+        cluster_img = plots.get("clustering")
+        routes_img = plots.get("routes")
+
+        # --- FASE 1: CLUSTERING ---
+        SectionHeader.render("🧠", "Phase 1: Zonification (Clustering)")
+
+        col_c1, col_c2 = st.columns([3, 1])
+        with col_c2:
+            st.markdown(f"""
+            **Objective:** Divide orders into logical zones.
+
+            **Algorithm:** {result.get("clustering_strategy", "N/A")}
+
+            **What we see:** Polygons that define the delivery area for each driver.
+            """)
+
+        with col_c1:
+            if cluster_img:
+                st.image(f"data:image/png;base64,{cluster_img}", width="stretch")
+            else:
+                st.warning("Clustering visualization not available.")
+
+        st.markdown("---")
+
+        # --- FASE 2: ROUTING ---
+        SectionHeader.render("🚛", "Phase 2: Sequencing (Routing)")
+
+        col_r1, col_r2 = st.columns([3, 1])
+        with col_r2:
+            st.markdown(f"""
+            **Objective:** Order stops to minimize km and time.
+
+            **Algorithm:** {result.get("routing_algorithm", "N/A")}
+
+            **What we see:** The traced line indicates the exact path. Arrows indicate flow direction.
+            """)
+
+        with col_r1:
+            if routes_img:
+                st.image(f"data:image/png;base64,{routes_img}", width="stretch")
+            else:
+                st.warning("The route map could not be generated.")
+
+        st.markdown("---")
+
+        with st.expander("Watch the process calculation animation (Graph)"):
+            traces = result.get("algorithm_trace", {})
+            if traces:
+                truck_options = list(traces.keys())
+                selected_truck = st.selectbox(
+                    "Select Truck",
+                    options=truck_options,
+                    format_func=lambda x: f"🚛 {x.upper().replace('_', ' ')}",
+                )
+                if selected_truck:
+                    AlgorithmVisualizer.render_graph_animation(
+                        traces[selected_truck], container_key=selected_truck
+                    )
 
     def _render_orders_tab(self, result: dict):
         """Enhanced Order Manifest with full details."""
