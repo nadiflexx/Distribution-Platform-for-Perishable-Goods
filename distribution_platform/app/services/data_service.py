@@ -17,7 +17,7 @@ class DataService:
         """Load data from database."""
         try:
             with st.spinner("Synchronizing data streams..."):
-                data = run_etl(use_database=False)
+                data = run_etl(use_database=True)
                 SessionManager.set("df", data)
                 SessionManager.set("load_success", True)
                 SessionManager.reset_validation()
