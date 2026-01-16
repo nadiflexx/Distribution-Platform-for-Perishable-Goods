@@ -17,6 +17,7 @@ class GeneticStrategy(RoutingStrategy):
     """
 
     def optimize(self, orders: list[Order], **kwargs) -> RouteOptimizationResult | None:
+        """Optimizes the order sequence using a Genetic Algorithm."""
         generations = kwargs.get("generations", 500)
         pop_size = kwargs.get("pop_size", 200)
 
@@ -87,6 +88,7 @@ class GeneticStrategy(RoutingStrategy):
         return self._build_result(final_route, full_metrics)
 
     def _crossover_ox(self, p1: list[Order], p2: list[Order]) -> list[Order]:
+        """Order Crossover (OX) implementation."""
         size = len(p1)
         a, b = sorted(random.sample(range(size), 2))
         child: list[Order | None] = [None] * size
@@ -200,6 +202,7 @@ class GeneticStrategy(RoutingStrategy):
         )
 
     def _build_result(self, orders, fit_data):
+        """Builds the RouteOptimizationResult from orders and fitness data."""
         (_, valid, dist, time, drive, lit, cost, c_driv, c_fuel, arrs) = fit_data
 
         cities = [self.origin] + [p.destino for p in orders] + [self.origin]

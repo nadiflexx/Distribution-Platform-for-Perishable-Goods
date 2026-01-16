@@ -69,6 +69,10 @@ class FormView:
             ValidationBadge.awaiting()
             return
 
+        ## Create funcy dropdown to inform: print_rules from rules.py
+        parameter_info = st.expander("📋 VEHICLE PARAMETER GUIDELINES", expanded=False)
+        parameter_info.markdown(ValidationService.print_rules(), unsafe_allow_html=True)
+
         # Category selection
         category = st.selectbox(
             "VEHICLE CLASS",

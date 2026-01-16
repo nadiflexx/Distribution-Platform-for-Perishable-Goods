@@ -45,3 +45,8 @@ class ValidationService:
         else:
             SessionManager.set("truck_validated", False)
             return False
+
+    @staticmethod
+    def print_rules() -> str:
+        """Prints the vehicle parameter guidelines."""
+        return "\n".join(rules.print_rules())

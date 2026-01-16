@@ -18,6 +18,7 @@ class ORToolsStrategy(RoutingStrategy):
     """
 
     def optimize(self, orders: list[Order], **kwargs) -> RouteOptimizationResult | None:
+        """Optimizes the order sequence using OR-Tools."""
         if not orders:
             return None
 
@@ -31,6 +32,7 @@ class ORToolsStrategy(RoutingStrategy):
             matrix_cache = {}
 
             def get_dist_cached(from_node, to_node):
+                """Caches distance calculations to avoid redundant calls."""
                 key = (from_node, to_node)
                 if key not in matrix_cache:
                     val = self._get_distance(locations[from_node], locations[to_node])
@@ -38,6 +40,7 @@ class ORToolsStrategy(RoutingStrategy):
                 return matrix_cache[key]
 
             def distance_callback(from_index, to_index):
+                """Returns the distance between the two nodes."""
                 from_node = manager.IndexToNode(from_index)
                 to_node = manager.IndexToNode(to_index)
                 return get_dist_cached(from_node, to_node)

@@ -127,7 +127,7 @@ class SpainMapRoutes:
                     folium.Marker(
                         location=path[0],
                         popup=folium.Popup(
-                            f"<b>🏢 BASE (Mataró)</b><br>Salida y Retorno<br>Camión {camion_id}",
+                            f"<b>🏢 BASE (Mataró)</b><br>Exit and Return<br>Truck {camion_id}",
                             max_width=200,
                         ),
                         icon=folium.Icon(color="darkblue", icon="home", prefix="fa"),
@@ -151,15 +151,15 @@ class SpainMapRoutes:
 
                     if margen_dias < 0:
                         estado_emoji = "❌"
-                        estado_texto = f"CADUCADO ({abs(margen_dias):.1f} días tarde)"
+                        estado_texto = f"EXPIRED ({abs(margen_dias):.1f} days late)"
                         color_estado = "red"
                     elif margen_dias < 1:
                         estado_emoji = "⚠️"
-                        estado_texto = f"LÍMITE (margen {margen_dias:.1f} días)"
+                        estado_texto = f"LIMIT (margin {margen_dias:.1f} days)"
                         color_estado = "orange"
                     else:
                         estado_emoji = "✅"
-                        estado_texto = f"A TIEMPO (margen {margen_dias:.1f} días)"
+                        estado_texto = f"ON TIME (margin {margen_dias:.1f} days)"
                         color_estado = "green"
 
                     es_ultimo = i == len(pedidos) - 1
@@ -167,20 +167,19 @@ class SpainMapRoutes:
                     if es_ultimo:
                         icon_color = "green"
                         icon_name = "flag-checkered"
-                        titulo_html = f'<h4 style="margin:0; color:green;">🏁 Última Entrega: #{pedido.pedido_id}</h4>'
+                        titulo_html = f'<h4 style="margin:0; color:green;">🏁 Last Delivery: #{pedido.pedido_id}</h4>'
                     else:
                         icon_color = "orange"
                         icon_name = "box"
-                        titulo_html = f'<h4 style="margin:0; color:#1f77b4;">📦 Pedido #{pedido.pedido_id}</h4>'
-
+                        titulo_html = f'<h4 style="margin:0; color:#1f77b4;">📦 Order #{pedido.pedido_id}</h4>'
                     popup_html = f"""
                     <div style="font-family: Arial; min-width: 200px;">
                         {titulo_html}
                         <hr style="margin: 5px 0;">
-                        <b>📍 Destino:</b> {pedido.destino}<br>
-                        <b>⚖️ Peso:</b> {pedido.cantidad_producto:.1f} kg<br>
-                        <b>⏰ Caducidad:</b> {pedido.caducidad} días<br>
-                        <b>🕐 Llegada:</b> día {dias_llegada:.1f}<br>
+                        <b>📍 Destiny:</b> {pedido.destino}<br>
+                        <b>⚖️ Weight:</b> {pedido.cantidad_producto:.1f} kg<br>
+                        <b>⏰ Expiration:</b> {pedido.caducidad} days<br>
+                        <b>🕐 Arrival:</b> day {dias_llegada:.1f}<br>
                         <hr style="margin: 5px 0;">
                         <div style="background: {color_estado}; color: white; padding: 4px; border-radius: 4px; text-align: center; font-size: 0.9em;">
                             <b>{estado_emoji} {estado_texto}</b>

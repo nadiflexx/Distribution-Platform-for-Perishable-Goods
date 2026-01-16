@@ -133,6 +133,6 @@ class TestSpainMapRoutes:
 
             html_text = " ".join(str(p) for p in popups_html)
 
-            assert "A TIEMPO" in html_text
-            assert "CADUCADO" in html_text
-            assert "Última Entrega" in html_text
+            assert "ON TIME" in html_text
+            assert "EXPIRED" in html_text
+            assert "Last Delivery" in html_text

@@ -42,6 +42,8 @@ import numpy as np
 
 
 class OptimizationOrchestrator:
+    """Main Orchestrator for Delivery Optimization. Integrates Clustering, Graph, and Routing."""
+
     IMPOSSIBLE_DESTS = {
         "las palmas",
         "santa cruz de tenerife",
@@ -68,6 +70,7 @@ class OptimizationOrchestrator:
         coord_cache: CoordinateCache | None = None,
         clustering_strategy: ClusteringStrategy | None = None,
     ):
+        """Initializes the Optimization Orchestrator."""
         self.config = config if config else SimulationConfig()
         self.origin = origin_base
         self.coord_cache = coord_cache if coord_cache else CoordinateCache()
@@ -118,16 +121,16 @@ class OptimizationOrchestrator:
         # 1. Pre-process: Consolidate
         if orders and isinstance(orders[0], list):
             logger.info(
-                "🔄 Detectados pedidos agrupados. Consolidando líneas por pedido_id..."
+                "🔄 Detected grouped orders. Consolidating lines by order_id..."
             )
             total_lines = len(sum(orders, []))
             orders = consolidate_orders(orders)
             logger.info(
-                f"   ✅ {total_lines} líneas → {len(orders)} pedidos consolidados\n"
+                f"   ✅ {total_lines} lines → {len(orders)} consolidated orders\n"
             )
 
         # 2. Filter: Impossible Destinations
-        logger.debug(f"Iniciando filtrado de {len(orders)} pedidos")
+        logger.debug(f"Starting filtering of {len(orders)} orders")
         valid_orders = []
         impossible_orders = []
 
@@ -139,18 +142,18 @@ class OptimizationOrchestrator:
                 valid_orders.append(p)
 
         logger.debug(
-            f"Resultado filtrado: {len(valid_orders)} entregables, "
-            f"{len(impossible_orders)} imposibles\n"
+            f"Filtered result: {len(valid_orders)} deliverable, "
+            f"{len(impossible_orders)} impossible destinations\n"
         )
 
         if impossible_orders:
             logger.warning(
-                f"⚠️ ADVERTENCIA: {len(impossible_orders)} pedidos a destinos "
-                "INACCESIBLES por carretera."
+                f"⚠️: {len(impossible_orders)} orders to impossible destinations "
+                "INACCESIBLE by road."
             )
 
         if not valid_orders:
-            logger.error("❌ No hay pedidos entregables por carretera")
+            logger.error("❌ There are no deliverable orders by road")
             return {"pedidos_no_entregables": impossible_orders}
 
         # 3. Fleet Calculation
@@ -161,30 +164,30 @@ class OptimizationOrchestrator:
         capacidad_camion = self.config.capacidad_carga
         n_trucks = max(1, math.ceil(total_weight / capacidad_camion))
 
-        logger.info("📦 ANÁLISIS DE CARGA:")
-        logger.info(f"   Total pedidos: {len(valid_orders)}")
-        logger.info(f"   Peso total: {total_weight:.2f} kg")
-        logger.info(f"   Capacidad por camión: {capacidad_camion:.2f} kg")
-        logger.info(f"   Camiones mínimos necesarios: {n_trucks}")
-        logger.info(f"   ✅ Usando {n_trucks} camion(es)\n")
+        logger.info("📦 LOAD ANALYSIS:")
+        logger.info(f"   Total orders: {len(valid_orders)}")
+        logger.info(f"   Total weight: {total_weight:.2f} kg")
+        logger.info(f"   Capacity per truck: {capacidad_camion:.2f} kg")
+        logger.info(f"   Minimum trucks needed: {n_trucks}")
+        logger.info(f"   ✅ Using {n_trucks} truck(s)\n")
 
         # 4. Clustering (using selected strategy)
         logger.info(
-            f"🧠 Agrupando {len(valid_orders)} pedidos en {n_trucks} camion(es) "
-            f"usando [{self.clustering.get_strategy_name()}]..."
+            f"🧠 Grouping {len(valid_orders)} orders in {n_trucks} truck(s) "
+            f"using [{self.clustering.get_strategy_name()}]..."
         )
         clusters = self.clustering.cluster_orders(
             valid_orders, n_trucks, self.config.peso_unitario_default, capacidad_camion
         )
 
         if not clusters:
-            logger.error("❌ No se pudieron agrupar los pedidos")
+            logger.error("❌ The orders could not be grouped into clusters")
             return {}
 
-        logger.info(f"   ✅ Clustering completado: {len(clusters)} grupos creados\n")
+        logger.info(f"   ✅ Clustering completed: {len(clusters)} groups created\n")
 
         # 5. Distance Matrix
-        logger.info("📊 Generando matriz de distancias...\n")
+        logger.info("📊 Generating distance matrix...\n")
         dist_matrix = self.graph.generate_distance_matrix()
 
         # 6. Select Routing Strategy
@@ -202,7 +205,7 @@ class OptimizationOrchestrator:
         for cid, group in clusters.items():
             if not group:
                 results[cid] = None
-                logger.warning(f"⚠️ Camión {cid + 1}: Sin pedidos asignados")
+                logger.warning(f"⚠️ Truck {cid + 1}: No orders assigned")
                 continue
 
             peso_cluster = sum(
@@ -210,10 +213,10 @@ class OptimizationOrchestrator:
             )
             ocupacion = (peso_cluster / capacidad_camion) * 100
 
-            logger.info(f"🚚 CAMIÓN {cid + 1}:")
+            logger.info(f"🚚 TRUCK {cid + 1}:")
             logger.info(
-                f"   Pedidos: {len(group)} | Peso: {peso_cluster:.2f} kg | "
-                f"Ocupación: {ocupacion:.1f}%"
+                f"   Orders: {len(group)} | Weight: {peso_cluster:.2f} kg | "
+                f"Occupancy: {ocupacion:.1f}%"
             )
 
             # Run Algorithm
@@ -231,21 +234,20 @@ class OptimizationOrchestrator:
                         for c, cnt in ciudades_counts.items()
                     ]
                 )
-                logger.info(f"   ✅ Ruta: {ruta_resumida}")
+                logger.info(f"   ✅ Route: {ruta_resumida}")
                 logger.info(
-                    f"   📏 Distancia: {result.distancia_total_km} km | "
-                    f"⏱️ Tiempo: {result.tiempo_total_viaje_horas} h"
+                    f"   📏 Distance: {result.distancia_total_km} km | "
+                    f"⏱️ Time: {result.tiempo_total_viaje_horas} h"
                 )
                 logger.info(
-                    f"   ⛽ Consumo: {result.consumo_litros} L | "
-                    f"💰 Coste: {result.coste_total_ruta} €\n"
+                    f"   ⛽ Consum: {result.consumo_litros} L | "
+                    f"💰 Cost: {result.coste_total_ruta} €\n"
                 )
             else:
-                logger.error(f"   ❌ Fallo al optimizar ruta Camión {cid + 1}")
-
+                logger.error(f"   ❌ Failed to optimize route Truck {cid + 1}")
         # 8. Show final resume
         logger.info("=" * 70)
-        logger.info("📊 RESUMEN DE APROVECHAMIENTO DE FLOTA")
+        logger.info("📊 FINAL RESUME OF FLEET UTILIZATION")
         logger.info("=" * 70)
 
         peso_total_transportado = 0
@@ -261,8 +263,8 @@ class OptimizationOrchestrator:
                 capacidad_total_disp += capacidad_camion
                 pct = (peso_camion / capacidad_camion) * 100
                 logger.info(
-                    f"🚛 Camión {cid + 1}: {peso_camion:.1f}/{capacidad_camion:.1f} kg "
-                    f"({pct:.1f}% ocupación)"
+                    f"🚛 Truck {cid + 1}: {peso_camion:.1f}/{capacidad_camion:.1f} kg "
+                    f"({pct:.1f}% occupancy)"
                 )
 
         aprovechamiento_global = (
@@ -270,11 +272,9 @@ class OptimizationOrchestrator:
             if capacidad_total_disp > 0
             else 0
         )
-        logger.info(
-            f"\n✅ Aprovechamiento global de la flota: {aprovechamiento_global:.1f}%"
-        )
-        logger.info(f"📦 Total peso transportado: {peso_total_transportado:.1f} kg")
-        logger.info(f"🚛 Capacidad total disponible: {capacidad_total_disp:.1f} kg")
+        logger.info(f"\n✅ Global fleet utilization: {aprovechamiento_global:.1f}%")
+        logger.info(f"📦 Total transport carried: {peso_total_transportado:.1f} kg")
+        logger.info(f"🚛 Total available capacity: {capacidad_total_disp:.1f} kg")
         logger.info("=" * 70 + "\n")
 
         # 9. Add rejected orders
@@ -345,7 +345,7 @@ class OptimizationOrchestrator:
                 edgecolors="#FFD700",
                 linewidth=2,
                 zorder=10,
-                label="Centro de Distribución",
+                label="Distribution Center",
             )
 
         # 2. DRAW ROUTES
@@ -376,8 +376,6 @@ class OptimizationOrchestrator:
 
             # --- B. DIRECTION ARROWS  ---
             for i in range(len(lons) - 1):
-                mid_lon = (lons[i] + lons[i + 1]) / 2
-                mid_lat = (lats[i] + lats[i + 1]) / 2
                 dx = lons[i + 1] - lons[i]
                 dy = lats[i + 1] - lats[i]
 

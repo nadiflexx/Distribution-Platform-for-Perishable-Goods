@@ -10,7 +10,7 @@ from distribution_platform.infrastructure.persistence.truck_repository import (
 @patch("distribution_platform.infrastructure.persistence.truck_repository.Paths")
 class TestTruckRepository:
     def test_get_trucks_standard(self, mock_paths):
-        """Prueba carga de camiones estándar (large/medium)."""
+        """Test loading standard trucks (large/medium)."""
         repo = TruckRepository()
 
         fake_data = json.dumps(
@@ -32,6 +32,7 @@ class TestTruckRepository:
             mock_load.assert_called_with("large_medium_trucks.json")
 
     def test_get_trucks_custom(self, mock_paths):
+        """Test loading custom trucks."""
         repo = TruckRepository()
 
         with patch.object(
@@ -42,7 +43,7 @@ class TestTruckRepository:
             mock_load.assert_called_with("custom_trucks.json")
 
     def test_save_custom_truck(self, mock_paths):
-        """Prueba flujo de guardar camión custom: leer existente -> actualizar -> guardar."""
+        """Test saving a custom truck: read existing -> update -> save."""
         repo = TruckRepository()
 
         with (
@@ -58,7 +59,7 @@ class TestTruckRepository:
             assert "Nuevo" in saved_data
 
     def test_save_image_success(self, mock_paths):
-        """Prueba guardado de imagen con sanitización de nombre."""
+        """Test saving an image with name sanitization."""
         repo = TruckRepository()
         mock_paths.TRUCK_IMAGES = {"custom": Path("/fake/images")}
 
@@ -82,7 +83,7 @@ class TestTruckRepository:
         assert repo.save_image(None, "name") == "truck_default.png"
 
     def test_save_image_error(self, mock_paths):
-        """Si falla la escritura, devuelve default."""
+        """If writing fails, return default."""
         repo = TruckRepository()
         mock_file = MagicMock()
         mock_file.name = "test.jpg"
@@ -97,6 +98,7 @@ class TestTruckRepository:
     # --- Internal Methods (_load_json / _save_json) ---
 
     def test_load_json_internal(self, mock_paths):
+        """Test loading JSON from file with various cases."""
         repo = TruckRepository()
         mock_file_path = MagicMock()
         mock_paths.STORAGE.__truediv__.return_value = mock_file_path
@@ -118,6 +120,7 @@ class TestTruckRepository:
         assert repo._load_json("test.json") == {}
 
     def test_save_json_internal(self, mock_paths):
+        """Test saving JSON to file with success and error cases."""
         repo = TruckRepository()
         mock_file_path = MagicMock()
         mock_paths.STORAGE.__truediv__.return_value = mock_file_path

@@ -52,6 +52,7 @@ class TruckRepository:
             return "truck_default.png"
 
     def _load_json(self, filename: str) -> dict:
+        """Loads data from a JSON file."""
         path = self.storage_dir / filename
         if not path.exists():
             return {}
@@ -62,6 +63,7 @@ class TruckRepository:
             return {}
 
     def _save_json(self, filename: str, data: dict) -> bool:
+        """Saves data to a JSON file."""
         try:
             path = self.storage_dir / filename
             path.write_text(

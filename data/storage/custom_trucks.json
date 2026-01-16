@@ -1,30 +1,16 @@
 {
-  "Prueba 1": {
+  "Camion OK": {
     "capacidad": 120,
     "consumo": 30,
     "velocidad_constante": 75,
     "precio_conductor_hora": 20,
     "imagen": "truck_default.png"
   },
-  "ej2": {
-    "capacidad": 140,
-    "consumo": 30,
-    "velocidad_constante": 89,
-    "precio_conductor_hora": 20,
+  "Camion Errores": {
+    "capacidad": 1,
+    "consumo": 1,
+    "velocidad_constante": 1,
+    "precio_conductor_hora": 1,
     "imagen": "truck_default.png"
-  },
-  "ej3": {
-    "capacidad": 80,
-    "consumo": 40,
-    "velocidad_constante": 80,
-    "precio_conductor_hora": 20,
-    "imagen": "truck_default.png"
-  },
-  "X-1": {
-    "capacidad": 3000,
-    "consumo": 25.0,
-    "velocidad_constante": 90.0,
-    "precio_conductor_hora": 20.0,
-    "imagen": "X-1.jpg"
   }
 }

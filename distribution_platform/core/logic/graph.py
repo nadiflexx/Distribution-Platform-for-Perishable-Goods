@@ -36,9 +36,11 @@ class GraphManager:
         return self.coords.get(city, (None, None))
 
     def obtener_coordenadas(self, city: str):
+        """Alias for get_coords."""
         return self.get_coords(city)
 
     def _haversine(self, lat1, lon1, lat2, lon2):
+        """Calculates the Haversine distance between two points."""
         R = 6371  # km
         dlat = math.radians(lat2 - lat1)
         dlon = math.radians(lon2 - lon1)

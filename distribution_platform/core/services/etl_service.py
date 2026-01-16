@@ -144,6 +144,7 @@ class ETLService:
     # ---------------------------------------------------------
 
     def _load_raw_csvs(self):
+        """Loads raw CSV files into DataFrames."""
         raw = self.paths.DATA_RAW
         self.df_clientes = FileReader.load_data(
             DataTypesEnum.CSV, raw / "dboClientes.csv"
@@ -165,10 +166,14 @@ class ETLService:
         )
 
     def _load_uploads(self, files: dict):
+        """Loads uploaded files into DataFrames."""
+
         def _get(key):
+            """Helper to get uploaded files by key."""
             return files.get(key, [])
 
         def _proc(f_list):
+            """Processes uploaded files: loads and concatenates them."""
             f_list = f_list if isinstance(f_list, list) else [f_list]
             return FileReader.safe_concat(
                 [FileReader.load_uploaded_file(f) for f in f_list]
@@ -186,6 +191,7 @@ class ETLService:
     # ---------------------------------------------------------
 
     def _normalize_all(self):
+        """Applies snake_case normalization to all DataFrames."""
         self.df_clientes = DataCleaner.to_snake_case(self.df_clientes)
         self.df_lineas = DataCleaner.to_snake_case(self.df_lineas)
         self.df_pedidos = DataCleaner.to_snake_case(self.df_pedidos)
@@ -194,6 +200,7 @@ class ETLService:
         self.df_destinos = DataCleaner.to_snake_case(self.df_destinos)
 
     def _merge_datasets(self):
+        """Merges all DataFrames into a single DataFrame for processing."""
         self.df_pedidos = self.df_pedidos.rename(
             columns={"destino_entrega_id": "destino_id"}
         )

@@ -22,8 +22,10 @@ class VehicleCategory:
 
     @classmethod
     def all(cls):
+        """Get all vehicle categories."""
         return [cls.HEAVY, cls.MEDIUM, cls.CUSTOM]
 
     @classmethod
     def to_key(cls, category: str) -> str:
+        """Convert vehicle category to a key string."""
         return "large" if "Heavy" in category else "medium"

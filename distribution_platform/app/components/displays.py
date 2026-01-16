@@ -1,5 +1,5 @@
 """
-Display components: headers, timelines, etc.
+Display components: headers, timelines, validation badges, launch sections.
 """
 
 import streamlit as st
@@ -10,6 +10,7 @@ class SectionHeader:
 
     @staticmethod
     def render(icon: str, title: str):
+        """Renders a section header with an icon and title."""
         st.markdown(
             f"""<div class="section-header"><span class="section-icon">{icon}</span><span class="section-title">{title}</span></div>""",
             unsafe_allow_html=True,
@@ -21,6 +22,7 @@ class PageHeader:
 
     @staticmethod
     def render(icon: str, title: str, subtitle: str):
+        """Renders a page header with icon, title, and subtitle."""
         st.markdown(
             f"""
             <div class="page-header animate-in">
@@ -38,6 +40,7 @@ class Timeline:
 
     @staticmethod
     def render(route_list: list[str]):
+        """Renders a vertical timeline for the given route list."""
         if not route_list:
             return
 
@@ -78,6 +81,7 @@ class ValidationBadge:
 
     @staticmethod
     def success():
+        """Renders a success validation badge."""
         st.markdown(
             """<div class="validation-success"><span>✅</span> VEHICLE VERIFIED & READY</div>""",
             unsafe_allow_html=True,
@@ -85,6 +89,7 @@ class ValidationBadge:
 
     @staticmethod
     def awaiting():
+        """Renders an awaiting data stream badge."""
         st.markdown(
             """<div class="awaiting-data"><span class="pulse-icon">📡</span><p>Awaiting Data Stream...</p><small>Sync data to unlock fleet configuration</small></div>""",
             unsafe_allow_html=True,
@@ -96,6 +101,7 @@ class LaunchSection:
 
     @staticmethod
     def render():
+        """Renders the launch ready section."""
         st.markdown("<div class='launch-divider'></div>", unsafe_allow_html=True)
         st.markdown(
             """<div class="launch-section"><div class="launch-ready-badge"><span class="pulse-dot"></span>SYSTEMS READY</div></div>""",

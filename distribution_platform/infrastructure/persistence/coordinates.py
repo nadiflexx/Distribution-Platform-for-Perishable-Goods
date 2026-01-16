@@ -47,7 +47,9 @@ class CoordinateCache:
             logger.error(f"Failed to save coordinate cache: {e}")
 
     def get(self, destination: str) -> str | None:
+        """Gets coordinate for a destination from the cache."""
         return self.cache.get(destination)
 
     def set(self, destination: str, coord: str | None) -> None:
+        """Sets coordinate for a destination in the cache."""
         self.cache[destination] = coord

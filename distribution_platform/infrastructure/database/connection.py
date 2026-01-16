@@ -28,8 +28,18 @@ def get_sql_engine() -> Engine:
     password = os.getenv("DB_PASSWORD")
     driver = os.getenv("DB_DRIVER")
 
+    if user is None:
+        raise ValueError("The variable DB_USER is not defined.")
+    if password is None:
+        raise ValueError("The variable DB_PASSWORD is not defined.")
+    if db is None:
+        raise ValueError("The variable DB_NAME is not defined.")
+    if port is None:
+        raise ValueError("The variable DB_PORT is not defined.")
+    if host is None:
+        raise ValueError("The variable DB_HOST is not defined.")
     if driver is None:
-        raise ValueError("La variable de entorno DB_DRIVER no está definida.")
+        raise ValueError("The variable DB_DRIVER is not defined.")
 
     driver_encoded = driver.replace(" ", "+")
 

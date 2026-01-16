@@ -44,30 +44,30 @@ The project follows a modular **Clean Architecture** to ensure scalability and m
 
 ```
 distribution_platform/
-├── app/ # Presentation Layer (Streamlit)
-│   ├── components/ # Reusable UI Widgets (Cards, Charts, Timelines)
-│   ├── config/ # UI Constants & Enums
-│   ├── services/ # Bridge services (Data, Validation, Optimization)
-│   ├── state/ # Centralized Session Management
-│   ├── views/ # Page Rendering Logic (Form, Results, Processing)
+├── 📂 app/ # Presentation Layer (Streamlit)
+│   ├── 📂 components/ # Reusable UI Widgets (Cards, Charts, Timelines)
+│   ├── 📂 config/ # UI Constants & Enums
+│   ├── 📂 services/ # Bridge services (Data, Validation, Optimization)
+│   ├── 📂 state/ # Centralized Session Management
+│   ├── 📂 views/ # Page Rendering Logic (Form, Results, Processing)
 │   └── main.py # Application Entry Point
-├── batch/backup # Batch for automated backups (Optional)
+├── 📂 batch/backup # Batch for automated backups (Optional)
 │   └── backup.py # Backup logic (Google Drive)
-├── core/ # Domain Layer (The Brain)
-│   ├── logic/
-│   │ └── routing/ # Core Optimization Logic
-│   │   ├── clustering/ # K-Means, Agglomerative, Plotting Strategies
-│   │   └── strategies/ # Genetic, OR-Tools VRP Solvers
-│   ├── inference_engine/ # Validation Rule Engine
-│   ├── knowledge_base/ # Business Rules Repository
-│   ├── models/ # Domain Data Models (Pydantic)
-│   └── services/ # Orchestrators (ETL, Solver Logic)
-└── infrastructure/ # Infrastructure Layer
-   ├── database/ # Connection engine for a SQL Server database
-   ├── external/ # External APIs (Maps, Geocoding)
-   └── persistence/ # Data Repositories (CSV, JSON, SQL)
+├── 📂 core/ # Domain Layer (The Brain)
+│   ├── 📂 logic/
+│   │ └── 📂 routing/ # Core Optimization Logic
+│   │   ├── 📂 clustering/ # K-Means, Agglomerative, Plotting Strategies
+│   │   └── 📂 strategies/ # Genetic, OR-Tools VRP Solvers
+│   ├── 📂 inference_engine/ # Validation Rule Engine
+│   ├── 📂 knowledge_base/ # Business Rules Repository
+│   ├── 📂 models/ # Domain Data Models (Pydantic)
+│   └── 📂 services/ # Orchestrators (ETL, Solver Logic)
+└── 📂 infrastructure/ # Infrastructure Layer
+   ├── 📂 database/ # Connection engine for a SQL Server database
+   ├── 📂 external/ # External APIs (Maps, Geocoding)
+   └── 📂 persistence/ # Data Repositories (CSV, JSON, SQL)
 
-tests/ # Test Suite (Pytest)
+📂 tests/ # Test Suite (Pytest)
 ```
 
 ---
@@ -77,8 +77,7 @@ tests/ # Test Suite (Pytest)
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ai-delivery-planner.git
-cd ai-delivery-planner
+git clone https://github.com/nadiflexx/Distribution-Platform-for-Perishable-Goods
 ```
 
 ### 2. Create a virtual environment
@@ -186,4 +185,4 @@ pytest tests/
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the `LICENSE` file for details.

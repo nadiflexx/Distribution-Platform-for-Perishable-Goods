@@ -91,14 +91,14 @@ def capacity_rule(truck: Truck) -> str:
 
 
 def precio_conductor_hora_rule(truck: Truck) -> str:
-    """R5: The truck must have a valid driver hourly rate."""
+    """R4: The truck must have a valid driver hourly rate."""
     precio_min = 10.0
     precio_max = 50.0
 
     if precio_min <= truck.precio_conductor_hora <= precio_max:
-        return f"[SUCCESS] (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is within acceptable range."
+        return f"[SUCCESS] (R4) The truck's driver rate (€{truck.precio_conductor_hora}/h) is within acceptable range."
 
-    return f"[ERROR] (R5) The truck's driver rate (€{truck.precio_conductor_hora}/h) is outside acceptable range (€{precio_min}-€{precio_max})."
+    return f"[ERROR] (R4) The truck's driver rate (€{truck.precio_conductor_hora}/h) is outside acceptable range (€{precio_min}-€{precio_max})."
 
 
 # ==================== FORMAT VALIDATION RULES ====================
