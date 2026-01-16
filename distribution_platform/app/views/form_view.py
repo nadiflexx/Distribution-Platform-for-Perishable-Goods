@@ -11,6 +11,7 @@ from distribution_platform.app.components.displays import (
     ValidationBadge,
 )
 from distribution_platform.app.components.forms import FileUploadSection
+from distribution_platform.app.components.images import ImageLoader
 from distribution_platform.app.config.constants import AppPhase, VehicleCategory
 from distribution_platform.app.services.data_service import DataService
 from distribution_platform.app.services.validation_service import ValidationService
@@ -28,7 +29,11 @@ class FormView:
         self.repository = TruckRepository()
 
     def render(self):
-        PageHeader.render("🎯", "MISSION CONTROL", "Fleet & Cargo Configuration Center")
+        PageHeader.render(
+            ImageLoader._get_logo_img(),
+            "MISSION CONTROL",
+            "Fleet & Cargo Configuration Center",
+        )
 
         col_data, col_fleet = st.columns([1, 1.8], gap="large")
 

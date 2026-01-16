@@ -12,21 +12,6 @@ import re
 from distribution_platform.core.models.truck import Truck
 
 
-def print_rules() -> list[str]:
-    """Returns the human-readable list of business rules.
-
-    Used by the UI to display the available rules.
-    """
-    return [
-        "- The csv file must contain all required fields.",
-        "- The truck must have enough capacity for deliveries (in product units).",
-        "- The truck must have an acceptable fuel consumption rate.",
-        "- The truck must have a constant velocity during the route.",
-        "- The truck must have a valid operational cost per kilometer.",
-        "- The truck must have a valid driver hourly rate.",
-    ]
-
-
 def obtain_rules() -> list[Callable[[Truck], str]]:
     """Returns the list of rule functions to be executed by the engine.
 

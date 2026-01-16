@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from distribution_platform.config.enums import DataTypesEnum, WorkflowError
-from distribution_platform.config.settings import AppConfig, MapConfig, Paths
+from distribution_platform.config.settings import ExternalServices, MapConfig, Paths
 
 
 class TestSettings:
@@ -21,8 +21,7 @@ class TestSettings:
 
     def test_app_config_structure(self):
         """Verifica claves esenciales en la configuración de la App."""
-        assert "title" in AppConfig.METADATA
-        assert AppConfig.SCOPES == ["https://www.googleapis.com/auth/drive"]
+        assert ExternalServices.SCOPES == ["https://www.googleapis.com/auth/drive"]
 
     def test_map_config_colors(self):
         """Verifica que la lista de colores no esté vacía."""

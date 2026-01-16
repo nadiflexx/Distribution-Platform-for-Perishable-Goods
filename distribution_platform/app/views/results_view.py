@@ -11,8 +11,13 @@ import streamlit as st
 
 from distribution_platform.app.components.cards import KPICard
 from distribution_platform.app.components.charts import AlgorithmVisualizer
-from distribution_platform.app.components.displays import SectionHeader, Timeline
+from distribution_platform.app.components.displays import (
+    PageHeader,
+    SectionHeader,
+    Timeline,
+)
 from distribution_platform.app.components.export import ExportHub
+from distribution_platform.app.components.images import ImageLoader
 from distribution_platform.app.components.loaders import LoaderOverlay
 from distribution_platform.app.config.constants import AppPhase
 from distribution_platform.app.state.session_manager import SessionManager
@@ -36,14 +41,10 @@ class ResultsView:
         LoaderOverlay.inject_map_detector()
 
     def _render_header(self, result: dict):
-        st.markdown(
-            """
-            <div class="results-header animate-in">
-                <h1>🏁 MISSION RESULTS</h1>
-                <p class="results-subtitle">Optimization Complete • Routes Generated</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
+        PageHeader.render(
+            ImageLoader._get_logo_img(),
+            "MISSION CONTROL",
+            "Fleet & Cargo Configuration Center",
         )
 
         col_back, _, col_actions = st.columns([1, 2, 2])

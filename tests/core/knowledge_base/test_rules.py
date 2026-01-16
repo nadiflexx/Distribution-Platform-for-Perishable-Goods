@@ -2,7 +2,6 @@ from distribution_platform.core.knowledge_base.rules import (
     obtain_format_validation_rules,
     obtain_rules,
     parse_truck_data,
-    print_rules,
     validate_capacidad_format,
     validate_consumo_format,
     validate_nombre_format,
@@ -14,12 +13,6 @@ from distribution_platform.core.models.truck import Truck
 
 class TestHelperFunctions:
     """Covers lines 20-49: Rule getters."""
-
-    def test_print_rules(self):
-        rules = print_rules()
-        assert isinstance(rules, list)
-        assert len(rules) > 0
-        assert isinstance(rules[0], str)
 
     def test_obtain_rules(self):
         rules = obtain_rules()

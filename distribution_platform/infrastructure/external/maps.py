@@ -6,10 +6,10 @@ import streamlit as st
 from streamlit_folium import st_folium
 
 from distribution_platform.config.logging_config import log as logger
-from distribution_platform.config.settings import MapConfig
+from distribution_platform.config.settings import ExternalServices, MapConfig
 
 MAP_DEFAULTS = MapConfig.DEFAULTS
-OSRM_SERVER = MapConfig.OSRM_SERVER
+OSRM_SERVER = ExternalServices.OSRM_SERVER
 
 
 class SpainMapRoutes:

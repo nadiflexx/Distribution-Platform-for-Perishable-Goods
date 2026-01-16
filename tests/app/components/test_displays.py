@@ -29,7 +29,7 @@ def test_page_header(mock_st):
     PageHeader.render("icon", "Title", "Subtitle")
     mock_st.markdown.assert_called_once()
     html = mock_st.markdown.call_args[0][0]
-    assert "page-header" in html
+    assert "header-container" in html
     assert "Title" in html
     assert "Subtitle" in html
 

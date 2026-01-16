@@ -6,6 +6,7 @@ from typing import Any, cast
 
 import streamlit as st
 
+from distribution_platform.app.config.constants import Printer
 from distribution_platform.app.state.session_manager import SessionManager
 from distribution_platform.core.inference_engine.engine import InferenceMotor
 from distribution_platform.core.knowledge_base import rules
@@ -49,4 +50,4 @@ class ValidationService:
     @staticmethod
     def print_rules() -> str:
         """Prints the vehicle parameter guidelines."""
-        return "\n".join(rules.print_rules())
+        return Printer.print_rules()

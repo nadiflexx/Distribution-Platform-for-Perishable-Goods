@@ -13,6 +13,6 @@ class SplashView:
     """Initial loading screen."""
 
     def render(self):
-        LoaderOverlay.static("BRAINCORE LOGISTICS", "Initializing components...")
+        LoaderOverlay.static("SMART CARGO", "Initializing components...")
         time.sleep(2.5)
         SessionManager.set_phase(AppPhase.FORM)

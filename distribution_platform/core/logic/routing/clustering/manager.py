@@ -5,7 +5,6 @@ Facade that uses a ClusteringStrategy to group orders.
 Provides backward compatibility with the original interface.
 """
 
-from distribution_platform.config.logging_config import log as logger
 from distribution_platform.core.models.order import Order
 from distribution_platform.infrastructure.persistence.coordinates import (
     CoordinateCache,
@@ -32,7 +31,6 @@ class ClusteringManager:
     def set_strategy(self, strategy: ClusteringStrategy) -> None:
         """Change the clustering strategy at runtime."""
         self.strategy = strategy
-        logger.info(f"🔄 Estrategia de clustering cambiada a: {strategy.name}")
 
     def get_strategy_name(self) -> str:
         """Returns current strategy name for UI display."""
@@ -52,10 +50,6 @@ class ClusteringManager:
         """
         Groups orders into clusters using the selected strategy.
         """
-        logger.info(
-            f"📊 Agrupando {len(orders)} pedidos en {n_trucks} camiones "
-            f"usando {self.strategy.name}"
-        )
 
         result = self.strategy.cluster_orders(
             orders=orders,
@@ -63,8 +57,6 @@ class ClusteringManager:
             unit_weight=unit_weight,
             max_capacity=max_capacity,
         )
-
-        logger.info(f"✅ Clustering completado: {len(result)} grupos creados")
         return result
 
     def generate_plot(

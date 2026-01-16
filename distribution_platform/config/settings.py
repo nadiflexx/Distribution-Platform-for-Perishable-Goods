@@ -58,71 +58,15 @@ class Paths:
 Paths.make_dirs()
 
 
-class AppConfig:
-    """Streamlit Application General Settings."""
+class ExternalServices:
+    """Configuration for external services."""
 
-    METADATA = {
-        "title": "🚛 IA Delivery - Smart Route Optimizer",
-        "page_icon": "🚛",
-        "layout": "wide",
-        "initial_sidebar_state": "collapsed",
-    }
-
-    PAGES = {
-        "FORM": "form_page",
-        "ROUTES": "routes_page",
-    }
-
-    SESSION_KEYS = {
-        "page": "current_page",
-        "dataframe": "loaded_dataframe",
-        "selected_trucks": "selected_trucks_data",
-        "connection_type": "data_connection_type",
-        "routes_result": "ai_routes_result",
-        "validation_result": "truck_validation_result",
-        "form_submitted": "form_was_submitted",
-    }
-
+    OSRM_SERVER = "https://routing.openstreetmap.de/routed-car"
     SCOPES = ["https://www.googleapis.com/auth/drive"]
-
-
-class UploadConfig:
-    """Constraints for File Uploads."""
-
-    MAX_FILE_SIZE_MB = 200
-    ALLOWED_EXTENSIONS = ["csv"]
-    REQUIRED_FILES = [
-        "clientes",
-        "lineas_pedido",
-        "pedidos",
-        "productos",
-        "provincias",
-        "destinos",
-    ]
-
-
-class UIConfig:
-    """User Interface texts and animation settings."""
-
-    ANIMATION = {
-        "spinner_text": "🤖 AI is calculating optimal routes...",
-        "loading_time": 2,
-        "transition_time": 0.3,
-    }
-
-    RULES_INFO = [
-        "📋 The CSV file must contain all required fields",
-        "📦 The truck must have sufficient capacity for all deliveries",
-        "⛽ The truck must have acceptable fuel consumption rates",
-        "🚗 The truck must maintain constant velocity during routes",
-        "📍 All delivery locations must be within service area",
-    ]
 
 
 class MapConfig:
     """Mapping and Routing Configuration."""
-
-    OSRM_SERVER = "https://routing.openstreetmap.de/routed-car"
 
     DEFAULTS = {
         "center": [40.2, -3.5],

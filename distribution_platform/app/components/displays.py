@@ -18,17 +18,84 @@ class SectionHeader:
 
 
 class PageHeader:
-    """Page header with icon and subtitle."""
+    """Renders the main page header with logo support."""
 
     @staticmethod
-    def render(icon: str, title: str, subtitle: str):
-        """Renders a page header with icon, title, and subtitle."""
+    def render(logo_src: str, title: str, subtitle: str):
+        """
+        Renders a header with a logo and text.
+
+        Args:
+            logo_src: The base64 source string (data:image/...) or an emoji.
+            title: The main title.
+            subtitle: The small subtitle below.
+        """
+
+        if logo_src and (
+            logo_src.startswith("data:image") or logo_src.startswith("http")
+        ):
+            logo_html = f'<img src="{logo_src}" class="header-logo">'
+        else:
+            logo_html = (
+                f'<span class="header-emoji">{logo_src}</span>' if logo_src else ""
+            )
+
         st.markdown(
             f"""
-            <div class="page-header animate-in">
-                <div class="header-icon">{icon}</div>
-                <h1>{title}</h1>
-                <p class="header-subtitle">{subtitle}</p>
+            <style>
+                .header-container {{
+                    display: flex;
+                    align-items: center;
+                    padding-bottom: 20px;
+                    justify-content: center;
+                    border-bottom: 1px solid #27272a;
+                    margin-bottom: 30px;
+                    gap: 20px;
+                }}
+
+                .header-logo {{
+                    height: 120px;
+                    width: auto;
+                    object-fit: contain;
+                }}
+
+                .header-emoji {{
+                    font-size: 4rem;
+                }}
+
+                .header-text {{
+                    display: flex;
+                    flex-direction: column;
+                }}
+
+                .header-text h1 {{
+                    margin: 0;
+                    padding: 0;
+                    font-family: 'Rajdhani', sans-serif;
+                    font-weight: 700;
+                    font-size: 3rem;
+                    line-height: 1;
+                    text-transform: uppercase;
+                    background: linear-gradient(90deg, #fff, #a1a1aa);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }}
+
+                .header-text p {{
+                    margin: 5px 0 0 0;
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 1rem;
+                    color: #a1a1aa;
+                    letter-spacing: 0.05em;
+                }}
+            </style>
+
+            <div class="header-container">
+                {logo_html}
+                <div class="header-text">
+                    <h1>{title}</h1>
+                    <p>{subtitle}</p>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,

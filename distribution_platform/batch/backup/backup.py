@@ -10,7 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 
 from distribution_platform.config.logging_config import log as logger
-from distribution_platform.config.settings import AppConfig
+from distribution_platform.config.settings import ExternalServices
 from distribution_platform.infrastructure.database.sql_client import (
     load_clients,
     load_destinations,
@@ -22,7 +22,7 @@ from distribution_platform.infrastructure.database.sql_client import (
 
 load_dotenv()
 
-SCOPES = AppConfig.SCOPES
+SCOPES = ExternalServices.SCOPES
 ROOT_DRIVE_FOLDER_ID = os.getenv("GDRIVE_FOLDER_ID")
 CREDENTIALS_FILE = os.getenv("GDRIVE_CREDENTIALS_PATH")
 TOKEN_FILE = os.getenv("GDRIVE_TOKEN_PATH", "token.json")
