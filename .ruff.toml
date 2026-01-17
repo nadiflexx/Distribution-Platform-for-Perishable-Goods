@@ -2,23 +2,21 @@
 #          RUFF CONFIGURATION
 # ============================================
 
-# Selección de reglas (las más usadas en proyectos reales)
+# Select rules to enforce
 select = [
-    "E",   # Errores de Pyflakes / PEP8
+    "E",   # Pyflakes Errors / PEP8
     "F",   # Flake8
-    "I",   # Import sorting (isort integrado)
+    "I",   # Import sorting (Imports)
     "W",   # Warnings
     "B",   # Bugbear
     "UP",  # Pyupgrade
     "C4",  # Comprehensions
-    "SIM", # Simplificaciones
+    "SIM", # Simplifications
 ]
 
-ignore = [
-    "E501", # Desactiva límite de longitud de línea (Black ya lo maneja)
-]
+ignore = ["E501"]
 
-# Formateador integrado de Ruff (reemplaza a Black)
+# Integrated formatter of Ruff (replaces Black)
 line-length = 88
 indent-width = 4
 

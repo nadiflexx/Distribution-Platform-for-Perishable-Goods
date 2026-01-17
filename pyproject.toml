@@ -10,37 +10,31 @@ include = ["distribution_platform*"]
 
 [project]
 name = "distribution_platform"
-description = "Project to integrate and develop predictive models."
+description = "Intelligent VRP solver for perishable goods using K-Means Clustering and Genetic Algorithms."
 version = "0.2.0"
 readme = "README.md"
-authors = [{ name = "Nadeem", email = "alu2019213@365.stucom.com" }]
-maintainers = [{ name = "Nadeem", email = "alu2019213@365.stucom.com" }]
+authors = [
+    { name = "Nadeem", email = "alu2019213@365.stucom.com" },
+    { name = "Alex", email = "pl2025297@365.stucom.com" },
+    { name = "Axel", email = "pl2025416@365.stucom.com" },
+]
+
+maintainers = [
+    { name = "Nadeem", email = "alu2019213@365.stucom.com" },
+    { name = "Alex", email = "pl2025297@365.stucom.com" },
+    { name = "Axel", email = "pl2025416@365.stucom.com" },
+]
 requires-python = ">=3.12"
 dependencies = [
-    "rich",
     "numpy",
     "python-dotenv",
     "gitpython",
-    "fastapi>=0.117.1",
-    "az>=0.1.0.dev1",
-    "azure-storage-blob>=12.26.0",
-    "azure-cosmos>=4.9.0",
     "dotenv>=0.9.9",
-    "pyyaml>=6.0.3",
-    "types-pyyaml>=6.0.12.20250915",
-    "aiofiles>=24.1.0",
-    "types-aiofiles>=24.1.0.20250822",
-    "httpx>=0.28.1",
-    "uvicorn>=0.37.0",
-    "nltk>=3.9.2",
     "requests>=2.32.5",
     "types-requests>=2.32.4.20250913",
     "pandas>=2.3.3",
-    "librosa>=0.11.0",
     "pytest>=8.4.2",
-    "openpyxl>=3.1.5",
     "matplotlib>=3.10.7",
-    "seaborn>=0.13.2",
     "geopy>=2.4.1",
     "streamlit>=1.51.0",
     "pydantic[email]>=2.12.4",
@@ -50,6 +44,10 @@ dependencies = [
     "pyodbc>=4.0.40",
     "google-api-python-client>=2.187.0",
     "google-auth-oauthlib>=1.2.2",
+    "ortools>=9.14.6206",
+    "plotly>=6.5.0",
+    "scikit-learn>=1.6.0",
+    "openpyxl>=3.1.5",
 ]
 
 [dependency-groups]

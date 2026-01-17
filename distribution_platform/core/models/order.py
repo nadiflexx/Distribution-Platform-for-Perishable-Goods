@@ -25,43 +25,32 @@ class Order(BaseModel):
         email_cliente (EmailStr): Customer's email address.
     """
 
-    # Unique identifier for the order
     pedido_id: int = Field(description="Unique identifier for the order")
 
-    # Date of the order (YYYY-MM-DD format)
     fecha_pedido: date | str = Field(description="Order date in YYYY-MM-DD format")
 
-    # Name of the product
     producto: str = Field(description="Name of the product")
-    # Quantity of the product
     cantidad_producto: int = Field(description="Quantity of the product")
 
-    # Sale price (may use comma as decimal separator)
     precio_venta: float | str = Field(
         description="Product price (may use comma as decimal separator)"
     )
 
-    # Average manufacturing time in hours
     tiempo_fabricacion_medio: int = Field(
         description="Average manufacturing time in hours"
     )
 
-    # Expiry in days
     caducidad: int = Field(description="Expiry in days")
 
-    # Destination address
-    destino: str
-    # Distance in kilometers
+    destino: str = Field(description="Destination province")
     distancia_km: float | str = Field(description="Distance in kilometers")
-    # GPS coordinates in 'latitud,longitud' format
-    # coordenadas_gps: str | None
 
-    # Customer's email address
     email_cliente: EmailStr = Field(description="Customer's email address")
     dias_totales_caducidad: int = Field(
         description="Total caducity days (1 + fabrication time + caducity)"
     )
     fecha_caducidad_final: date | str = Field(description="Final expiry date")
+
     # -------------------------------------------
     # VALIDATORS
     # -------------------------------------------
@@ -74,7 +63,6 @@ class Order(BaseModel):
         """
         if isinstance(v, (int, float)):
             return float(v)
-        # Replace comma with dot for decimal conversion
         return float(v.replace(",", "."))
 
     @field_validator("fecha_pedido")
@@ -92,6 +80,10 @@ class Order(BaseModel):
 
     @field_validator("fecha_caducidad_final")
     def validate_fecha_cad_final(cls, v):
+        """
+        Validates and converts the final caducity date string to a date object.
+        Accepts date object or string in YYYY-MM-DD format.
+        """
         if isinstance(v, date):
             return v
         return datetime.strptime(v, "%Y-%m-%d").date()
