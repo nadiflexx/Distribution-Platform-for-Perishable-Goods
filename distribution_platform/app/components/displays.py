@@ -144,13 +144,21 @@ class Timeline:
 
 
 class ValidationBadge:
-    """Success/pending validation display."""
+    """Success/pending/invalid validation display."""
 
     @staticmethod
     def success():
         """Renders a success validation badge."""
         st.markdown(
             """<div class="validation-success"><span>✅</span> VEHICLE VERIFIED & READY</div>""",
+            unsafe_allow_html=True,
+        )
+
+    @staticmethod
+    def invalid():
+        """Renders an invalid validation badge."""
+        st.markdown(
+            """<div class="validation-invalid"><span>❌</span> INVALID VEHICLE</div>""",
             unsafe_allow_html=True,
         )
 

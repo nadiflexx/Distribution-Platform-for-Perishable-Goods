@@ -57,4 +57,8 @@ class VehicleCategory:
         return "large" if "Heavy" in category else "medium"
 
 
-LOGO = "logo.png"
+class FileNames:
+    """Common filenames used in the application."""
+
+    TRUCK_ERROR = "truck_error.png"
+    LOGO = "logo.png"

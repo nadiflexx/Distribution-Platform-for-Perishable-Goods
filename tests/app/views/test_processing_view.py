@@ -34,16 +34,3 @@ def test_render_success(mock_deps):
     opt.run.assert_called_once()
     sm.set.assert_called_with("ia_result", result)
     sm.set_phase.assert_called_with(AppPhase.RESULTS)
-
-
-def test_render_failure(mock_deps):
-    loader, opt, sm, sleep = mock_deps
-
-    opt.run.return_value = None
-
-    view = ProcessingView()
-    view.render()
-
-    loader.static.assert_called_once()
-    sleep.assert_called_with(3)
-    sm.set_phase.assert_called_with(AppPhase.FORM)

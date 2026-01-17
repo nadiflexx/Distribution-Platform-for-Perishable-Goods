@@ -7,7 +7,7 @@ import os
 
 import streamlit as st
 
-from distribution_platform.app.config import constants
+from distribution_platform.app.config.constants import FileNames
 from distribution_platform.config.settings import Paths
 
 
@@ -44,7 +44,7 @@ class ImageLoader:
     def _get_logo_img() -> str:
         """Reads the local logo file and returns a base64 HTML image tag source."""
         try:
-            logo_path = Paths.MEDIA / constants.LOGO
+            logo_path = Paths.MEDIA / FileNames.LOGO
             if logo_path.exists():
                 with open(logo_path, "rb") as f:
                     data = f.read()

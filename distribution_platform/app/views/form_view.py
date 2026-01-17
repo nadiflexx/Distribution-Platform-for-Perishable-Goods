@@ -84,6 +84,7 @@ class FormView:
             VehicleCategory.all(),
             index=VehicleCategory.all().index(SessionManager.get("sel_cat")),
             key="cat_selector",
+            on_change=self.reset_validation_state,
         )
         SessionManager.set("sel_cat", category)
 
@@ -96,22 +97,20 @@ class FormView:
         st.markdown("<div style='height: 20px'></div>", unsafe_allow_html=True)
 
         # --- VALIDATION LOGIC ---
+        validation_res = SessionManager.get("validation_result")
 
-        if SessionManager.get("truck_validated"):
-            ValidationBadge.success()
-
-        else:
-            if (
-                st.button(
-                    "🔒 VERIFY VEHICLE INTEGRITY", type="primary", width="stretch"
-                )
-                and ValidationService.validate_truck()
-            ):
-                st.rerun()
-
-            validation_res = SessionManager.get("validation_result")
-            if validation_res and not validation_res.is_valid:
+        if validation_res is not None:
+            if validation_res.is_valid:
+                ValidationBadge.success()
+            else:
+                ValidationBadge.invalid()
                 self._render_validation_errors(validation_res)
+        else:
+            if st.button(
+                "🔒 VERIFY VEHICLE INTEGRITY", type="primary", width="stretch"
+            ):
+                ValidationService.validate_truck()
+                st.rerun()
 
     def _render_validation_errors(self, result):
         """Renders validation errors in a styled expander."""
@@ -128,6 +127,11 @@ class FormView:
                 "Please adjust the vehicle parameters or select a different model."
             )
 
+    def reset_validation_state(self):
+        """Resets validation state."""
+        SessionManager.set("validation_result", None)
+        SessionManager.set("truck_validated", False)
+
     def _render_standard_fleet(self, category: str):
         cat_key = VehicleCategory.to_key(category)
         trucks = self.repository.get_trucks(cat_key)
@@ -141,6 +145,7 @@ class FormView:
             list(trucks.keys()),
             index=idx,
             key="model_selector",
+            on_change=self.reset_validation_state,
         )
         SessionManager.set("sel_model", model)
 
@@ -151,7 +156,6 @@ class FormView:
 
             if SessionManager.get("selected_truck_data") != current_truck:
                 SessionManager.set("selected_truck_data", current_truck)
-                SessionManager.reset_validation()
 
             TruckHero.render(img_path, data)
 
@@ -163,7 +167,11 @@ class FormView:
         idx = options.index(current) if current in options else 0
 
         selection = st.selectbox(
-            "PROTOTYPE DATABASE", options, index=idx, key="custom_selector"
+            "PROTOTYPE DATABASE",
+            options,
+            index=idx,
+            key="custom_selector",
+            on_change=self.reset_validation_state,
         )
         SessionManager.set("sel_custom_db", selection)
 
@@ -176,7 +184,6 @@ class FormView:
 
             if SessionManager.get("selected_truck_data") != current_truck:
                 SessionManager.set("selected_truck_data", current_truck)
-                SessionManager.reset_validation()
 
             TruckHero.render(img_path, data)
 

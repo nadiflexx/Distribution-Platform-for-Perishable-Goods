@@ -56,7 +56,7 @@ def velocity_rule(truck: Truck) -> str:
 
 def consumption_rule(truck: Truck) -> str:
     """R2: The truck's fuel consumption must be within acceptable limits."""
-    min_consumo = 5.0  # Nadie gasta 1L a los 100km
+    min_consumo = 5.0
     max_consumo = 50.0
 
     if min_consumo <= truck.consumo_combustible <= max_consumo:
@@ -67,7 +67,7 @@ def consumption_rule(truck: Truck) -> str:
 
 def capacity_rule(truck: Truck) -> str:
     """R3: The truck must have sufficient capacity (in product units)."""
-    min_cap = 100  # Un camión de menos de 100kg no es útil
+    min_cap = 500
 
     if truck.capacidad_carga >= min_cap:
         return f"[SUCCESS] (R3) The truck has sufficient capacity ({truck.capacidad_carga} products)."
@@ -102,25 +102,25 @@ def validate_nombre_format(data: dict) -> str:
     nombre = data.get("nombre", "").strip()
 
     if not nombre:
-        return "[ERROR] (Nombre) The truck's name cannot be empty."
+        return "[ERROR] (Name) The truck's name cannot be empty."
 
     if len(nombre) < 3:
-        return "[ERROR] (Nombre) The name must have at least 3 characters."
+        return "[ERROR] (Name) The name must have at least 3 characters."
 
     if len(nombre) > 50:
-        return "[ERROR] (Nombre) The name cannot exceed 50 characters."
+        return "[ERROR] (Name) The name cannot exceed 50 characters."
 
     if not re.match(r"^[a-zA-Z0-9\s\-áéíóúÁÉÍÓÚñÑ]+$", nombre):
         return (
-            "[ERROR] (Nombre) The name contains invalid characters. "
+            "[ERROR] (Name) The name contains invalid characters. "
             "Only letters, numbers, spaces and hyphens are allowed."
         )
 
-    return f"[SUCCESS] (Nombre) Valid name format: '{nombre}'."
+    return f"[SUCCESS] (Name) Valid name format: '{nombre}'."
 
 
 def validate_capacidad_format(data: dict) -> str:
-    """Validates the format and range of the truck's capacity (in product units).
+    """Validates the format and range of the truck's capacity (in kg).
     Args:
         data: Dictionary with the custom truck's data
 
@@ -131,23 +131,20 @@ def validate_capacidad_format(data: dict) -> str:
     capacidad = data.get("capacidad", "")
 
     if capacidad == "" or capacidad is None:
-        return "[ERROR] (Capacidad) The capacity cannot be empty."
+        return "[ERROR] (Capacity) The capacity needs to be entered."
 
     try:
-        numero = int(float(capacidad))
+        numero = float(capacidad)
     except (ValueError, TypeError):
-        return (
-            "[ERROR] (Capacidad) Invalid capacity format. "
-            "Enter only integers (e.g., 100 for 100 products)."
-        )
+        return "[ERROR] (Capacity) Introduce a valid number (e.g., 15000)."
 
-    if numero < 10:
-        return "[ERROR] (Capacidad) The capacity must be at least 10 products."
+    if numero < 500:
+        return "[ERROR] (Capacity) The capacity is too low (min: 500 kg). ¿It's a bicycle truck?"
 
-    if numero > 200:
-        return "[ERROR] (Capacidad) The capacity cannot exceed 200 products."
+    if numero > 50000:
+        return "[ERROR] (Capacity) The capacity should exceeds legal road limit (> 50,000 kg)."
 
-    return f"[SUCCESS] (Capacidad) Valid capacity format: {numero} products."
+    return f"[SUCCESS] (Capacity) Valid format: {numero:,.0f} kg."
 
 
 def validate_consumo_format(data: dict) -> str:
@@ -163,23 +160,25 @@ def validate_consumo_format(data: dict) -> str:
     consumo = data.get("consumo", "")
 
     if consumo == "" or consumo is None:
-        return "[ERROR] (Consumo) The fuel consumption cannot be empty."
+        return "[ERROR] (Consumption) The fuel consumption cannot be empty."
 
     try:
         numero = float(consumo) if isinstance(consumo, str) else consumo
     except (ValueError, TypeError):
         return (
-            "[ERROR] (Consumo) Invalid fuel consumption format. "
+            "[ERROR] (Consumption) Invalid fuel consumption format. "
             "Enter only numbers (e.g., 30 for 30 L/100km)."
         )
 
-    if numero < 10:
-        return "[ERROR] (Consumo) The fuel consumption cannot be less than 10 L/100km."
+    if numero < 5:
+        return (
+            "[ERROR] (Consumption) The fuel consumption cannot be less than 5 L/100km."
+        )
 
-    if numero > 50:
-        return "[ERROR] (Consumo) The fuel consumption cannot exceed 50 L/100km."
+    if numero > 80:
+        return "[ERROR] (Consumption) The fuel consumption cannot exceed 80 L/100km."
 
-    return f"[SUCCESS] (Consumo) Valid fuel consumption format: {numero} L/100km."
+    return f"[SUCCESS] (Consumption) Valid fuel consumption format: {numero} L/100km."
 
 
 def validate_velocidad_format(data: dict) -> str:
@@ -195,23 +194,23 @@ def validate_velocidad_format(data: dict) -> str:
     velocidad = data.get("velocidad_constante", "")
 
     if velocidad == "" or velocidad is None:
-        return "[ERROR] (Velocidad) The constant speed cannot be empty."
+        return "[ERROR] (Velocity) The constant speed cannot be empty."
 
     try:
         numero = float(velocidad) if isinstance(velocidad, str) else velocidad
     except (ValueError, TypeError):
         return (
-            "[ERROR] (Velocidad) Invalid speed format. "
+            "[ERROR] (Velocity) Invalid speed format. "
             "Enter only numbers (e.g., 75 for 75 km/h)."
         )
 
     if numero < 30:
-        return "[ERROR] (Velocidad) The speed must be at least 30 km/h."
+        return "[ERROR] (Velocity) The speed must be at least 30 km/h."
 
     if numero > 120:
-        return "[ERROR] (Velocidad) The speed cannot exceed 120 km/h."
+        return "[ERROR] (Velocity) The speed cannot exceed 120 km/h."
 
-    return f"[SUCCESS] (Velocidad) Valid speed format: {numero} km/h."
+    return f"[SUCCESS] (Velocity) Valid speed format: {numero} km/h."
 
 
 def validate_precio_conductor_hora_format(data: dict) -> str:
@@ -237,17 +236,17 @@ def validate_precio_conductor_hora_format(data: dict) -> str:
         )
     except (ValueError, TypeError):
         return (
-            "[ERROR] (Precio Conductor) Invalid price format. "
+            "[ERROR] (Driver Hourly Rate) Invalid price format. "
             "Enter only numbers (e.g., 15.0 for €15.00/h)."
         )
 
     if numero < 10.0:
-        return "[ERROR] (Precio Conductor) The price must be at least €10.00/h."
+        return "[ERROR] (Driver Hourly Rate) The price must be at least €10.00/h."
 
     if numero > 50.0:
-        return "[ERROR] (Precio Conductor) The price cannot exceed €50.00/h."
+        return "[ERROR] (Driver Hourly Rate) The price cannot exceed €50.00/h."
 
-    return f"[SUCCESS] (Precio Conductor) Valid price format: €{numero}/h."
+    return f"[SUCCESS] (Driver Hourly Rate) Valid price format: €{numero}/h."
 
 
 def parse_truck_data(data: dict) -> tuple[bool | Truck, dict | Truck]:

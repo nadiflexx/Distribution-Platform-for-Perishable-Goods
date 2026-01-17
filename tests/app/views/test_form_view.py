@@ -90,15 +90,20 @@ def test_render_fleet_awaiting(mock_deps):
 def test_render_fleet_standard(mock_deps):
     st, sm, repo, _, vs, _, _, hero, _ = mock_deps
 
-    sm.get.side_effect = (
-        lambda k: True
-        if k == "load_success"
-        else (
-            VehicleCategory.HEAVY
-            if k == "sel_cat"
-            else ("Truck A" if k == "sel_model" else False)
-        )
-    )
+    def sm_get_side_effect(key, default=None):
+        if key == "load_success":
+            return True
+        if key == "sel_cat":
+            return VehicleCategory.HEAVY
+        if key == "sel_model":
+            return "Truck A"
+        if key == "validation_result":
+            return None
+        if key == "selected_truck_data":
+            return {"nombre": "Truck A"}
+        return default
+
+    sm.get.side_effect = sm_get_side_effect
 
     st.selectbox.side_effect = [VehicleCategory.HEAVY, "Truck A"]
     repo.return_value.get_trucks.return_value = {

@@ -177,22 +177,41 @@ class OptimizationService:
 
     @staticmethod
     def _validate_capacity(truck_data: dict, orders_data: list) -> bool:
-        orders_flat = [order for group in orders_data for order in group]
-        total_load = sum(o.cantidad_producto for o in orders_flat)
-        total_orders = len(orders_flat)
+        """
+        Validates if the selected truck is viable for the actual load.
 
+        Returns:
+            True if truck is viable, False otherwise.
+        """
+
+        orders_flat = [order for group in orders_data for order in group]
+
+        # 1. Calculate total load
+        total_load = sum(o.cantidad_producto for o in orders_flat)
+
+        # 2. Calculate the real truck capacity
         truck_cap = float(truck_data.get("capacidad", 1000))
+        # Correction heuristic if the data comes with incorrect format
         if truck_cap < 100 and total_load > 10000:
             truck_cap *= 1000
 
+        # 3. Calculates unique destinies
+        unique_destinations = {o.pedido_id for o in orders_flat}
+        n_unique_destinations = len(unique_destinations)
+
+        # 4. Calculates minimum necessary trucks
         needed_trucks = math.ceil(total_load / truck_cap) if truck_cap > 0 else 9999
 
-        if needed_trucks > total_orders:
-            st.error(
-                f"⚠️ CAPACITY ERROR: {truck_cap}kg capacity insufficient "
-                f"for {total_orders} orders."
-            )
+        # --- LOGIC VALIDATION ---
+
+        # Case A: Its necessary more trucks than destinies (Cause K-Means error)
+        if needed_trucks > n_unique_destinations:
             return False
+
+        # Caso B: Limit float
+        MAX_TRUCKS = 200
+        return not needed_trucks > MAX_TRUCKS
+
         return True
 
     @staticmethod

@@ -5,7 +5,7 @@ Handles page configuration, CSS injection, and view routing.
 
 import streamlit as st
 
-from distribution_platform.app.config import constants
+from distribution_platform.app.config.constants import FileNames
 from distribution_platform.app.state.session_manager import SessionManager
 from distribution_platform.app.views import (
     FormView,
@@ -28,7 +28,7 @@ class Application:
     def _configure_page(self):
         st.set_page_config(
             page_title="SmartCargo",
-            page_icon=Paths.MEDIA / constants.LOGO,
+            page_icon=Paths.MEDIA / FileNames.LOGO,
             layout="wide",
             initial_sidebar_state="collapsed",
         )

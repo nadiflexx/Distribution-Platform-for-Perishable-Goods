@@ -2,6 +2,8 @@
 Data loading and ETL service.
 """
 
+import base64
+
 import streamlit as st
 
 from distribution_platform.app.components.forms import FileUploadSection
@@ -45,3 +47,9 @@ class DataService:
         except Exception as e:
             st.error(f"❌ ETL Failure: {e}")
             return False
+
+    @staticmethod
+    def load_image_base64(path):
+        """Converts an image to base64 string."""
+        with open(path, "rb") as f:
+            return base64.b64encode(f.read()).decode()

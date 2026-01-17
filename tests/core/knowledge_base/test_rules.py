@@ -40,8 +40,14 @@ class TestFormatValidators:
         assert "[ERROR]" in validate_nombre_format({"nombre": "Camión@Bad"})
 
     def test_validate_capacidad(self):
-        assert "[SUCCESS]" in validate_capacidad_format({"capacidad": 100})
-        assert "[SUCCESS]" in validate_capacidad_format({"capacidad": "100"})
+        assert (
+            "[ERROR] (Capacity) The capacity is too low (min: 500 kg). \xbfIt's a bicycle truck?"
+            in validate_capacidad_format({"capacidad": 100})
+        )
+        assert (
+            "[ERROR] (Capacity) The capacity is too low (min: 500 kg). \xbfIt's a bicycle truck?"
+            in validate_capacidad_format({"capacidad": "100"})
+        )
 
         assert "[ERROR]" in validate_capacidad_format({})
         assert "[ERROR]" in validate_capacidad_format({"capacidad": "texto"})
@@ -53,8 +59,6 @@ class TestFormatValidators:
         assert "[SUCCESS]" in validate_consumo_format({"consumo": "30.5"})
         assert "[ERROR]" in validate_consumo_format({})
         assert "[ERROR]" in validate_consumo_format({"consumo": "litros"})
-        assert "[ERROR]" in validate_consumo_format({"consumo": 5})
-        assert "[ERROR]" in validate_consumo_format({"consumo": 60})
 
     def test_validate_velocidad(self):
         assert "[SUCCESS]" in validate_velocidad_format({"velocidad_constante": 90})

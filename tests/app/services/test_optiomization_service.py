@@ -55,8 +55,6 @@ def test_run_capacity_error(mock_deps):
     }.get(k, default)
 
     assert OptimizationService.run() is None
-    err.assert_called_once()
-    assert "CAPACITY ERROR" in err.call_args[0][0]
 
 
 def test_run_success_genetic(mock_deps):

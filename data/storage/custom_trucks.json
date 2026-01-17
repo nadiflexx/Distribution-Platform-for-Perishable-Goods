@@ -1,12 +1,19 @@
 {
-  "Camion OK": {
-    "capacidad": 120,
+  "Truck OK": {
+    "capacidad": 3000,
     "consumo": 30,
     "velocidad_constante": 75,
     "precio_conductor_hora": 20,
     "imagen": "truck_default.png"
   },
-  "Camion Errores": {
+  "Impossible Truck OK": {
+    "capacidad": 500,
+    "consumo": 30,
+    "velocidad_constante": 75,
+    "precio_conductor_hora": 20,
+    "imagen": "truck_default.png"
+  },
+  "Truck Error": {
     "capacidad": 1,
     "consumo": 1,
     "velocidad_constante": 1,
