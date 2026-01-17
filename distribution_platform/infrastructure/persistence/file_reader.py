@@ -48,7 +48,8 @@ class FileReader:
 
             elif filename.endswith((".xls", ".xlsx")):
                 return pd.read_excel(uploaded_file)
-
+            elif filename.endswith(".txt"):
+                return FileReader._read_csv_smart(uploaded_file)
             else:
                 raise ValueError(f"Unsupported file extension: {filename}")
         except Exception as e:

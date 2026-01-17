@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from distribution_platform.config.enums import DataTypesEnum, WorkflowError
+from distribution_platform.config.enums import DataTypesEnum
 from distribution_platform.config.settings import ExternalServices, MapConfig, Paths
 
 
@@ -30,11 +30,6 @@ class TestSettings:
 
 
 class TestEnums:
-    def test_workflow_error_enum(self):
-        """Verifica que WorkflowError se comporte como string (StrEnum)."""
-        assert WorkflowError.FILE_ERROR == "FILE_ERROR"
-        assert isinstance(WorkflowError.DB_ERROR, str)
-
     def test_data_types_enum(self):
         """Verifica la existencia de tipos de datos."""
         assert DataTypesEnum.CSV is not None

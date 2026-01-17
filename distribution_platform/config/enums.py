@@ -3,7 +3,7 @@ Application Enumerations.
 Central source of truth for types and constants.
 """
 
-from enum import Enum, StrEnum, auto
+from enum import Enum, auto
 
 
 class DataTypesEnum(Enum):
@@ -13,13 +13,5 @@ class DataTypesEnum(Enum):
     JSON = auto()
     SQL = auto()
     EXCEL = auto()
+    TXT = auto()
     OTHER = auto()
-
-
-class WorkflowError(StrEnum):
-    """Application error codes."""
-
-    FILE_ERROR = "FILE_ERROR"
-    DB_ERROR = "DB_ERROR"
-    ETL_ERROR = "ETL_ERROR"
-    VALIDATION_ERROR = "VALIDATION_ERROR"
