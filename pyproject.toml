@@ -1,0 +1,115 @@
+[build-system]
+requires = ["setuptools", "wheel", "setuptools_scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+
+[tool.setuptools.packages.find]
+include = ["distribution_platform*"]
+
+[project]
+name = "distribution_platform"
+description = "Intelligent VRP solver for perishable goods using K-Means Clustering and Genetic Algorithms."
+version = "0.2.0"
+readme = "README.md"
+authors = [
+    { name = "Nadeem", email = "alu2019213@365.stucom.com" },
+    { name = "Alex", email = "pl2025297@365.stucom.com" },
+    { name = "Axel", email = "pl2025416@365.stucom.com" },
+]
+
+maintainers = [
+    { name = "Nadeem", email = "alu2019213@365.stucom.com" },
+    { name = "Alex", email = "pl2025297@365.stucom.com" },
+    { name = "Axel", email = "pl2025416@365.stucom.com" },
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy",
+    "python-dotenv",
+    "gitpython",
+    "dotenv>=0.9.9",
+    "requests>=2.32.5",
+    "types-requests>=2.32.4.20250913",
+    "pandas>=2.3.3",
+    "pytest>=8.4.2",
+    "matplotlib>=3.10.7",
+    "geopy>=2.4.1",
+    "streamlit>=1.51.0",
+    "pydantic[email]>=2.12.4",
+    "folium>=0.20.0",
+    "streamlit-folium>=0.25.3",
+    "sqlalchemy>=2.0.44",
+    "pyodbc>=4.0.40",
+    "google-api-python-client>=2.187.0",
+    "google-auth-oauthlib>=1.2.2",
+    "ortools>=9.14.6206",
+    "plotly>=6.5.0",
+    "scikit-learn>=1.6.0",
+    "openpyxl>=3.1.5",
+]
+
+[dependency-groups]
+dev = [
+    "ruff<1.0.0,>=0.5.3",
+    "mypy<2.0.0,>=1.4.1",
+    "pytest<9.0.0,>=8.3.4",
+    "pytest-cov",
+    "pre-commit",
+    "ipython",
+    "notebook",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+minversion = "6.2"
+addopts = "-vvv -s --cov=distribution_platform --cov-report term-missing --cov-report xml:coverage.xml"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.mypy]
+files = ["**/*.py"]
+ignore_missing_imports = true
+
+[tool.ruff]
+exclude = [".git", ".venv", "build", "dist", "node_modules", "__init__.py"]
+line-length = 88
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "A",   # flake8-builtins
+    "B",   # flake8-bugbear
+    "D",   # pydocstyle
+    "E",   # pycodestyle-error
+    "F",   # Pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "PD",  # pandas-vet
+    "TID", # flake8-tidy-imports
+    "UP",  # pyupgrade
+]
+ignore = [
+    "D100", # Checks for undocumented public module definitions
+    "D104", # Checks for undocumented public package definitions
+    "D107", # Checks for public __init__ method definitions that are missing docstrings
+    "D205", # Checks for docstring summary lines that are not separated from the docstring description by one blank line.
+    "D212", # Checks for docstring summary lines that are not positioned on the first physical line of the docstring
+    "D401", # Checks for docstring first lines that are not in an imperative mood
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.isort]
+known-local-folder = ["scripts", "mh_chatbot_dialogue", "tests"]
+
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = ["classmethod", "pydantic.field_validator"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["D101"]
+
+[tool.uv.sources]

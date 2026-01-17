@@ -1,0 +1,105 @@
+# ============================================
+#  ENTORNOS VIRTUALES
+# ============================================
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+
+# ============================================
+#  ARCHIVOS DE CONFIGURACIÓN SENSIBLES
+# ============================================
+.env
+.env.*
+*.env
+
+# ============================================
+#  CREDENCIALES API Y GOOGLE (¡NUEVO!)
+# ============================================
+# Archivos generados por las librerías de Google
+token.json
+credentials.json
+client_secrets.json
+
+# ============================================
+#  TESTING Y COVERAGE (¡NUEVO!)
+# ============================================
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.tox/
+nosetests.xml
+
+# ============================================
+#  LOGS (¡NUEVO!)
+# ============================================
+*.log
+logs/
+distribution_platform/logs/
+
+# ============================================
+#  DATOS (CONTROL FINO)
+# ============================================
+
+# Ignorar todo data por defecto
+data/*
+
+# PERMITIR storage (datos de dominio)
+!data/storage/
+!data/storage/**
+
+# Ignorar datos regenerables explícitamente
+data/raw/
+data/processed/
+data/cache/
+
+# NO ignorar JSON de storage (Persistencia de camiones y coordenadas)
+!data/storage/*.json
+
+# ============================================
+#  ARCHIVOS DE DATOS GENÉRICOS (FUERA DE STORAGE)
+# ============================================
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+
+# ============================================
+#  CACHE Y TEMPORALES
+# ============================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.cache/
+.ipynb_checkpoints/
+
+# ============================================
+#  STREAMLIT
+# ============================================
+.streamlit/
+
+# ============================================
+#  CONFIGURACIÓN DE EDITORES
+# ============================================
+.vscode/
+.idea/
+*.iml
+
+# ============================================
+#  BUILD / DIST
+# ============================================
+dist/
+build/
+*.spec
+
+# ============================================
+#  SISTEMA
+# ============================================
+.DS_Store
+Thumbs.db
+*.bak
+*.old

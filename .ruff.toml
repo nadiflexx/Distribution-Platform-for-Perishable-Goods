@@ -1,0 +1,32 @@
+# ============================================
+#          RUFF CONFIGURATION
+# ============================================
+
+# Select rules to enforce
+select = [
+    "E",   # Pyflakes Errors / PEP8
+    "F",   # Flake8
+    "I",   # Import sorting (Imports)
+    "W",   # Warnings
+    "B",   # Bugbear
+    "UP",  # Pyupgrade
+    "C4",  # Comprehensions
+    "SIM", # Simplifications
+]
+
+ignore = ["E501"]
+
+# Integrated formatter of Ruff (replaces Black)
+line-length = 88
+indent-width = 4
+
+[format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+skip-magic-trailing-comma = false
+
+[isort]
+combine-as-imports = true
+known-first-party = ["distribution_platform", "data_models"]
+force-sort-within-sections = true

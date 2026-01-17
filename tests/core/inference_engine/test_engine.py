@@ -1,0 +1,53 @@
+from unittest.mock import Mock
+
+import pytest
+
+from distribution_platform.core.inference_engine.engine import InferenceMotor
+from distribution_platform.core.models.truck import Truck
+
+
+class TestInferenceMotor:
+    @pytest.fixture
+    def sample_truck(self):
+        return Truck(
+            nombre="TestTruck",
+            velocidad_constante=80.0,
+            consumo_combustible=30.0,
+            capacidad_carga=1000,
+            precio_conductor_hora=20.0,
+            imagen="test.png",
+        )
+
+    def test_evaluate_all_rules_pass(self, sample_truck):
+        """Verifies that if all rules pass, the result is valid."""
+        rule1 = Mock(return_value="[SUCCESS] Rule 1 Passed")
+        rule2 = Mock(return_value="[SUCCESS] Rule 2 Passed")
+
+        motor = InferenceMotor([rule1, rule2])
+        result = motor.evaluate(sample_truck)
+
+        assert result.is_valid is True
+        assert len(result.reasoning) == 2
+        assert "[SUCCESS] Rule 1 Passed" in result.reasoning
+
+        rule1.assert_called_with(sample_truck)
+
+    def test_evaluate_one_rule_fails(self, sample_truck):
+        """Verifies that if one rule fails, the result is invalid."""
+        rule1 = Mock(return_value="[SUCCESS] Rule 1 Passed")
+        rule2 = Mock(return_value="[ERROR] Rule 2 Failed")
+
+        motor = InferenceMotor([rule1, rule2])
+        result = motor.evaluate(sample_truck)
+
+        assert result.is_valid is False
+        assert len(result.reasoning) == 2
+        assert "[ERROR] Rule 2 Failed" in result.reasoning
+
+    def test_empty_rules(self, sample_truck):
+        """Verifies behavior without rules (should be valid by default)."""
+        motor = InferenceMotor([])
+        result = motor.evaluate(sample_truck)
+
+        assert result.is_valid is True
+        assert result.reasoning == []
