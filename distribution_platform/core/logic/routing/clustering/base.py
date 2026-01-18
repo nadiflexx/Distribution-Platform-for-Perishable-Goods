@@ -10,9 +10,8 @@ import base64
 import io
 
 import matplotlib
-import matplotlib.patheffects as pe  # <--- IMPORTANTE PARA EL BORDE DEL TEXTO
+import matplotlib.patheffects as pe
 
-# Backend sin GUI para servidores
 matplotlib.use("Agg")
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
@@ -35,7 +34,6 @@ class ClusteringStrategy(ABC):
         self.scaler = StandardScaler()
         self.coord_cache = coord_cache
 
-        # Cache del último clustering para plotting
         self._last_data: list[dict] | None = None
         self._last_labels: list[int] | None = None
         self._last_n_clusters: int = 0

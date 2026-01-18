@@ -34,7 +34,7 @@ An advanced system leveraging genetic algorithms, K-Means/Hierarchical clusterin
   - **Flow Maps:** Directed graph visualizations showing exact truck trajectories and stop sequences.
 - **📦 Order Manifest:** Detailed breakdown of consolidated orders, including product-level details and financial summaries.
 - **🗺️ Interactive Maps:** Real-time route visualization on OpenStreetMap using OSRM for precise road mapping.
-- **⚖️ Fleet Management:** Dynamic load assignment to maximize truck capacity utilization (>90%).
+- **⚖️ Fleet Management:** Dynamic load assignment to maximize truck capacity utilization (>70%).
 
 ---
 
@@ -171,7 +171,7 @@ pytest tests/
 
 - **Language:** Python 3.13+
 - **Web Framework:** Streamlit, Plotly (Charts)
-- **Algorithms:** DEAP (Genetic), Google OR-Tools
+- **Algorithms:** Genetic, Google OR-Tools
 - **Data Science:** Pandas, Scikit-learn (Clustering), NumPy
 - **Maps & Geo:** Folium, Geopy, OSRM
 - **Backups:** Google Drive (Optional)
