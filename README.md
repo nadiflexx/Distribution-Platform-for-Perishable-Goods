@@ -113,7 +113,8 @@ DB_DRIVER=SQL Server
 
 # Google Drive (Optional for backups)
 GDRIVE_FOLDER_ID=your_folder_id
-GDRIVE_CREDENTIALS_PATH=credentials.json
+GDRIVE_CREDENTIALS_PATH=credentials.json #You should get it from Google Drive
+GDRIVE_TOKEN_PATH=token.json #You should get it by executing the backup pipeline
 ```
 
 ---
